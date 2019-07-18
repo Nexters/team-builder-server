@@ -1,0 +1,135 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.6.RELEASE'
+    id 'java'
+    id "org.asciidoctor.convert" version "1.5.9.2"
+}
+
+ext {
+    modelMapperVersion = "2.3.0"
+    snippetsDir = file("${buildDir}/generated-snippets")
+    springRestDocsVersion = "2.0.2.RELEASE"
+    hibernateValidatorVersion = "6.0.13.Final"
+    swaggerVersion = "2.9.2"
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'checkstyle'
+apply plugin: 'jacoco'
+apply plugin: 'org.asciidoctor.convert'
+
+group = 'com.nexters'
+version = 'dev-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation("org.modelmapper:modelmapper:${modelMapperVersion}")
+    runtime('mysql:mysql-connector-java')
+    runtime('com.h2database:h2')
+    runtime('org.springframework.boot:spring-boot-devtools')
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
+    testImplementation('org.mockito:mockito-junit-jupiter:2.21.0')
+    testImplementation('com.google.guava:guava:27.0-jre')
+    testImplementation('org.projectlombok:lombok')
+    testAnnotationProcessor("org.projectlombok:lombok")
+
+    asciidoctor("org.springframework.restdocs:spring-restdocs-asciidoctor:${springRestDocsVersion}")
+    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc:${springRestDocsVersion}")
+//    integrationTestAnnotationProcessor("org.projectlombok:lombok")
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "skipped", "failed"
+    }
+    reports {
+        html.enabled = true
+    }
+
+    jacoco {
+        destinationFile = file("${buildDir}/jacoco/test.exec")
+    }
+
+    outputs.dir snippetsDir
+}
+
+checkstyle {
+    toolVersion = "8.13"
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
+}
+
+jacocoTestReport {
+    afterEvaluate {
+        getClassDirectories().setFrom(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['**/*Application*', '**/*Config*'])
+        })
+    }
+
+    dependsOn test
+}
+
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output
+            compileClasspath += main.compileClasspath
+            compileClasspath += test.output
+            compileClasspath += test.compileClasspath
+            runtimeClasspath += test.runtimeClasspath
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
+}
+
+configurations {
+    intTestImplementation.extendsFrom implementation
+    intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+
+task integrationTest(type: Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+    useJUnitPlatform()
+    reports {
+        html.enabled = true
+    }
+}
+check.dependsOn integrationTest
+
+asciidoctor {
+    inputs.dir snippetsDir
+    sourceDir 'docs'
+    attributes  'snippets': snippetsDir,
+            'toc': 'left',
+            'toc-title': 'Table of Contents',
+            docinfo1 : ''
+    dependsOn test
+}
