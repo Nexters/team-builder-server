@@ -1,0 +1,25 @@
+server:
+  port: 8080
+spring:
+  main:
+    banner-mode: 'off'
+  output:
+    ansi:
+      enabled: ALWAYS
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: true
+  flyway:
+    enabled: false
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+  jackson:
+    mapper:
+      DEFAULT_VIEW_INCLUSION: true
+service:
+  user-api-server: http://localhost:8080

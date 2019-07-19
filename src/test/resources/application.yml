@@ -1,0 +1,26 @@
+service:
+  api-server: http://localhost:8080
+spring:
+  main:
+    banner-mode: 'off'
+  output:
+    ansi.enabled: ALWAYS
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+  flyway:
+    enabled: false
+  jackson:
+    mapper:
+      DEFAULT_VIEW_INCLUSION: true
+logging.level:
+  org.hibernate:
+    type.descriptor.sql.BasicBinder: TRACE
+  com.baemin.webtoon: DEBUG
