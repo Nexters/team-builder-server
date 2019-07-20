@@ -1,0 +1,75 @@
+= TeamBuilder API Docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[overview]]
+= Overview
+
+[[overview-http-verbs]]
+== HTTP verbs
+Person-service tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
+|==
+| Verb | Usage
+
+| `GET`
+| Used to retrieve a resource
+
+| `POST`
+| Used to create a new resource
+
+| `PUT`
+| Used to update an existing resource, full updates only
+
+| `DELETE`
+| Used to delete an existing resource
+|==
+
+[[overview-http-status-codes]]
+== HTTP status codes
+Person-service tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
+
+|==
+| Status code | Usage
+
+| `200 OK`
+| Standard response for successful HTTP requests. The actual response will depend on the request method used. +
+  In a GET request, the response will contain an entity corresponding to the requested resource. +
+  In a POST request, the response will contain an entity describing or containing the result of the action.
+
+| `201 Created`
+| The request has been fulfilled and resulted in a new resource being created.
+
+| `400 Bad Request`
+| The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+
+| `401 Unauthorized`
+| The request has not been applied because it lacks valid authentication credentials for the target resource.
+
+| `403 Forbidden`
+| The server understood the request but refuses to authorize it.
+
+| `404 Not Found`
+| The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible.
+|==
+
+= Resources
+
+== Person
+
+=== Create Person
+operation::/persons/post-person[snippets='http-request,request-fields,http-response,response-fields']
+
+=== Get Person
+operation::/persons/get-person[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== Put Person
+operation::/persons/put-person[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+=== Paged Person list
+operation::/persons/list-person[snippets='http-request,request-parameters,http-response,response-fields']

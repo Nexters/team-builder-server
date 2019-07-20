@@ -1,0 +1,11 @@
+|===
+|Name|Description|Mandatory|Constraints
+
+{{#headers}}
+|{{#tableCellContent}}`+{{name}}+`{{/tableCellContent}}
+|{{#tableCellContent}}{{description}}{{/tableCellContent}}
+|{{#tableCellContent}}{{^optional}}true{{/optional}}{{/tableCellContent}}
+|{{#tableCellContent}}{{#constraints}}{{{constraints}}}{{/constraints}}{{/tableCellContent}}
+
+{{/headers}}
+|===
