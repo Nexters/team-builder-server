@@ -53,6 +53,13 @@ public class Person {
         this.age = age;
     }
 
+    public void update(PersonRequest request) {
+        this.gender = request.getGender();
+        this.name = request.getName();
+        this.nickname = request.getNickname();
+        this.age = request.getAge();
+    }
+
     public static Person of(PersonRequest request) {
         return new Person(request.getGender(), request.getName(), request.getNickname(), request.getAge());
     }
