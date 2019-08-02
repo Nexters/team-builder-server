@@ -7,7 +7,9 @@ import java.util.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.nexters.teambuilder.config.security.InValidTokenException;
 import com.nexters.teambuilder.config.security.TokenService;
+import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
+import com.nexters.teambuilder.user.api.dto.UserResponse;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
@@ -26,9 +28,9 @@ public class UserService {
 
     private BCryptPasswordEncoder encryptor = new BCryptPasswordEncoder();
 
-    public User createUser(UserRequest request) {
+    public UserResponse createUser(UserRequest request) {
 
-        return userRepository.save(User.builder()
+        User user = userRepository.save(User.builder()
                 .id(request.getId())
                 .password(encryptor.encode(request.getPassword()))
                 .name(request.getName())
@@ -36,19 +38,18 @@ public class UserService {
                 .role(request.getRole())
                 .position(request.getPosition())
                 .build());
+
+        return UserResponse.of(user);
     }
 
     public User findByToken(String token) {
         return Optional.of(tokenService.verify(token))
-                .map(map -> {
-                    System.out.println(map.get("uuid"));
-                    return map.get("uuid");
-                })
+                .map(map -> map.get("uuid"))
                 .flatMap(userRepository::findUserByUuid)
                 .orElseThrow(() -> new InValidTokenException());
     }
 
-    public Map<String, String> logIn(String id, String password) {
+    public SignInResponse signIn(String id, String password) {
         return userRepository.findUserById(id)
                 .map(user -> {
                     user.setAuthenticated(true);
@@ -56,13 +57,10 @@ public class UserService {
                         throw new PasswordNotMatedException();
                     }
                     return tokenService.expiring(ImmutableMap.of("uuid",user.getUuid()));
-                }).map(this::createTokenMap)
+                }).map(token -> {
+                    User user = findByToken(token);
+                    return new SignInResponse(token, user.getRole());
+                })
                 .orElseThrow(() -> new LoginErrorException(id));
-    }
-
-    private Map<String, String> createTokenMap(String token) {
-        Map<String, String> map = new HashMap<>();
-        map.put("accessToken",token);
-        return map;
     }
 }
