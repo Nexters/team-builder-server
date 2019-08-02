@@ -1,7 +1,6 @@
 package com.nexters.teambuilder.user.api;
 
-import java.util.Map;
-
+import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
 import com.nexters.teambuilder.user.service.UserService;
@@ -22,11 +21,11 @@ public class UserController {
 
     @PostMapping("sign-up")
     public UserResponse signUp(@RequestBody UserRequest request) {
-        return UserResponse.of(userService.createUser(request));
+        return userService.createUser(request);
     }
 
     @PostMapping("sign-in")
-    public Map<String, String> signIn(@RequestParam String id, @RequestParam String password) {
-        return userService.logIn(id, password);
+    public SignInResponse signIn(@RequestParam String id, @RequestParam String password) {
+        return userService.signIn(id, password);
     }
 }
