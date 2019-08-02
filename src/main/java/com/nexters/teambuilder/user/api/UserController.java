@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("signUp")
+    @PostMapping("sign-up")
     public UserResponse signUp(@RequestBody UserRequest request) {
         return UserResponse.of(userService.createUser(request));
     }
 
-    @PostMapping("signIn")
+    @PostMapping("sign-in")
     public Map<String, String> signIn(@RequestParam String id, @RequestParam String password) {
         return userService.logIn(id, password);
     }

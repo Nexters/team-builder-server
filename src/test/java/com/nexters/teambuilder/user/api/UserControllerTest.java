@@ -90,7 +90,7 @@ class UserControllerTest {
 
         given(userService.createUser(any(UserRequest.class))).willReturn(user);
 
-        this.mockMvc.perform(post("/users/signUp")
+        this.mockMvc.perform(post("/users/sign-up")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(mapper.writeValueAsString(input)))
                 .andExpect(status().isOk())
@@ -113,7 +113,7 @@ class UserControllerTest {
 
         given(userService.logIn(anyString(), anyString())).willReturn(ImmutableMap.of("accessToken", "access token"));
 
-        this.mockMvc.perform(post("/users/signIn")
+        this.mockMvc.perform(post("/users/sign-in")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .param("id", "originman'")
                 .param("password", "password1212'"))
