@@ -29,17 +29,12 @@ class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private ObjectMapper mapper;
-
     private User user;
-
-    private User principal;
 
     @BeforeEach
     void setUp() {
         user = new User("originman", "password1212", "kiwon",
                 13, User.Role.ROLE_USER, User.Position.DEVELOPER);
-        mapper = new ObjectMapper();
     }
 
     @Test
@@ -54,7 +49,7 @@ class AuthControllerTest {
                                 fieldWithPath("uuid").description("user uuid"),
                                 fieldWithPath("id").description("아이디"),
                                 fieldWithPath("name").description("user 이름"),
-                                fieldWithPath("term").description("user 기수"),
+                                fieldWithPath("nextersNumber").description("user 기수"),
                                 fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
                                 fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
                                 fieldWithPath("createdAt").description("user 가입 일자")

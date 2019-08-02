@@ -21,7 +21,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
+import com.nexters.teambuilder.user.api.dto.UserResponse;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +57,7 @@ class UserControllerTest {
             fieldWithPath("uuid").description("user uuid"),
             fieldWithPath("id").description("아이디"),
             fieldWithPath("name").description("user 이름"),
-            fieldWithPath("term").description("user 기수"),
+            fieldWithPath("nextersNumber").description("user 기수"),
             fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
             fieldWithPath("createdAt").description("user 가입 일자")
@@ -65,7 +67,7 @@ class UserControllerTest {
             fieldWithPath("id").description("아이디"),
             fieldWithPath("password").description("비밀번호"),
             fieldWithPath("name").description("user 이름"),
-            fieldWithPath("term").description("user 기수"),
+            fieldWithPath("nextersNumber").description("user 기수"),
             fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
     };
@@ -84,11 +86,11 @@ class UserControllerTest {
         input.put("id", "originman");
         input.put("password", "password1212");
         input.put("name", "kiwon");
-        input.put("term", 13);
+        input.put("nextersNumber", 13);
         input.put("role", "ROLE_USER");
         input.put("position", "DEVELOPER");
 
-        given(userService.createUser(any(UserRequest.class))).willReturn(user);
+        given(userService.createUser(any(UserRequest.class))).willReturn(UserResponse.of(user));
 
         this.mockMvc.perform(post("/users/sign-up")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -96,7 +98,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value("originman"))
                 .andExpect(jsonPath("name").value("kiwon"))
-                .andExpect(jsonPath("term").value(13))
+                .andExpect(jsonPath("nextersNumber").value(13))
                 .andExpect(jsonPath("role").value("ROLE_USER"))
                 .andExpect(jsonPath("position").value("DEVELOPER"))
                 .andDo(document("users/post-signUp",
@@ -111,7 +113,8 @@ class UserControllerTest {
         input.put("id", "originman");
         input.put("password", "password1212");
 
-        given(userService.logIn(anyString(), anyString())).willReturn(ImmutableMap.of("accessToken", "access token"));
+        given(userService.signIn(anyString(), anyString()))
+                .willReturn(new SignInResponse("access token", User.Role.ROLE_USER));
 
         this.mockMvc.perform(post("/users/sign-in")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -126,7 +129,8 @@ class UserControllerTest {
                                 parameterWithName("password").description("user 비밀번호")
                         ),
                         responseFields(
-                                fieldWithPath("accessToken").description("access token for user"))));
+                                fieldWithPath("accessToken").description("access token for user"),
+                                fieldWithPath("role").description("user role"))));
     }
 }
 

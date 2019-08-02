@@ -34,7 +34,7 @@ public class UserService {
                 .id(request.getId())
                 .password(encryptor.encode(request.getPassword()))
                 .name(request.getName())
-                .term(request.getTerm())
+                .nextersNumber(request.getNextersNumber())
                 .role(request.getRole())
                 .position(request.getPosition())
                 .build());
