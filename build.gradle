@@ -142,3 +142,19 @@ asciidoctor {
             docinfo1 : ''
     dependsOn test
 }
+
+bootJar {
+    baseName "team-builder-server"
+    version "SNAPSHOT"
+
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
+
+    launchScript()
+}
+
+bootRun {
+    bootRun.systemProperty 'spring.profiles.active', 'develop'
+}

@@ -1,6 +1,5 @@
 service:
   api-server: http://localhost:8080
-spring:
   main:
     banner-mode: 'off'
   output:
