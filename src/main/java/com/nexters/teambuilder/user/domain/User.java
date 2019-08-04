@@ -50,7 +50,7 @@ public class User implements UserDetails {
 
     private String name;
 
-    private Integer term;
+    private Integer nextersNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
@@ -64,11 +64,11 @@ public class User implements UserDetails {
     private ZonedDateTime createdAt;
 
     @Builder
-    public User(String id, String password, String name, Integer term, Role role, Position position) {
+    public User(String id, String password, String name, Integer nextersNumber, Role role, Position position) {
         this.id = id;
         this.password = password;
         this.name = name;
-        this.term = term;
+        this.nextersNumber = nextersNumber;
         this.role = role;
         this.position = position;
     }

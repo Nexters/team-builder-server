@@ -19,7 +19,7 @@ public class UserResponse {
 
     private String name;
 
-    private Integer term;
+    private Integer nextersNumber;
 
     private User.Role role;
 
@@ -29,6 +29,6 @@ public class UserResponse {
 
     public static UserResponse of(User user) {
         return new UserResponse(user.getUuid(), user.getId(), user.getName(),
-                user.getTerm(), user.getRole(), user.getPosition(), user.getCreatedAt());
+                user.getNextersNumber(), user.getRole(), user.getPosition(), user.getCreatedAt());
     }
 }

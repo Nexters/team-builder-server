@@ -19,7 +19,7 @@ public class UserRequest {
 
     private String name;
 
-    private Integer term;
+    private Integer nextersNumber;
 
     private User.Role role;
 
