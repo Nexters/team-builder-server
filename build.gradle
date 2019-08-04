@@ -156,5 +156,5 @@ bootJar {
 }
 
 bootRun {
-    bootRun.systemProperty 'spring.profiles.active', 'develop'
+    bootRun.systemProperty 'spring.profiles.active', 'local'
 }
