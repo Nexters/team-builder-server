@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.nexters.teambuilder.common.response.ApiError;
 import com.nexters.teambuilder.person.exception.PersonNotFoundException;
+import com.nexters.teambuilder.user.exception.LoginErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -26,6 +27,19 @@ public class GlobalControllerExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ApiError handleNotFound(RuntimeException ex) {
         return new ApiError(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    /**
+     * exception handler for episode, creator, title not found exception.
+     * @param ex RuntimeException
+     * @return Api Error Wrapper
+     */
+    @ExceptionHandler(value = {
+            LoginErrorException.class
+    })
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected ApiError handleUnAuthoization(RuntimeException ex) {
+        return new ApiError(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     /**
