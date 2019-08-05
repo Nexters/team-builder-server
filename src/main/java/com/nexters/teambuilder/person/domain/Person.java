@@ -22,7 +22,7 @@ import org.springframework.util.Assert;
 @AllArgsConstructor
 public class Person {
     public enum Gender{
-        MAN, WOOOMAN
+        MAN, WOMAN
     }
 
     @Id
@@ -41,11 +41,11 @@ public class Person {
     @CreationTimestamp
     private ZonedDateTime bornAt;
 
-    @Builder
+    @Builder    // 생성자에 넣을 게 너무 많을 때 사용
     public Person(Gender gender, String name, String nickname, Integer age) {
         Assert.notNull(gender, "gender must not be null");
         Assert.hasLength(name, "name must not be empty");
-        Assert.hasLength(nickname, "nikcname must not be empty");
+        Assert.hasLength(nickname, "nickname must not be empty");
 
         this.gender = gender;
         this.name = name;
