@@ -14,7 +14,7 @@ spring:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         format_sql: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
   flyway:
     enabled: false
   data:
