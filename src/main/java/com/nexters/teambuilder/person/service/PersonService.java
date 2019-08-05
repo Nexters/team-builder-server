@@ -37,7 +37,7 @@ public class PersonService {
      * @param request for update person
      * @return PersonResponse
      */
-    public PersonResponse updatePerson(Integer personId, PersonRequest request) {
+    public PersonResponse  updatePerson(Integer personId, PersonRequest request) {
         Person person = personRepository.findById(personId)
                 .orElseThrow(() -> new PersonNotFoundException(personId));
 
