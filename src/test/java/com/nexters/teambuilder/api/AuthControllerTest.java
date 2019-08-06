@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -30,6 +31,22 @@ class AuthControllerTest {
     private MockMvc mockMvc;
 
     private User user;
+
+    private FieldDescriptor[] baseResposneDescription = new FieldDescriptor[]{
+            fieldWithPath("status").description("status code"),
+            fieldWithPath("errorCode").description("error code, 해당 코드를 보고 front 에서 분기처리를 한다"),
+            fieldWithPath("data").description("respone data"),
+    };
+
+    private FieldDescriptor[] meResposneDescription = new FieldDescriptor[]{
+            fieldWithPath("uuid").description("user uuid"),
+            fieldWithPath("id").description("아이디"),
+            fieldWithPath("name").description("user 이름"),
+            fieldWithPath("nextersNumber").description("user 기수"),
+            fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
+            fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
+            fieldWithPath("createdAt").description("user 가입 일자")
+    };
 
     @BeforeEach
     void setUp() {
@@ -45,14 +62,7 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document("auth/get-me",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                        responseFields(
-                                fieldWithPath("uuid").description("user uuid"),
-                                fieldWithPath("id").description("아이디"),
-                                fieldWithPath("name").description("user 이름"),
-                                fieldWithPath("nextersNumber").description("user 기수"),
-                                fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
-                                fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
-                                fieldWithPath("createdAt").description("user 가입 일자")
-                        )));
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.", meResposneDescription)));
     }
 }
