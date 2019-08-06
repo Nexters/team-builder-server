@@ -53,6 +53,17 @@ class UserControllerTest {
 
     private ObjectMapper mapper;
 
+    private FieldDescriptor[] baseResposneDescription = new FieldDescriptor[]{
+            fieldWithPath("status").description("status code"),
+            fieldWithPath("errorCode").description("error code, 해당 코드를 보고 front 에서 분기처리를 한다"),
+            fieldWithPath("data").description("respone data"),
+    };
+
+    private FieldDescriptor[] signInResposneDescription = new FieldDescriptor[]{
+            fieldWithPath("accessToken").description("access token for user"),
+            fieldWithPath("role").description("user role")
+    };
+
     private FieldDescriptor[] userResposneDescription = new FieldDescriptor[]{
             fieldWithPath("uuid").description("user uuid"),
             fieldWithPath("id").description("아이디"),
@@ -96,15 +107,16 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(mapper.writeValueAsString(input)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value("originman"))
-                .andExpect(jsonPath("name").value("kiwon"))
-                .andExpect(jsonPath("nextersNumber").value(13))
-                .andExpect(jsonPath("role").value("ROLE_USER"))
-                .andExpect(jsonPath("position").value("DEVELOPER"))
+                .andExpect(jsonPath("data.id").value("originman"))
+                .andExpect(jsonPath("data.name").value("kiwon"))
+                .andExpect(jsonPath("data.nextersNumber").value(13))
+                .andExpect(jsonPath("data.role").value("ROLE_USER"))
+                .andExpect(jsonPath("data.position").value("DEVELOPER"))
                 .andDo(document("users/post-signUp",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
                         requestFields(userRequesteDescription),
-                        responseFields(userResposneDescription)));
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.", userResposneDescription)));
     }
 
     @Test
@@ -121,16 +133,15 @@ class UserControllerTest {
                 .param("id", "originman'")
                 .param("password", "password1212'"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("accessToken").value("access token"))
+                .andExpect(jsonPath("data.accessToken").value("access token"))
                 .andDo(document("users/post-signIn",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
                         requestParameters(
                                 parameterWithName("id").description("user 아이디"),
                                 parameterWithName("password").description("user 비밀번호")
                         ),
-                        responseFields(
-                                fieldWithPath("accessToken").description("access token for user"),
-                                fieldWithPath("role").description("user role"))));
+                        responseFields(baseResposneDescription)
+                                        .andWithPrefix("data.", signInResposneDescription)));
     }
 }
 
