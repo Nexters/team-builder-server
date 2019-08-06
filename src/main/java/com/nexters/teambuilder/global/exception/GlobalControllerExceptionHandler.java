@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.nexters.teambuilder.common.response.ApiError;
 import com.nexters.teambuilder.person.exception.PersonNotFoundException;
+import com.nexters.teambuilder.tag.exception.TagNotFoundException;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,11 +24,12 @@ public class GlobalControllerExceptionHandler {
      */
     @ExceptionHandler(value = {
             PersonNotFoundException.class,
-            LoginErrorException.class
+            LoginErrorException.class,
+            TagNotFoundException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ApiError handleNotFound(RuntimeException ex) {
-        return new ApiError(HttpStatus.NOT_FOUND, ex.getMessage());
+        return new ApiError(HttpStatus.NOT_FOUND, 0, ex.getMessage());
     }
 
     /**
@@ -41,7 +43,7 @@ public class GlobalControllerExceptionHandler {
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ApiError handleBadRequest(RuntimeException ex) {
-        return new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return new ApiError(HttpStatus.BAD_REQUEST, 0, ex.getMessage());
     }
 
     /**
@@ -55,6 +57,6 @@ public class GlobalControllerExceptionHandler {
         String message = ex.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage() + ".")
                 .collect(Collectors.joining("\n"));
-        return new ApiError(HttpStatus.BAD_REQUEST, message);
+        return new ApiError(HttpStatus.BAD_REQUEST, 0, message);
     }
 }

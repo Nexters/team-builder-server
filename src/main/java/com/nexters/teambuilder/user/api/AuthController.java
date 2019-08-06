@@ -1,5 +1,6 @@
 package com.nexters.teambuilder.user.api;
 
+import com.nexters.teambuilder.common.response.BaseResponse;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
 import com.nexters.teambuilder.user.domain.User;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     @GetMapping("/me")
-    public UserResponse me(@AuthenticationPrincipal User user) {
+    public BaseResponse<UserResponse> me(@AuthenticationPrincipal User user) {
 
-        return UserResponse.of(user);
+        return new BaseResponse<>(200, 0, UserResponse.of(user));
     }
 }

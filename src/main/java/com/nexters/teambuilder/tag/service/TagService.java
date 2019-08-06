@@ -41,4 +41,10 @@ public class TagService {
         List<Tag> tagList = tagRepository.findAll();
         return tagList.stream().map(TagResponse::of).collect(Collectors.toList());
     }
+
+    public void delete(Integer tagId) {
+        Tag tag = tagRepository.findById(tagId)
+                .orElseThrow(() -> new TagNotFoundException(tagId));
+        tagRepository.delete(tag);
+    }
 }

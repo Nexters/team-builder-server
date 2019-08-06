@@ -1,5 +1,6 @@
 package com.nexters.teambuilder.user.api;
 
+import com.nexters.teambuilder.common.response.BaseResponse;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
@@ -20,12 +21,17 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("sign-up")
-    public UserResponse signUp(@RequestBody UserRequest request) {
-        return userService.createUser(request);
+    public BaseResponse<UserResponse> signUp(@RequestBody UserRequest request) {
+        UserResponse user = userService.createUser(request);
+
+        return new BaseResponse<>(200, 0, user);
+
     }
 
     @PostMapping("sign-in")
-    public SignInResponse signIn(@RequestParam String id, @RequestParam String password) {
-        return userService.signIn(id, password);
+    public BaseResponse<SignInResponse> signIn(@RequestParam String id, @RequestParam String password) {
+        SignInResponse signIn = userService.signIn(id, password);
+
+        return new BaseResponse<>(200, 0, signIn);
     }
 }
