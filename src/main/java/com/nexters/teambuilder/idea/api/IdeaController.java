@@ -1,10 +1,8 @@
 package com.nexters.teambuilder.idea.api;
 
+import com.nexters.teambuilder.common.response.BaseResponse;
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
-import com.nexters.teambuilder.idea.domain.Idea;
-import com.nexters.teambuilder.idea.domain.IdeaRepository;
-import com.nexters.teambuilder.idea.exception.IdeaNotFoundException;
 import com.nexters.teambuilder.idea.service.IdeaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,29 +12,39 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("idea")
+@RequestMapping("/ideas")
 public class IdeaController {
     private final IdeaService ideaService;
 
-    @GetMapping("list")
-    public List<IdeaResponse> ideaList() {
-        return ideaService.getIdeaList();
-    }
-
-    @GetMapping("{ideaId}")
-    public IdeaResponse getIdea(@PathVariable Integer ideaId){
-       return ideaService.getIdea(ideaId);
+    @GetMapping
+    public BaseResponse<List<IdeaResponse>> list() {
+        List<IdeaResponse> ideas = ideaService.getIdeaList();
+        return new BaseResponse<>(200, 0, ideas);
     }
 
     @PostMapping
-    public IdeaResponse create(@RequestBody @Valid IdeaRequest request){
-        return ideaService.createIdea(request);
+    public BaseResponse<IdeaResponse> create(@RequestBody @Valid IdeaRequest request){
+        IdeaResponse idea = ideaService.createIdea(request);
+        return new BaseResponse<>(200, 0, idea);
     }
 
-    @PutMapping("{ideaId}")
-    public IdeaResponse update(@PathVariable Integer ideaId,
+    @GetMapping("/{ideaId}")
+    public BaseResponse<IdeaResponse> get(@PathVariable Integer ideaId){
+       IdeaResponse idea = ideaService.getIdea(ideaId);
+        return new BaseResponse<>(200, 0, idea);
+    }
+
+    @PutMapping("/{ideaId}")
+    public BaseResponse<IdeaResponse> update(@PathVariable Integer ideaId,
                                @RequestBody @Valid IdeaRequest request){
-        return ideaService.updateIdea(ideaId, request);
+        IdeaResponse idea = ideaService.updateIdea(ideaId, request);
+        return new BaseResponse<>(200, 0, idea);
+    }
+
+    @DeleteMapping("/{ideaId}")
+    public BaseResponse delete(@PathVariable Integer ideaId){
+        ideaService.deleteIdea(ideaId);
+        return new BaseResponse<>(200, 0, null);
     }
 
 

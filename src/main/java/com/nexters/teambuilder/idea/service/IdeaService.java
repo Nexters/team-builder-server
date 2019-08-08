@@ -37,7 +37,13 @@ public class IdeaService {
 
     public List<IdeaResponse> getIdeaList() {
         List<Idea> ideaList = ideaRepository.findAll();
-        return ideaList.stream().map(IdeaResponse::of).collect(Collectors.toList() );
+        return ideaList.stream().map(IdeaResponse::of).collect(Collectors.toList());
+    }
+
+    public void deleteIdea(Integer ideaId) {
+        Idea idea = ideaRepository.findById(ideaId)
+                .orElseThrow(() -> new IdeaNotFoundException(ideaId));
+        ideaRepository.delete(idea);
     }
 
 
