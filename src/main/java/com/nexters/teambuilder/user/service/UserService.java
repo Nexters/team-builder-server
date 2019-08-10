@@ -54,7 +54,13 @@ public class UserService {
                     if(!encryptor.matches(password, user.getPassword())) {
                         throw new PasswordNotMatedException();
                     }
-                    return tokenService.expiring(ImmutableMap.of("uuid",user.getUuid()));
+                    return tokenService.expiring(user,
+                            ImmutableMap.of("uuid",user.getUuid(),
+                                    "id", user.getId(),
+                                    "name", user.getName(),
+                                    "nextersNumber", user.getNextersNumber(),
+                                    "role", user.getRole(),
+                                    ""));
                 }).map(token -> {
                     User user = findByToken(token);
                     return new SignInResponse(token, user.getRole());
