@@ -25,6 +25,7 @@ public class Tag {
     private Integer tagId;
 
     private String name;
+
     @Enumerated(EnumType.STRING)
     private Type type;
 
