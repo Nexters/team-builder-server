@@ -1,5 +1,7 @@
 package com.nexters.teambuilder.idea.api.dto;
 
+import com.nexters.teambuilder.idea.domain.Idea;
+import com.nexters.teambuilder.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,12 +21,12 @@ public class IdeaRequest {
     @NotEmpty
     private String title;
 
-    private String tags;
+    private String content;
 
-    @NotEmpty
-    private String position;
+    // null 넣었을 때 방지용
+    private String file = "";
 
-    @NotEmpty
-    private String author;
+    private Idea.Type type;
 
+    private boolean selected;
 }
