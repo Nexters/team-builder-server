@@ -32,6 +32,8 @@ public class SessionResponse {
 
     private List<TagResponse> tags;
 
+    private Integer maxVoteCount;
+
     private List<IdeaResponse> ideas = new ArrayList<>();
 
     public static SessionResponse of(Session session, List<SessionNumber> sessionNumbers,  List<TagResponse> tags, List<IdeaResponse> ideas) {
@@ -46,7 +48,7 @@ public class SessionResponse {
         }
 
         return new SessionResponse(session.getSessionId(), session.getSessionNumber(), sessionNumbers, session.getLogoImageUrl(),
-                session.isTeamBuildingMode(), periods, tags, ideas);
+                session.isTeamBuildingMode(), periods, tags, session.getMaxVoteCount(), ideas);
     }
 
 }
