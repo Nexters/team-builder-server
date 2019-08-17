@@ -4,7 +4,7 @@ import static java.time.ZonedDateTime.now;
 
 import java.time.ZonedDateTime;
 
-import com.nexters.teambuilder.session.domaiin.Period;
+import com.nexters.teambuilder.session.domain.Period;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.nexters.teambuilder.session.domaiin;
+package com.nexters.teambuilder.session.domain;
 
 import java.util.Optional;
 

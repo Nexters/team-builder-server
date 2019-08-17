@@ -22,7 +22,7 @@ public class SessionRequest {
 
     @NotEmpty
     @URL
-    private String headerImageUrl;
+    private String logoImageUrl;
 
     private List<PeriodRequest> periods;
 }

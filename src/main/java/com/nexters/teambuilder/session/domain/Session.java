@@ -1,4 +1,4 @@
-package com.nexters.teambuilder.session.domaiin;
+package com.nexters.teambuilder.session.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +31,24 @@ public class Session {
     @CollectionTable(name = "session_period", joinColumns = @JoinColumn(name = "sessionId"))
     private List<Period> periods = new ArrayList<>();
 
-    private String headerImageUrl;
+    private String logoImageUrl;
 
-    public Session(Integer sessionNumber, List<Period> periods, String headerImageUrl) {
+    public Session(Integer sessionNumber, List<Period> periods, String logoImageUrl) {
         this.sessionNumber = sessionNumber;
         this.periods = periods;
-        this.headerImageUrl = headerImageUrl;
+        this.logoImageUrl = logoImageUrl;
+    }
+
+    public void update(SessionRequest request) {
+        this.sessionNumber = request.getSessionNumber();
+        this.periods = request.getPeriods().stream().map(Period::of).collect(Collectors.toList());
+        this.logoImageUrl = request.getLogoImageUrl();
     }
 
     public static Session of(SessionRequest sessionRequest) {
         List<Period> periods = sessionRequest.getPeriods().stream().map(Period::of).collect(Collectors.toList());
 
-        return new Session(sessionRequest.getSessionNumber(), periods, sessionRequest.getHeaderImageUrl());
+        return new Session(sessionRequest.getSessionNumber(), periods, sessionRequest.getLogoImageUrl());
     }
 }
 

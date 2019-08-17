@@ -1,8 +1,10 @@
 package com.nexters.teambuilder.session.service;
 
+import java.util.List;
+
 import com.nexters.teambuilder.session.api.dto.SessionRequest;
-import com.nexters.teambuilder.session.domaiin.Session;
-import com.nexters.teambuilder.session.domaiin.SessionRepository;
+import com.nexters.teambuilder.session.domain.Session;
+import com.nexters.teambuilder.session.domain.SessionRepository;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,15 @@ public class SessionService {
 
     public Session createSession(SessionRequest sessionRequest) {
         Session session = Session.of(sessionRequest);
+        return sessionRepository.save(session);
+    }
+
+    public Session updateSession(Integer sessionId, SessionRequest sessionRequest) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new SessionNotFoundException(sessionId));
+
+        session.update(sessionRequest);
+
         return sessionRepository.save(session);
     }
 }
