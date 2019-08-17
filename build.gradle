@@ -47,7 +47,7 @@ dependencies {
     implementation("io.springfox:springfox-swagger-ui:${swaggerVersion}")
     implementation("io.springfox:springfox-swagger2:${swaggerVersion}")
     runtime('mysql:mysql-connector-java')
-    runtime('com.h2database:h2')
+    implementation('com.h2database:h2')
     runtime('org.springframework.boot:spring-boot-devtools')
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
