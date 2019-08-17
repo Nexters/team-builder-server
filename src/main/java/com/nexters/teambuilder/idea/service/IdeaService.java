@@ -1,5 +1,6 @@
 package com.nexters.teambuilder.idea.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,6 +9,7 @@ import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
 import com.nexters.teambuilder.idea.domain.Idea;
 import com.nexters.teambuilder.idea.domain.IdeaRepository;
 import com.nexters.teambuilder.idea.exception.IdeaNotFoundException;
+import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.tag.domain.Tag;
 import com.nexters.teambuilder.tag.domain.TagRepository;
 import com.nexters.teambuilder.user.domain.User;
@@ -47,8 +49,14 @@ public class IdeaService {
 
     public List<IdeaResponse> getIdeaList() {
         List<Idea> ideaList = ideaRepository.findAll();
-
-        return ideaList.stream().map(IdeaResponse::of).collect(Collectors.toList());
+        return ideaList.stream()
+                .sorted(Comparator.comparing(Idea::getIdeaId).reversed())
+                .map(idea -> {
+            IdeaResponse ideaResponse = IdeaResponse.of(idea);
+            ideaResponse.setOrderNumber(ideaList.indexOf(idea) + 1);
+            return ideaResponse;
+        }).collect(Collectors.toList());
+//        return ideaList.stream().map(IdeaResponse::of).collect(Collectors.toList());
     }
 
     public void deleteIdea(User author, Integer ideaId) {
