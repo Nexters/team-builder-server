@@ -16,6 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/apis/ideas")
 public class IdeaController {
     private final IdeaService ideaService;
