@@ -3,6 +3,7 @@ package com.nexters.teambuilder.idea.api.dto;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.nexters.teambuilder.common.view.Views;
 import com.nexters.teambuilder.idea.domain.Idea;
+import com.nexters.teambuilder.tag.api.dto.TagResponse;
 import com.nexters.teambuilder.tag.domain.Tag;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
 import com.nexters.teambuilder.user.domain.User;
@@ -54,7 +55,8 @@ public class IdeaResponse {
                         User author, String file, boolean selected,
                         Idea.Type type,
                         ZonedDateTime createdAt, ZonedDateTime updatedAt,
-                        Tag... tags){
+                        Tag... tags
+                        ){
         this.ideaId = ideaId;
         this.title = title;
         this.content = content;
@@ -65,10 +67,10 @@ public class IdeaResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
 
-        /* this에서 에러남
-        this.tags = Stream.of(tags).collect(Collectors.toSet());
-        this.tags.forEach(x->x.getIdeas().add(this));
-         */
+        // this에서 에러남
+//        this.tags = Stream.of(tags).collect(Collectors.toSet());
+//        this.tags.forEach(x->x.getIdeas().add(this));
+//        this.tags = TagResponse.of(tags.forEach(x->x.getIdeas().add(this)));
     }
 
     public static IdeaResponse of(Idea idea) {

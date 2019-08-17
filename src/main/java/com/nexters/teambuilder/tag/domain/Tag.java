@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Table(name = "tags")
+@Table
 @NoArgsConstructor
 public class Tag {
     public enum Type {
@@ -30,7 +30,7 @@ public class Tag {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},
                 mappedBy = "tags")
-    private Set<Idea> ideas = new HashSet<Idea>();
+    private Set<Idea> ideas;
 
     public Tag(String name, Type type) {
         this.name = name;

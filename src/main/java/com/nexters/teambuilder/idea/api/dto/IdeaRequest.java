@@ -15,9 +15,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class IdeaRequest {
-    @NotNull
-    private Integer ideaId;
-
     @NotEmpty
     private String title;
 
