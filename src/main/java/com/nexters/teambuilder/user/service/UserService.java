@@ -56,6 +56,7 @@ public class UserService {
                     if(!encryptor.matches(password, user.getPassword())) {
                         throw new PasswordNotMatedException();
                     }
+
                     Map<String, String> attributes = new LinkedHashMap<>();
                     attributes.put("uuid", user.getUuid());
                     attributes.put("id", user.getId());

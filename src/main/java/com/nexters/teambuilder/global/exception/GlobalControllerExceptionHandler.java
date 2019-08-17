@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.nexters.teambuilder.common.response.ApiError;
 import com.nexters.teambuilder.person.exception.PersonNotFoundException;
+import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.tag.exception.TagNotFoundException;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,8 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(value = {
             PersonNotFoundException.class,
             LoginErrorException.class,
-            TagNotFoundException.class
+            TagNotFoundException.class,
+            SessionNotFoundException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ApiError handleNotFound(RuntimeException ex) {
