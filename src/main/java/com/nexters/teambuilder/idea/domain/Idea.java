@@ -54,10 +54,10 @@ public class Idea {
     private Type type;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "ideas_tags",
+    @JoinTable(name = "idea_tag",
             joinColumns = { @JoinColumn(name = "idea_id") },
             inverseJoinColumns = { @JoinColumn(name = "tag_id") })
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<Tag>();
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)

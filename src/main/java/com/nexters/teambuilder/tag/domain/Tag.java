@@ -29,8 +29,8 @@ public class Tag {
     private Type type;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-                mappedBy = "tags")
-    private Set<Idea> ideas;
+                mappedBy = "idea")
+    private Set<Idea> ideas = new HashSet<Idea>();
 
     public Tag(String name, Type type) {
         this.name = name;
