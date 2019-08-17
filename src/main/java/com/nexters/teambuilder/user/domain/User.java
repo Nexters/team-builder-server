@@ -18,6 +18,7 @@ import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nexters.teambuilder.session.domain.SessionUser;
+import javafx.geometry.Pos;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -78,6 +79,12 @@ public class User implements UserDetails {
         this.nextersNumber = nextersNumber;
         this.role = role;
         this.position = position;
+    }
+
+    public void update(String password, Position position) {
+        this.password = password;
+        this.position = position;
+
     }
 
     @JsonIgnore
