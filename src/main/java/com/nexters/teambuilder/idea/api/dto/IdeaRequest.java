@@ -9,23 +9,24 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class IdeaRequest {
-    @NotNull
-    private Integer ideaId;
-
     @NotEmpty
     private String title;
 
     private String content;
 
+    private List<Integer> tags;
+
     // null 넣었을 때 방지용
     private String file = "";
 
+    @NotNull
     private Idea.Type type;
 
     private boolean selected;

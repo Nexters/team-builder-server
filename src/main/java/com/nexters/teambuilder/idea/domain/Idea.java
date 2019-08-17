@@ -12,13 +12,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
-import java.io.File;
-import java.lang.reflect.Field;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "idea")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,29 +30,33 @@ public class Idea {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer ideaId; // null 때문에!!
+    private Integer ideaId;
 
+    /*
+    @NotNull
+    @Size(max = 100)
+    */
     private String title;
 
     @Column(columnDefinition = "TEXT", name = "content", nullable = false)
     private String content;
 
-//    @ManyToMany // 중요...! 뭔가 중간 객체..?
-//    @JoinColumn(name = "idea_id")
-//    private List<Tag> tags;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User author;
 
-
     private String file;
 
-    //    // 이것도 디비에..?
     private boolean selected;
 
     @Enumerated(EnumType.STRING)
     private Type type;
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "idea_tag",
+            joinColumns = { @JoinColumn(name = "idea_id") },
+            inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+    private Set<Tag> tags;
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
@@ -63,17 +67,16 @@ public class Idea {
     private ZonedDateTime updateAt;
 
     @Builder
-    public Idea(Integer ideaId, String title, String content, User author, String file, Type type) {
-        Assert.notNull(ideaId, "id must not be null");
+    public Idea(String title, String content, User author, String file, Type type, List<Tag> tags) {
         Assert.hasLength(title, "title must not be empty");
         Assert.notNull(author, "author must not be null");
 
-        this.ideaId = ideaId;
         this.title = title;
         this.content = content;
         this.author = author;
         this.file = file;
         this.type = type;
+        this.tags = tags.stream().collect(Collectors.toSet());
     }
 
     public void update(IdeaRequest request) {
@@ -84,9 +87,9 @@ public class Idea {
         this.selected = request.isSelected();
     }
 
-    public static Idea of(User author, IdeaRequest request) {
-        return new Idea(request.getIdeaId(), request.getTitle(), request.getContent(),
-                author, request.getFile(), request.getType());
+    public static Idea of(User author, List<Tag> tags, IdeaRequest request) {
+        return new Idea(request.getTitle(), request.getContent(),
+                author, request.getFile(), request.getType(), tags);
     }
 
 
