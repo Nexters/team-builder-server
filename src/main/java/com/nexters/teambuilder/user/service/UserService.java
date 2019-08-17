@@ -1,5 +1,7 @@
 package com.nexters.teambuilder.user.service;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import com.google.common.collect.ImmutableMap;
@@ -54,7 +56,16 @@ public class UserService {
                     if(!encryptor.matches(password, user.getPassword())) {
                         throw new PasswordNotMatedException();
                     }
-                    return tokenService.expiring(ImmutableMap.of("uuid",user.getUuid()));
+                    Map<String, String> attributes = new LinkedHashMap<>();
+                    attributes.put("uuid", user.getUuid());
+                    attributes.put("id", user.getId());
+                    attributes.put("name", user.getName());
+                    attributes.put("nextersNumber", String.valueOf(user.getNextersNumber()));
+                    attributes.put("role", String.valueOf(user.getRole()));
+                    attributes.put("position", String.valueOf(user.getPosition()));
+                    attributes.put("createdAt", String.valueOf(user.getCreatedAt()));
+
+                    return tokenService.expiring(attributes);
                 }).map(token -> {
                     User user = findByToken(token);
                     return new SignInResponse(token, user.getRole());
