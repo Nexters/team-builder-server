@@ -26,7 +26,7 @@ public class SessionService {
     }
 
     public Session getLatestSession() {
-        return sessionRepository.findTopByOrderBySessionNumber()
+        return sessionRepository.findTopByOrderBySessionNumberDesc()
                 .orElseThrow(() -> new SessionNotFoundException(0));
     }
 

@@ -32,9 +32,20 @@ public class SessionController {
     private final TagService tagService;
     private final IdeaService ideaService;
 
+
+
     @GetMapping("{sessionNumber}")
     public BaseResponse<SessionResponse> get(@PathVariable Integer sessionNumber) {
         Session session = sessionService.getSession(sessionNumber);
+        List<TagResponse> tags = tagService.getTagList();
+        List<IdeaResponse> ideas = ideaService.getIdeaList();
+        List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
+        return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
+    }
+
+    @GetMapping("latest")
+    public BaseResponse<SessionResponse> getLatest() {
+        Session session = sessionService.getLatestSession();
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaList();
         List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
