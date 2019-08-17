@@ -28,7 +28,9 @@ public class PeriodResponse {
         this.startDate = startDate;
         this.endDate = endDate;
         ZonedDateTime now = now();
-        this.now = startDate.isBefore(now) && endDate.isAfter(now);
+        if(!periodType.equals(Period.PeriodType.TEAM_BUILDING)) {
+            this.now = startDate.isBefore(now) && endDate.isAfter(now);
+        }
     }
 
     public static PeriodResponse of(Period period) {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
+import com.nexters.teambuilder.session.domain.Period;
 import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.tag.api.dto.TagResponse;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,8 @@ public class SessionResponse {
 
     private String logoImageUrl;
 
+    private boolean teamBuildingMode;
+
     private List<PeriodResponse> periods;
 
     private List<TagResponse> tags;
@@ -35,8 +38,17 @@ public class SessionResponse {
         List<PeriodResponse> periods =
                 session.getPeriods().stream().map(PeriodResponse::of).collect(Collectors.toList());
 
+        System.out.println("aaaa");
+        if(session.isTeamBuildingMode()) {
+            periods.forEach(periodResponse -> periodResponse.setNow(false));
+            System.out.println("aaaa");
+            periods.stream()
+                    .filter(periodResponse -> periodResponse.getPeriodType().equals(Period.PeriodType.TEAM_BUILDING))
+                    .findFirst().ifPresent(periodResponse -> periodResponse.setNow(true));
+        }
+
         return new SessionResponse(session.getSessionId(), session.getSessionNumber(), sessionNumbers, session.getLogoImageUrl(),
-                periods,tags, ideas);
+                session.isTeamBuildingMode(), periods, tags, ideas);
     }
 
 }

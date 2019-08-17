@@ -31,20 +31,24 @@ public class Session {
 
     private Integer sessionNumber;
 
+    private boolean teamBuildingMode;
+
     @ElementCollection
     @CollectionTable(name = "session_period", joinColumns = @JoinColumn(name = "sessionId"))
     private List<Period> periods = new ArrayList<>();
 
     private String logoImageUrl;
 
-    public Session(Integer sessionNumber, List<Period> periods, String logoImageUrl) {
+    public Session(Integer sessionNumber, boolean teamBuildingMode, List<Period> periods, String logoImageUrl) {
         this.sessionNumber = sessionNumber;
+        this.teamBuildingMode = teamBuildingMode;
         this.periods = periods;
         this.logoImageUrl = logoImageUrl;
     }
 
     public void update(SessionRequest request) {
         this.sessionNumber = request.getSessionNumber();
+        this.teamBuildingMode = request.isTeamBuildingMode();
         this.periods = request.getPeriods().stream().map(Period::of).collect(Collectors.toList());
         this.logoImageUrl = request.getLogoImageUrl();
     }
@@ -52,7 +56,7 @@ public class Session {
     public static Session of(SessionRequest sessionRequest) {
         List<Period> periods = sessionRequest.getPeriods().stream().map(Period::of).collect(Collectors.toList());
 
-        return new Session(sessionRequest.getSessionNumber(), periods, sessionRequest.getLogoImageUrl());
+        return new Session(sessionRequest.getSessionNumber(), sessionRequest.isTeamBuildingMode(), periods, sessionRequest.getLogoImageUrl());
     }
 }
 

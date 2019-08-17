@@ -24,5 +24,7 @@ public class SessionRequest {
     @URL
     private String logoImageUrl;
 
+    private boolean teamBuildingMode;
+
     private List<PeriodRequest> periods;
 }

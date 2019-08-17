@@ -36,7 +36,7 @@ public class SessionService {
     }
 
     public Session updateSession(Integer sessionNumber, SessionRequest sessionRequest) {
-        Session session = sessionRepository.findById(sessionNumber)
+        Session session = sessionRepository.findBySessionNumber(sessionNumber)
                 .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
 
         session.update(sessionRequest);
