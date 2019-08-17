@@ -5,20 +5,26 @@ import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
 import com.nexters.teambuilder.idea.domain.Idea;
 import com.nexters.teambuilder.idea.domain.IdeaRepository;
 import com.nexters.teambuilder.idea.exception.IdeaNotFoundException;
+import com.nexters.teambuilder.tag.domain.Tag;
+import com.nexters.teambuilder.tag.domain.TagRepository;
 import com.nexters.teambuilder.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import springfox.documentation.service.Tags;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class IdeaService {
     private final IdeaRepository ideaRepository;
+    private final TagRepository tagRepository;
 
     public IdeaResponse createIdea(User author, IdeaRequest request) {
-        return IdeaResponse.of(ideaRepository.save(Idea.of(author, request)));
+        List<Tag> tags = tagRepository.findAllById(request.getTags());
+        return IdeaResponse.of(ideaRepository.save(Idea.of(author, tags, request)));
     }
 
     public IdeaResponse getIdea(Integer ideaId) {

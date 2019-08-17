@@ -12,7 +12,6 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Table
 @NoArgsConstructor
 public class Tag {
     public enum Type {
@@ -29,8 +28,8 @@ public class Tag {
     private Type type;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-                mappedBy = "idea")
-    private Set<Idea> ideas = new HashSet<Idea>();
+                mappedBy = "tags")
+    private Set<Idea> ideas = new HashSet<>();
 
     public Tag(String name, Type type) {
         this.name = name;
