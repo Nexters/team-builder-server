@@ -1,15 +1,17 @@
 package com.nexters.teambuilder.user.service;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableMap;
 import com.nexters.teambuilder.config.security.InValidTokenException;
 import com.nexters.teambuilder.config.security.TokenService;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
+import com.nexters.teambuilder.user.api.dto.UserUpdateRequest;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
@@ -72,5 +74,19 @@ public class UserService {
                     return new SignInResponse(token, user.getRole());
                 })
                 .orElseThrow(() -> new LoginErrorException(id));
+    }
+
+    public void updateUser(User user, UserUpdateRequest request) {
+        if (!encryptor.matches(request.getNowPassword(), user.getPassword())) {
+            throw new PasswordNotMatedException();
+        }
+
+        user.update(encryptor.encode(request.getNewPassword()), request.getPosition());
+
+        userRepository.save(user);
+    }
+
+    public List<UserResponse> userList() {
+        return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
     }
 }
