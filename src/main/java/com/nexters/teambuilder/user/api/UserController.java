@@ -35,11 +35,10 @@ public class UserController {
     @PostMapping("sign-up")
     public BaseResponse<UserResponse> signUp(@RequestBody UserRequest request) {
         UserResponse user = userService.createUser(request);
-
+        System.out.println("Test");
         return new BaseResponse<>(200, 0, user);
 
     }
-
     @PostMapping("sign-in")
     public BaseResponse<SignInResponse> signIn(@RequestParam String id, @RequestParam String password) {
         SignInResponse signIn = userService.signIn(id, password);
