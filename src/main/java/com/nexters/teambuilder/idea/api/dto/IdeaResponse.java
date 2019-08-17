@@ -14,7 +14,6 @@ import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Getter
 @NoArgsConstructor
@@ -41,7 +40,8 @@ public class IdeaResponse {
     @JsonView(Views.External.class)
     private Idea.Type type;
 
-    private Set<Tag> tags = new HashSet<Tag>();
+    @JsonView(Views.External.class)
+    private Set<TagResponse> tags = new HashSet<>();
 
     private int orderNumber;
 
@@ -55,7 +55,7 @@ public class IdeaResponse {
                         User author, String file, boolean selected,
                         Idea.Type type,
                         ZonedDateTime createdAt, ZonedDateTime updatedAt,
-                        Tag... tags
+                        Set<Tag> tags
                         ){
         this.ideaId = ideaId;
         this.title = title;
@@ -66,19 +66,15 @@ public class IdeaResponse {
         this.type = type;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-
-        // this에서 에러남
-//        this.tags = Stream.of(tags).collect(Collectors.toSet());
-//        this.tags.forEach(x->x.getIdeas().add(this));
-//        this.tags = TagResponse.of(tags.forEach(x->x.getIdeas().add(this)));
+        this.tags = tags.stream().map(TagResponse::of).collect(Collectors.toSet());
     }
 
     public static IdeaResponse of(Idea idea) {
         return new IdeaResponse(idea.getIdeaId(), idea.getTitle(),
                 idea.getContent(), idea.getAuthor(), idea.getFile(),
                 idea.isSelected(), idea.getType(),
-                idea.getCreatedAt(), idea.getUpdateAt()
-                //idea.getTags() 이것도 안됨
+                idea.getCreatedAt(), idea.getUpdateAt(),
+                idea.getTags()
                 );
     }
 

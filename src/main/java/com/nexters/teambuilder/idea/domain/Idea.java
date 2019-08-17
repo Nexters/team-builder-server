@@ -14,12 +14,11 @@ import org.springframework.util.Assert;
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
-@Table(name = "idea")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -57,7 +56,7 @@ public class Idea {
     @JoinTable(name = "idea_tag",
             joinColumns = { @JoinColumn(name = "idea_id") },
             inverseJoinColumns = { @JoinColumn(name = "tag_id") })
-    private Set<Tag> tags = new HashSet<Tag>();
+    private Set<Tag> tags;
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
@@ -68,7 +67,7 @@ public class Idea {
     private ZonedDateTime updateAt;
 
     @Builder
-    public Idea(String title, String content, User author, String file, Type type, Tag... tags) {
+    public Idea(String title, String content, User author, String file, Type type, List<Tag> tags) {
         Assert.hasLength(title, "title must not be empty");
         Assert.notNull(author, "author must not be null");
 
@@ -77,8 +76,7 @@ public class Idea {
         this.author = author;
         this.file = file;
         this.type = type;
-        this.tags = Stream.of(tags).collect(Collectors.toSet());
-        this.tags.forEach(x->x.getIdeas().add(this));
+        this.tags = tags.stream().collect(Collectors.toSet());
     }
 
     public void update(IdeaRequest request) {
@@ -89,9 +87,9 @@ public class Idea {
         this.selected = request.isSelected();
     }
 
-    public static Idea of(User author, IdeaRequest request) {
+    public static Idea of(User author, List<Tag> tags, IdeaRequest request) {
         return new Idea(request.getTitle(), request.getContent(),
-                author, request.getFile(), request.getType());
+                author, request.getFile(), request.getType(), tags);
     }
 
 
