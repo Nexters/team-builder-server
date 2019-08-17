@@ -1,8 +1,11 @@
 package com.nexters.teambuilder.session.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -10,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -38,6 +42,11 @@ public class Session {
     private List<Period> periods = new ArrayList<>();
 
     private String logoImageUrl;
+
+    private Integer maxVoteCount;
+
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SessionUser> sessionUsers = new HashSet<>();
 
     public Session(Integer sessionNumber, boolean teamBuildingMode, List<Period> periods, String logoImageUrl) {
         this.sessionNumber = sessionNumber;

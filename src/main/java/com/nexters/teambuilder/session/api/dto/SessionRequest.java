@@ -1,10 +1,14 @@
 package com.nexters.teambuilder.session.api.dto;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.nexters.teambuilder.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,4 +31,8 @@ public class SessionRequest {
     private boolean teamBuildingMode;
 
     private List<PeriodRequest> periods;
+
+    private int maxVoteCount;
+
+    private List<String> users = new ArrayList<>();
 }

@@ -38,10 +38,8 @@ public class SessionResponse {
         List<PeriodResponse> periods =
                 session.getPeriods().stream().map(PeriodResponse::of).collect(Collectors.toList());
 
-        System.out.println("aaaa");
         if(session.isTeamBuildingMode()) {
             periods.forEach(periodResponse -> periodResponse.setNow(false));
-            System.out.println("aaaa");
             periods.stream()
                     .filter(periodResponse -> periodResponse.getPeriodType().equals(Period.PeriodType.TEAM_BUILDING))
                     .findFirst().ifPresent(periodResponse -> periodResponse.setNow(true));

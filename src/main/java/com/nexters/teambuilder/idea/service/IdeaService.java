@@ -1,5 +1,8 @@
 package com.nexters.teambuilder.idea.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
 import com.nexters.teambuilder.idea.domain.Idea;
@@ -10,11 +13,6 @@ import com.nexters.teambuilder.tag.domain.TagRepository;
 import com.nexters.teambuilder.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import springfox.documentation.service.Tags;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -49,6 +47,7 @@ public class IdeaService {
 
     public List<IdeaResponse> getIdeaList() {
         List<Idea> ideaList = ideaRepository.findAll();
+
         return ideaList.stream().map(IdeaResponse::of).collect(Collectors.toList());
     }
 

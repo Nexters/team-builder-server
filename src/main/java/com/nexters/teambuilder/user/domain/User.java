@@ -3,16 +3,21 @@ package com.nexters.teambuilder.user.domain;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.nexters.teambuilder.session.domain.SessionUser;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -61,6 +66,9 @@ public class User implements UserDetails {
 
     @CreationTimestamp
     private ZonedDateTime createdAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private Set<SessionUser> sessionUsers = new HashSet<>();
 
     @Builder
     public User(String id, String password, String name, Integer nextersNumber, Role role, Position position) {
