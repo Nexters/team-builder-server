@@ -5,6 +5,7 @@ import java.util.List;
 import com.nexters.teambuilder.common.response.BaseResponse;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
 import com.nexters.teambuilder.idea.service.IdeaService;
+import com.nexters.teambuilder.session.api.dto.SessionNumber;
 import com.nexters.teambuilder.session.api.dto.SessionRequest;
 import com.nexters.teambuilder.session.api.dto.SessionResponse;
 import com.nexters.teambuilder.session.domain.Session;
@@ -35,7 +36,8 @@ public class SessionController {
         Session session = sessionService.getSession(sessionId);
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaList();
-        return new BaseResponse<>(200, 0, SessionResponse.of(session, tags, ideas));
+        List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
+        return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }
 
     @PostMapping
@@ -43,7 +45,8 @@ public class SessionController {
         Session session = sessionService.createSession(request);
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaList();
-        return new BaseResponse<>(200, 0, SessionResponse.of(session, tags, ideas));
+        List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
+        return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }
 
     @PutMapping("{sessionId}")
@@ -52,6 +55,7 @@ public class SessionController {
 
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaList();
-        return new BaseResponse<>(200, 0, SessionResponse.of(session, tags, ideas));
+        List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
+        return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }
 }

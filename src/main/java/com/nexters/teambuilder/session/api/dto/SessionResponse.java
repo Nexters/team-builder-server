@@ -21,6 +21,8 @@ public class SessionResponse {
 
     private Integer sessionNumber;
 
+    private List<SessionNumber> sessionNumbers;
+
     private String logoImageUrl;
 
     private List<PeriodResponse> periods;
@@ -29,11 +31,12 @@ public class SessionResponse {
 
     private List<IdeaResponse> ideas = new ArrayList<>();
 
-    public static SessionResponse of(Session session, List<TagResponse> tags, List<IdeaResponse> ideas) {
+    public static SessionResponse of(Session session, List<SessionNumber> sessionNumbers,  List<TagResponse> tags, List<IdeaResponse> ideas) {
         List<PeriodResponse> periods =
                 session.getPeriods().stream().map(PeriodResponse::of).collect(Collectors.toList());
 
-        return new SessionResponse(session.getSessionId(), session.getSessionNumber(), session.getLogoImageUrl(),
+        return new SessionResponse(session.getSessionId(), session.getSessionNumber(), sessionNumbers, session.getLogoImageUrl(),
                 periods,tags, ideas);
     }
+
 }
