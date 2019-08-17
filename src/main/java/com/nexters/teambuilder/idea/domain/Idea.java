@@ -1,18 +1,22 @@
 package com.nexters.teambuilder.idea.domain;
 
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
+import com.nexters.teambuilder.tag.domain.Tag;
+import com.nexters.teambuilder.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.util.Assert;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -20,46 +24,72 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 public class Idea {
 
+    public enum Type{
+        IDEA, NOTICE
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer ideaId;
 
+    /*
+    @NotNull
+    @Size(max = 100)
+    */
     private String title;
 
-    private String tags;
+    @Column(columnDefinition = "TEXT", name = "content", nullable = false)
+    private String content;
 
-    private String position;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User author;
 
-    private String author;
+    private String file;
+
+    private boolean selected;
+
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "idea_tag",
+            joinColumns = { @JoinColumn(name = "idea_id") },
+            inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+    private Set<Tag> tags;
 
     @CreationTimestamp
+    @Column(name = "create_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;
 
-    @Builder
-    public Idea(Integer ideaId, String title, String tags, String position, String author) {
-        Assert.notNull(ideaId, "id must not be null");
-        Assert.hasLength(title, "title must not be empty");
-        Assert.hasLength(position, "position must not be empty");
-        Assert.hasLength(author, "author must not be empty");
+    @UpdateTimestamp
+    @Column(name = "update_at", nullable = false)
+    private ZonedDateTime updateAt;
 
-        this.ideaId = ideaId;
+    @Builder
+    public Idea(String title, String content, User author, String file, Type type, List<Tag> tags) {
+        Assert.hasLength(title, "title must not be empty");
+        Assert.notNull(author, "author must not be null");
+
         this.title = title;
-        this.tags = tags;
-        this.position = position;
+        this.content = content;
         this.author = author;
+        this.file = file;
+        this.type = type;
+        this.tags = tags.stream().collect(Collectors.toSet());
     }
 
     public void update(IdeaRequest request) {
-        this.ideaId = request.getIdeaId();
         this.title = request.getTitle();
-        this.tags = request.getTags();
-        this.position = request.getPosition();
-        this.author = request.getAuthor();
+        this.content = request.getContent();
+        this.file = request.getFile();
+        this.type = request.getType();
+        this.selected = request.isSelected();
     }
 
-    public static Idea of(IdeaRequest request) {
-        return new Idea(request.getIdeaId(), request.getTitle(), request.getTags(),
-                request.getPosition(), request.getAuthor());
+    public static Idea of(User author, List<Tag> tags, IdeaRequest request) {
+        return new Idea(request.getTitle(), request.getContent(),
+                author, request.getFile(), request.getType(), tags);
     }
 
 

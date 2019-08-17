@@ -1,16 +1,14 @@
 package com.nexters.teambuilder.tag.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+import com.nexters.teambuilder.idea.domain.Idea;
 import com.nexters.teambuilder.tag.api.dto.TagRequest;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -25,8 +23,13 @@ public class Tag {
     private Integer tagId;
 
     private String name;
+
     @Enumerated(EnumType.STRING)
     private Type type;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+                mappedBy = "tags")
+    private Set<Idea> ideas = new HashSet<>();
 
     public Tag(String name, Type type) {
         this.name = name;

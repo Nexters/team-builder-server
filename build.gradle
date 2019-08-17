@@ -44,6 +44,8 @@ dependencies {
     implementation('javax.xml.bind:jaxb-api:2.3.0')
     implementation('org.jasypt:jasypt:1.9.2')
     implementation('commons-codec:commons-codec:1.13')
+    implementation("io.springfox:springfox-swagger-ui:${swaggerVersion}")
+    implementation("io.springfox:springfox-swagger2:${swaggerVersion}")
     runtime('mysql:mysql-connector-java')
     runtime('com.h2database:h2')
     runtime('org.springframework.boot:spring-boot-devtools')
