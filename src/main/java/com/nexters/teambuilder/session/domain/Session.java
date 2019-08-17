@@ -48,11 +48,13 @@ public class Session {
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SessionUser> sessionUsers = new HashSet<>();
 
-    public Session(Integer sessionNumber, boolean teamBuildingMode, List<Period> periods, String logoImageUrl) {
+    public Session(Integer sessionNumber, boolean teamBuildingMode, List<Period> periods,
+                   String logoImageUrl, Integer maxVoteCount) {
         this.sessionNumber = sessionNumber;
         this.teamBuildingMode = teamBuildingMode;
         this.periods = periods;
         this.logoImageUrl = logoImageUrl;
+        this.maxVoteCount = maxVoteCount;
     }
 
     public void update(SessionRequest request) {
@@ -65,7 +67,8 @@ public class Session {
     public static Session of(SessionRequest sessionRequest) {
         List<Period> periods = sessionRequest.getPeriods().stream().map(Period::of).collect(Collectors.toList());
 
-        return new Session(sessionRequest.getSessionNumber(), sessionRequest.isTeamBuildingMode(), periods, sessionRequest.getLogoImageUrl());
+        return new Session(sessionRequest.getSessionNumber(), sessionRequest.isTeamBuildingMode(), periods,
+                sessionRequest.getLogoImageUrl(), sessionRequest.getMaxVoteCount());
     }
 }
 
