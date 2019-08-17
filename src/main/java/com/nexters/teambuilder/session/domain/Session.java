@@ -10,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.nexters.teambuilder.session.api.dto.SessionRequest;
 import lombok.Getter;
@@ -17,6 +19,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(uniqueConstraints =
+    @UniqueConstraint(columnNames = "sessionNumber"))
 @Getter
 @Setter
 @NoArgsConstructor

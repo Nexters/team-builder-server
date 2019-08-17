@@ -31,9 +31,9 @@ public class SessionController {
     private final TagService tagService;
     private final IdeaService ideaService;
 
-    @GetMapping("{sessionId}")
-    public BaseResponse<SessionResponse> get(@AuthenticationPrincipal User user, @PathVariable Integer sessionId) {
-        Session session = sessionService.getSession(sessionId);
+    @GetMapping("{sessionNumber}")
+    public BaseResponse<SessionResponse> get(@AuthenticationPrincipal User user, @PathVariable Integer sessionNumber) {
+        Session session = sessionService.getSession(sessionNumber);
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaList();
         List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
@@ -49,9 +49,9 @@ public class SessionController {
         return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }
 
-    @PutMapping("{sessionId}")
-    public BaseResponse<SessionResponse> update(@PathVariable Integer sessionId, @RequestBody SessionRequest request) {
-        Session session = sessionService.updateSession(sessionId, request);
+    @PutMapping("{sessionNumber}")
+    public BaseResponse<SessionResponse> update(@PathVariable Integer sessionNumber, @RequestBody SessionRequest request) {
+        Session session = sessionService.updateSession(sessionNumber, request);
 
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaList();

@@ -10,4 +10,6 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
      * @return 최신 기수
      */
     Optional<Session> findTopByOrderBySessionNumber();
+
+    Optional<Session> findBySessionNumber(Integer sessionNumber);
 }

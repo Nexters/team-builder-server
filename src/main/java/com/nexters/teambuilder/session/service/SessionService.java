@@ -19,11 +19,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class SessionService {
     private final SessionRepository sessionRepository;
-    private final TagRepository tagRepository;
-    private final IdeaRepository ideaRepository;
 
-    public Session getSession(Integer sessionId) {
-        return sessionRepository.findById(sessionId).orElseThrow(() -> new SessionNotFoundException(sessionId));
+    public Session getSession(Integer sessionNumber) {
+        return sessionRepository.findBySessionNumber(sessionNumber)
+                .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
     }
 
     public Session getLatestSession() {
@@ -36,9 +35,9 @@ public class SessionService {
         return sessionRepository.save(session);
     }
 
-    public Session updateSession(Integer sessionId, SessionRequest sessionRequest) {
-        Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new SessionNotFoundException(sessionId));
+    public Session updateSession(Integer sessionNumber, SessionRequest sessionRequest) {
+        Session session = sessionRepository.findById(sessionNumber)
+                .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
 
         session.update(sessionRequest);
 
