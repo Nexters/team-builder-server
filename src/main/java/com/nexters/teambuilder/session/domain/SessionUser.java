@@ -52,4 +52,8 @@ public class SessionUser {
         this.session = session;
         this.user = user;
     }
+
+    public void plusVoteCount () {
+        this.voteCount++;
+    }
 }

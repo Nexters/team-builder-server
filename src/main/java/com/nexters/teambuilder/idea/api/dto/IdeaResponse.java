@@ -25,6 +25,9 @@ public class IdeaResponse {
     private Integer ideaId;
 
     @JsonView(Views.External.class)
+    private Integer sessionId;
+
+    @JsonView(Views.External.class)
     private String title;
 
     @JsonView(Views.External.class)
@@ -48,18 +51,22 @@ public class IdeaResponse {
     private int orderNumber;
 
     @JsonView(Views.External.class)
+    private int voteNumber;
+
+    @JsonView(Views.External.class)
     private ZonedDateTime createdAt;
 
     @JsonView(Views.External.class)
     private ZonedDateTime updatedAt;
 
-    public IdeaResponse(Integer ideaId, String title, String content,
+    public IdeaResponse(Integer ideaId, Integer sessionId,  String title, String content,
                         User author, String file, boolean selected,
                         Idea.Type type,
                         ZonedDateTime createdAt, ZonedDateTime updatedAt,
-                        Set<Tag> tags
+                        Set<Tag> tags, Integer voteNumber
                         ){
         this.ideaId = ideaId;
+        this.sessionId = sessionId;
         this.title = title;
         this.content = content;
         this.author = UserResponse.of(author);
@@ -69,15 +76,15 @@ public class IdeaResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.tags = tags.stream().map(TagResponse::of).collect(Collectors.toSet());
+        this.voteNumber = voteNumber;
     }
 
     public static IdeaResponse of(Idea idea) {
-        return new IdeaResponse(idea.getIdeaId(), idea.getTitle(),
+        return new IdeaResponse(idea.getIdeaId(), idea.getSession().getSessionId(), idea.getTitle(),
                 idea.getContent(), idea.getAuthor(), idea.getFile(),
                 idea.isSelected(), idea.getType(),
                 idea.getCreatedAt(), idea.getUpdateAt(),
-                idea.getTags()
-                );
+                idea.getTags(), idea.getVoteNumber());
     }
 
     public void updateOrderNumber(Integer orderNumber){
