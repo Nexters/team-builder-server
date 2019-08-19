@@ -29,6 +29,13 @@ public class SwaggerConfig {
                 .required(false)
                 .modelRef(new ModelRef("string")).build());
 
+        global.add(new ParameterBuilder()
+                .name("Content-Type")
+                .description("content type")
+                .parameterType("header")
+                .required(false)
+                .modelRef(new ModelRef("string")).build());
+
         return new Docket(DocumentationType.SWAGGER_2)
                 .globalOperationParameters(global)
                 .select()
