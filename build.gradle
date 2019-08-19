@@ -11,6 +11,8 @@ ext {
     hibernateValidatorVersion = "6.0.13.Final"
     swaggerVersion = "2.9.2"
     jwtVersion = "0.9.1"
+    awsSdkVersion = "1.11.490"
+    commonsVersion = "2.6"
 }
 
 apply plugin: 'java'
@@ -33,6 +35,8 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
+    implementation("commons-io:commons-io:${commonsVersion}")
+    implementation("com.amazonaws:aws-java-sdk-s3:${awsSdkVersion}")
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation("org.modelmapper:modelmapper:${modelMapperVersion}")
