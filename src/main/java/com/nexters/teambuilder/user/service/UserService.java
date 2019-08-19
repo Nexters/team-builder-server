@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 
 import com.nexters.teambuilder.config.security.InValidTokenException;
 import com.nexters.teambuilder.config.security.TokenService;
+import com.nexters.teambuilder.session.domain.Session;
+import com.nexters.teambuilder.session.domain.SessionRepository;
+import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
@@ -16,17 +19,18 @@ import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
 import com.nexters.teambuilder.user.exception.PasswordNotMatedException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final SessionRepository sessionRepository;
 
     private BCryptPasswordEncoder encryptor = new BCryptPasswordEncoder();
 
@@ -88,5 +92,14 @@ public class UserService {
 
     public List<UserResponse> userList() {
         return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
+    }
+
+    public List<UserResponse> sessionUserList(Integer sessionNumber) {
+        Session session = sessionRepository.findBySessionNumber(sessionNumber)
+                .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
+
+        return session.getSessionUsers().stream()
+                .map(sessionUser -> UserResponse.of(sessionUser.getUser()))
+                .collect(Collectors.toList());
     }
 }
