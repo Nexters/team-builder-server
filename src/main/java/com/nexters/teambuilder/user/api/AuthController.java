@@ -35,9 +35,9 @@ public class AuthController {
         return new BaseResponse<>(200, 0, null);
     }
 
-    @GetMapping("/users")
-    public BaseResponse<List<UserResponse>> userList() {
-        List<UserResponse> userResponses = userService.userList();
-        return new BaseResponse<>(200, 0, userResponses);
-    }
+//    @GetMapping("/users")
+//    public BaseResponse<List<UserResponse>> userList() {
+//        List<UserResponse> userResponses = userService.userList();
+//        return new BaseResponse<>(200, 0, userResponses);
+//    }
 }
