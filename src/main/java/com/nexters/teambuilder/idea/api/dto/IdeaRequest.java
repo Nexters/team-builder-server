@@ -16,6 +16,9 @@ import java.util.List;
 @Getter
 @Setter
 public class IdeaRequest {
+    @NotNull
+    private Integer sessionId;
+
     @NotEmpty
     private String title;
 
