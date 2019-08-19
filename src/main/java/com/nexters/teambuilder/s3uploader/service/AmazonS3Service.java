@@ -47,7 +47,7 @@ public class AmazonS3Service {
 
     public List<String> uploadImages(String targetPath, String filename, List<MultipartFile> multipartFileList) {
         String modifiedTargetPath = targetPath.replaceAll("^/*|/*$","");
-
+        System.out.println(tempDirPath + "@@@@@@@@@@@@@@@@@@@@@@@@@");
         List<String> imageUrlList = new ArrayList<>();
         List<File> fileList = createFileListFrom(multipartFileList, filename);
         try {
