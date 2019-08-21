@@ -1,5 +1,6 @@
 package com.nexters.teambuilder.tag.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,9 @@ public class TagService {
 
     public List<TagResponse> getTagList() {
         List<Tag> tagList = tagRepository.findAll();
-        return tagList.stream().map(TagResponse::of).collect(Collectors.toList());
+        return tagList.stream()
+                .sorted(Comparator.comparing(Tag::getTagId).reversed())
+                .map(TagResponse::of).collect(Collectors.toList());
     }
 
     public void delete(Integer tagId) {

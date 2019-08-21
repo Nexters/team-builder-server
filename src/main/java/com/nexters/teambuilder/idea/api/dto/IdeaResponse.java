@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,7 +76,9 @@ public class IdeaResponse {
         this.type = type;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.tags = tags.stream().map(TagResponse::of).collect(Collectors.toSet());
+        this.tags = tags.stream()
+                .sorted(Comparator.comparing(Tag::getTagId).reversed())
+                .map(TagResponse::of).collect(Collectors.toSet());
         this.voteNumber = voteNumber;
     }
 
