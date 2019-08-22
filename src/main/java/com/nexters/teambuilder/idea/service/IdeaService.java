@@ -32,6 +32,15 @@ public class IdeaService {
         Session session = sessionRepository.findById(request.getSessionId())
                 .orElseThrow(() -> new SessionNotFoundException(request.getSessionId()));
 
+        session.getSessionUsers().stream().filter(sessionUser -> sessionUser.getId().getUuid().equals(author.getUuid()))
+                .findFirst().ifPresent(sessionUser -> {
+                    if(!sessionUser.isSubmitIdea()) {
+                        sessionUser.updateSubmitIdea();
+                    }
+        });
+
+        sessionRepository.save(session);
+
         List<Tag> tags = tagRepository.findAllById(request.getTags());
         return IdeaResponse.of(ideaRepository.save(Idea.of(session, author, tags, request)));
     }
@@ -109,7 +118,12 @@ public class IdeaService {
         session.getSessionUsers().stream()
                 .filter(sessionUser -> sessionUser.getUser().getUuid().equals(voter.getUuid()))
                 .findFirst()
-                .ifPresent(sessionUser -> sessionUser.plusVoteCount());
+                .ifPresent(sessionUser -> {
+                    sessionUser.plusVoteCount();
+                    if(!sessionUser.isVoted()) {
+                        sessionUser.updateVoted();
+                    }
+                });
 
         sessionRepository.save(session);
     }

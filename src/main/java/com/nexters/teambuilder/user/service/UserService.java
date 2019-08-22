@@ -11,6 +11,7 @@ import com.nexters.teambuilder.config.security.TokenService;
 import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.session.domain.SessionRepository;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
+import com.nexters.teambuilder.user.api.dto.SessionUserResponse;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
@@ -94,12 +95,12 @@ public class UserService {
         return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
     }
 
-    public List<UserResponse> sessionUserList(Integer sessionNumber) {
+    public List<SessionUserResponse> sessionUserList(Integer sessionNumber) {
         Session session = sessionRepository.findBySessionNumber(sessionNumber)
                 .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
 
         return session.getSessionUsers().stream()
-                .map(sessionUser -> UserResponse.of(sessionUser.getUser()))
+                .map(sessionUser -> new SessionUserResponse(sessionUser))
                 .collect(Collectors.toList());
     }
 }

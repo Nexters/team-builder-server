@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.nexters.teambuilder.common.response.BaseResponse;
 import com.nexters.teambuilder.session.service.SessionService;
+import com.nexters.teambuilder.user.api.dto.SessionUserResponse;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
@@ -58,8 +59,8 @@ public class UserController {
     }
 
     @GetMapping("apis/sessions/{sessionNumber}/users")
-    public BaseResponse<List<UserResponse>> userList(@PathVariable Integer sessionNumber) {
-        List<UserResponse> sessionUserResponses = userService.sessionUserList(sessionNumber);
+    public BaseResponse<List<SessionUserResponse>> userList(@PathVariable Integer sessionNumber) {
+        List<SessionUserResponse> sessionUserResponses = userService.sessionUserList(sessionNumber);
         return new BaseResponse<>(200, 0, sessionUserResponses);
     }
 }
