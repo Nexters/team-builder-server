@@ -19,6 +19,7 @@ import org.springframework.util.Assert;
 @NoArgsConstructor
 public class SessionUser {
     @Embeddable
+    @Getter
     @NoArgsConstructor
     @EqualsAndHashCode
     public static class Id implements Serializable {
@@ -44,6 +45,12 @@ public class SessionUser {
 
     private int voteCount;
 
+    private boolean voted;
+
+    private boolean submitIdea;
+
+    private boolean hasTeam;
+
     public SessionUser(Session session, User user) {
         Assert.notNull(session, "session must not be null");
         Assert.notNull(user, "user must not be null");
@@ -55,5 +62,17 @@ public class SessionUser {
 
     public void plusVoteCount () {
         this.voteCount++;
+    }
+
+    public void updateVoted() {
+        this.voted = true;
+    }
+
+    public void updateSubmitIdea() {
+        this.submitIdea = true;
+    }
+
+    public void updateHasTeam() {
+        this.hasTeam = true;
     }
 }
