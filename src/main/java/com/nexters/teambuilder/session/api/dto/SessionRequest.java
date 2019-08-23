@@ -33,6 +33,4 @@ public class SessionRequest {
     private List<PeriodRequest> periods;
 
     private int maxVoteCount;
-
-    private List<String> users = new ArrayList<>();
 }
