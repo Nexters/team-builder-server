@@ -11,6 +11,7 @@ import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.session.domain.SessionRepository;
 import com.nexters.teambuilder.session.domain.SessionUser;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
+import com.nexters.teambuilder.user.api.dto.SessionUserResponse;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.UserNotFoundException;
@@ -35,8 +36,6 @@ public class SessionService {
 
     public Session createSession(SessionRequest sessionRequest) {
         Session session = Session.of(sessionRequest);
-        addSessionUserToSession(session, sessionRequest.getUsers());
-        System.out.println(session.getSessionUsers().size() + "@@@");
         return sessionRepository.save(session);
     }
 
@@ -45,7 +44,6 @@ public class SessionService {
                 .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
 
         session.update(sessionRequest);
-        addSessionUserToSession(session, sessionRequest.getUsers());
         return sessionRepository.save(session);
     }
 
@@ -57,9 +55,38 @@ public class SessionService {
                 .collect(Collectors.toList());
     }
 
+    public List<SessionUserResponse> addSessionUsers(Integer sessionNumber, List<String> uuids) {
+        Session session = sessionRepository.findBySessionNumber(sessionNumber)
+                .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
+
+        addSessionUserToSession(session, uuids);
+
+        return sessionRepository.save(session).getSessionUsers()
+                .stream()
+                .map(sessionUser -> new SessionUserResponse(sessionUser))
+                .collect(Collectors.toList());
+    }
+
+    public List<SessionUserResponse> deleteSessionUsers(Integer sessionNumber, List<String> uuids) {
+        Session session = sessionRepository.findBySessionNumber(sessionNumber)
+                .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
+
+        uuids.stream().forEach(uuid ->
+            session.getSessionUsers().stream().filter(sessionUser -> sessionUser.getId().getUuid().equals(uuid))
+                    .findFirst().ifPresent(sessionUser -> session.getSessionUsers().remove(sessionUser)));
+
+        return sessionRepository.save(session).getSessionUsers()
+                .stream()
+                .map(sessionUser -> new SessionUserResponse(sessionUser))
+                .collect(Collectors.toList());
+    }
+
     private void addSessionUserToSession(Session session, List<String> uuids) {
         Set<SessionUser> sessionUsers =
                 uuids.stream()
+                        .filter(uuid ->
+                           !session.getSessionUsers().stream().filter(sessionUser -> sessionUser.getId()
+                                   .getUuid().equals(uuid)).findFirst().isPresent())
                         .map(uuid -> {
                             User user = userRepository.findUserByUuid(uuid)
                                     .orElseThrow(() -> new UserNotFoundException(uuid));
