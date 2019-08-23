@@ -1,6 +1,7 @@
 package com.nexters.teambuilder.idea.domain;
 
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
+import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.tag.domain.Tag;
 import com.nexters.teambuilder.user.domain.User;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,6 @@ import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,6 +31,10 @@ public class Idea {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer ideaId;
+
+    @ManyToOne
+    @JoinColumn(name = "session_id")
+    private Session session;
 
     /*
     @NotNull
@@ -58,6 +62,8 @@ public class Idea {
             inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags;
 
+    private int voteNumber;
+
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;
@@ -67,10 +73,12 @@ public class Idea {
     private ZonedDateTime updateAt;
 
     @Builder
-    public Idea(String title, String content, User author, String file, Type type, List<Tag> tags) {
+    public Idea(Session session, String title, String content, User author, String file, Type type,
+                List<Tag> tags) {
         Assert.hasLength(title, "title must not be empty");
         Assert.notNull(author, "author must not be null");
 
+        this.session = session;
         this.title = title;
         this.content = content;
         this.author = author;
@@ -87,10 +95,13 @@ public class Idea {
         this.selected = request.isSelected();
     }
 
-    public static Idea of(User author, List<Tag> tags, IdeaRequest request) {
-        return new Idea(request.getTitle(), request.getContent(),
+
+    public static Idea of(Session session, User author, List<Tag> tags, IdeaRequest request) {
+        return new Idea(session, request.getTitle(), request.getContent(),
                 author, request.getFile(), request.getType(), tags);
     }
 
-
+    public void vote() {
+        this.voteNumber++;
+    }
 }

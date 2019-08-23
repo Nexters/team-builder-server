@@ -16,6 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/apis/ideas")
 public class IdeaController {
     private final IdeaService ideaService;
@@ -55,5 +56,9 @@ public class IdeaController {
         return new BaseResponse<>(200, 0, null);
     }
 
-
+    @PutMapping("/{ideaId}/vote")
+    public BaseResponse voote(@AuthenticationPrincipal User user, @PathVariable Integer ideaId){
+        ideaService.ideaVote(user, ideaId);
+        return new BaseResponse<>(200, 0, null);
+    }
 }
