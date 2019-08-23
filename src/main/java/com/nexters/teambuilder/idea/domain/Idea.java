@@ -95,6 +95,7 @@ public class Idea {
         this.selected = request.isSelected();
     }
 
+
     public static Idea of(Session session, User author, List<Tag> tags, IdeaRequest request) {
         return new Idea(session, request.getTitle(), request.getContent(),
                 author, request.getFile(), request.getType(), tags);

@@ -64,6 +64,7 @@ public class IdeaResponse {
                         User author, String file, boolean selected,
                         Idea.Type type,
                         ZonedDateTime createdAt, ZonedDateTime updatedAt,
+
                         Set<Tag> tags, Integer voteNumber
                         ){
         this.ideaId = ideaId;
