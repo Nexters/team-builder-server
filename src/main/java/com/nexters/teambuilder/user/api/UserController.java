@@ -2,6 +2,8 @@ package com.nexters.teambuilder.user.api;
 
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import com.nexters.teambuilder.common.response.BaseResponse;
 import com.nexters.teambuilder.session.service.SessionService;
 import com.nexters.teambuilder.user.api.dto.SessionUserResponse;
@@ -61,6 +63,13 @@ public class UserController {
     @GetMapping("apis/sessions/{sessionNumber}/users")
     public BaseResponse<List<SessionUserResponse>> userList(@PathVariable Integer sessionNumber) {
         List<SessionUserResponse> sessionUserResponses = userService.sessionUserList(sessionNumber);
+        return new BaseResponse<>(200, 0, sessionUserResponses);
+    }
+
+    @GetMapping("apis/sessions/{sessionNumber}/users/{uuid}")
+    public BaseResponse<SessionUserResponse> sessionUser(@PathVariable Integer sessionNumber,
+                                                         @PathVariable String uuid) {
+        SessionUserResponse sessionUserResponses = userService.getSessionUser(sessionNumber, uuid);
         return new BaseResponse<>(200, 0, sessionUserResponses);
     }
 }
