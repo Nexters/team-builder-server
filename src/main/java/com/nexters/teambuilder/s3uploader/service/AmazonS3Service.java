@@ -38,8 +38,8 @@ public class AmazonS3Service {
 
     private TransferManager transferManager;
 
-    private String tempDirPath = System.getProperty("java.io.tmpdir");
-
+//    private String tempDirPath = System.getProperty("java.io.tmpdir");
+    private String tempDirPath = "/home/ec2-user/TeamBuilder/team-builder-server/tmp";
     public AmazonS3Service(TransferManager transferManager) {
         this.transferManager = transferManager;
     }
@@ -47,7 +47,6 @@ public class AmazonS3Service {
 
     public List<String> uploadImages(String targetPath, String filename, List<MultipartFile> multipartFileList) {
         String modifiedTargetPath = targetPath.replaceAll("^/*|/*$","");
-        System.out.println(tempDirPath + "@@@@@@@@@@@@@@@@@@@@@@@@@");
         List<String> imageUrlList = new ArrayList<>();
         List<File> fileList = createFileListFrom(multipartFileList, filename);
         try {
@@ -58,6 +57,15 @@ public class AmazonS3Service {
                     }
                 }
             };
+            File file = new File(FilenameUtils.getName(tempDirPath));
+            try {
+                if(!file.exists() || !file.isDirectory()) {
+                    file.mkdir();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
             MultipleFileUpload multipleFileUpload =
                     transferManager.uploadFileList(bucketName, modifiedTargetPath,
                             new File(FilenameUtils.getName(tempDirPath)), fileList, metadataProvider);
@@ -78,6 +86,7 @@ public class AmazonS3Service {
 
     private File createFileAtTempDirectoryFrom(MultipartFile multipartFile, String filename)  {
         String tmpDirectory = tempDirPath + "/";
+        System.out.println(tmpDirectory);
         File file = new File(tmpDirectory, FilenameUtils.getName(filename));
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
@@ -146,6 +155,6 @@ public class AmazonS3Service {
     }
 
     private String getUploadedFileUrl(String imageS3Key) {
-        return "https://" + cdnDomain + imageS3Key;
+        return "https://" + cdnDomain + "/" + imageS3Key;
     }
 }

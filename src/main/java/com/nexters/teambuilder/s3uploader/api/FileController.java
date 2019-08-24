@@ -3,6 +3,7 @@ package com.nexters.teambuilder.s3uploader.api;
 import java.util.List;
 
 import com.nexters.teambuilder.s3uploader.service.AmazonS3Service;
+//import com.nexters.teambuilder.s3uploader.service.S3Uploader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
