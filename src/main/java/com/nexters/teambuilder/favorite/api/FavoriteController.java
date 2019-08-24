@@ -1,9 +1,10 @@
 package com.nexters.teambuilder.favorite.api;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.nexters.teambuilder.common.response.BaseResponse;
+import com.nexters.teambuilder.common.view.Views;
 import com.nexters.teambuilder.favorite.api.dto.FavoriteRequest;
 import com.nexters.teambuilder.favorite.api.dto.FavoriteResponse;
-import com.nexters.teambuilder.favorite.domain.Favorite;
 import com.nexters.teambuilder.favorite.service.FavoriteService;
 import com.nexters.teambuilder.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,14 @@ import java.util.List;
 @RequestMapping("/apis/favorites")
 public class FavoriteController {
     private final FavoriteService favoriteService;
+
+    @GetMapping
+    @JsonView(Views.List.class)
+    public BaseResponse<List<FavoriteResponse>> list(@AuthenticationPrincipal User user){
+        List<FavoriteResponse> favorites = favoriteService.getFavoriteList(user.getUuid());
+
+        return new BaseResponse<>(200,0,favorites);
+    }
 
     @GetMapping("/{ideaId}")
     public BaseResponse<FavoriteResponse> get(@PathVariable Integer ideaId) {

@@ -49,6 +49,8 @@ public class IdeaResponse {
     @JsonView(Views.External.class)
     private Set<TagResponse> tags = new HashSet<>();
 
+    private boolean favorite;
+
     private int orderNumber;
 
     @JsonView(Views.External.class)
