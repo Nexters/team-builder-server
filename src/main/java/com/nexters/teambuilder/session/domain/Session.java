@@ -1,8 +1,11 @@
 package com.nexters.teambuilder.session.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -10,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -39,11 +43,18 @@ public class Session {
 
     private String logoImageUrl;
 
-    public Session(Integer sessionNumber, boolean teamBuildingMode, List<Period> periods, String logoImageUrl) {
+    private Integer maxVoteCount;
+
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SessionUser> sessionUsers = new HashSet<>();
+
+    public Session(Integer sessionNumber, boolean teamBuildingMode, List<Period> periods,
+                   String logoImageUrl, Integer maxVoteCount) {
         this.sessionNumber = sessionNumber;
         this.teamBuildingMode = teamBuildingMode;
         this.periods = periods;
         this.logoImageUrl = logoImageUrl;
+        this.maxVoteCount = maxVoteCount;
     }
 
     public void update(SessionRequest request) {
@@ -56,7 +67,8 @@ public class Session {
     public static Session of(SessionRequest sessionRequest) {
         List<Period> periods = sessionRequest.getPeriods().stream().map(Period::of).collect(Collectors.toList());
 
-        return new Session(sessionRequest.getSessionNumber(), sessionRequest.isTeamBuildingMode(), periods, sessionRequest.getLogoImageUrl());
+        return new Session(sessionRequest.getSessionNumber(), sessionRequest.isTeamBuildingMode(), periods,
+                sessionRequest.getLogoImageUrl(), sessionRequest.getMaxVoteCount());
     }
 }
 

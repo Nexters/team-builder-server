@@ -2,6 +2,8 @@ package com.nexters.teambuilder.session.domain;
 
 import java.time.ZonedDateTime;
 import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 import com.nexters.teambuilder.session.api.dto.PeriodRequest;
 import lombok.AllArgsConstructor;
@@ -19,6 +21,7 @@ public class Period {
         IDEA_COLLECT, IDEA_VOTE, IDEA_CHECK, TEAM_BUILDING
     }
 
+    @Enumerated(EnumType.STRING)
     private PeriodType periodType;
 
     private ZonedDateTime startDate;

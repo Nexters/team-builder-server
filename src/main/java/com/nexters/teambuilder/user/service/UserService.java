@@ -1,30 +1,39 @@
 package com.nexters.teambuilder.user.service;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableMap;
 import com.nexters.teambuilder.config.security.InValidTokenException;
 import com.nexters.teambuilder.config.security.TokenService;
+import com.nexters.teambuilder.session.domain.Session;
+import com.nexters.teambuilder.session.domain.SessionRepository;
+import com.nexters.teambuilder.session.domain.SessionUser;
+import com.nexters.teambuilder.session.exception.SessionNotFoundException;
+import com.nexters.teambuilder.user.api.dto.SessionUserResponse;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
+import com.nexters.teambuilder.user.api.dto.UserUpdateRequest;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
 import com.nexters.teambuilder.user.exception.PasswordNotMatedException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.nexters.teambuilder.user.exception.UserNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final SessionRepository sessionRepository;
 
     private BCryptPasswordEncoder encryptor = new BCryptPasswordEncoder();
 
@@ -72,5 +81,39 @@ public class UserService {
                     return new SignInResponse(token, user.getRole());
                 })
                 .orElseThrow(() -> new LoginErrorException(id));
+    }
+
+    public void updateUser(User user, UserUpdateRequest request) {
+        if (!encryptor.matches(request.getNowPassword(), user.getPassword())) {
+            throw new PasswordNotMatedException();
+        }
+
+        user.update(encryptor.encode(request.getNewPassword()), request.getPosition());
+
+        userRepository.save(user);
+    }
+
+    public List<UserResponse> userList() {
+        return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
+    }
+
+    public List<SessionUserResponse> sessionUserList(Integer sessionNumber) {
+        Session session = sessionRepository.findBySessionNumber(sessionNumber)
+                .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
+
+        return session.getSessionUsers().stream()
+                .map(sessionUser -> new SessionUserResponse(sessionUser))
+                .collect(Collectors.toList());
+    }
+
+    public SessionUserResponse getSessionUser(Integer sessionNumber, String uuid) {
+        Session session = sessionRepository
+                .findBySessionNumber(sessionNumber).orElseThrow(() -> new SessionNotFoundException(sessionNumber));
+
+        SessionUser findSessionUser = session.getSessionUsers().stream().filter(sessionUser -> sessionUser.getId().getUuid().equals(uuid))
+                .findFirst().orElseThrow(() -> new UserNotFoundException(uuid));
+
+
+        return new SessionUserResponse(findSessionUser);
     }
 }

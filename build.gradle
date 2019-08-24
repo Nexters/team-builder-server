@@ -11,6 +11,8 @@ ext {
     hibernateValidatorVersion = "6.0.13.Final"
     swaggerVersion = "2.9.2"
     jwtVersion = "0.9.1"
+    awsSdkVersion = "1.11.490"
+    commonsVersion = "2.6"
 }
 
 apply plugin: 'java'
@@ -33,6 +35,9 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
+//    implementation('org.springframework.cloud:spring-cloud-starter-aws:2.0.0.RELEASE')
+    implementation("commons-io:commons-io:${commonsVersion}")
+    implementation("com.amazonaws:aws-java-sdk-s3:${awsSdkVersion}")
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation("org.modelmapper:modelmapper:${modelMapperVersion}")
@@ -47,7 +52,7 @@ dependencies {
     implementation("io.springfox:springfox-swagger-ui:${swaggerVersion}")
     implementation("io.springfox:springfox-swagger2:${swaggerVersion}")
     runtime('mysql:mysql-connector-java')
-    runtime('com.h2database:h2')
+    implementation('com.h2database:h2')
     runtime('org.springframework.boot:spring-boot-devtools')
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
