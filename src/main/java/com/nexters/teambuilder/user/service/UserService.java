@@ -10,6 +10,7 @@ import com.nexters.teambuilder.config.security.InValidTokenException;
 import com.nexters.teambuilder.config.security.TokenService;
 import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.session.domain.SessionRepository;
+import com.nexters.teambuilder.session.domain.SessionUser;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.user.api.dto.SessionUserResponse;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
@@ -20,6 +21,7 @@ import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
 import com.nexters.teambuilder.user.exception.PasswordNotMatedException;
+import com.nexters.teambuilder.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -102,5 +104,16 @@ public class UserService {
         return session.getSessionUsers().stream()
                 .map(sessionUser -> new SessionUserResponse(sessionUser))
                 .collect(Collectors.toList());
+    }
+
+    public SessionUserResponse getSessionUser(Integer sessionNumber, String uuid) {
+        Session session = sessionRepository
+                .findBySessionNumber(sessionNumber).orElseThrow(() -> new SessionNotFoundException(sessionNumber));
+
+        SessionUser findSessionUser = session.getSessionUsers().stream().filter(sessionUser -> sessionUser.getId().getUuid().equals(uuid))
+                .findFirst().orElseThrow(() -> new UserNotFoundException(uuid));
+
+
+        return new SessionUserResponse(findSessionUser);
     }
 }
