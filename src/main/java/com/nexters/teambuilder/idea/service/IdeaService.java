@@ -98,13 +98,20 @@ public class IdeaService {
         }
     }
 
-    public List<IdeaResponse> getIdeaListBySessionId(Integer sessionId) {
+    public List<IdeaResponse> getIdeaListBySessionId(Integer sessionId, User user) {
         List<Idea> ideaList = ideaRepository.findAllBySessionSessionId(sessionId);
+
+        List<Favorite> favoriteList = favoriteRepository.findAllByUuid(user.getUuid());
+
         return ideaList.stream()
                 .sorted(Comparator.comparing(Idea::getIdeaId).reversed())
                 .map(idea -> {
                     IdeaResponse ideaResponse = IdeaResponse.of(idea);
                     ideaResponse.setOrderNumber(ideaList.indexOf(idea) + 1);
+
+                    favoriteList.forEach(favorite->
+                            addFavoriteToIdeaResponse(favorite, idea, ideaResponse));
+
                     return ideaResponse;
                 }).collect(Collectors.toList());
     }
