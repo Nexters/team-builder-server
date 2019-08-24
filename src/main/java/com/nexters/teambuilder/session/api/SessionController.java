@@ -1,7 +1,5 @@
 package com.nexters.teambuilder.session.api;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.nexters.teambuilder.common.response.BaseResponse;
@@ -42,7 +40,7 @@ public class SessionController {
     public BaseResponse<SessionResponse> get(@PathVariable Integer sessionNumber) {
         Session session = sessionService.getSession(sessionNumber);
         List<TagResponse> tags = tagService.getTagList();
-        List<IdeaResponse> ideas = ideaService.geIdeaListBySessionId(session.getSessionId());
+        List<IdeaResponse> ideas = ideaService.getIdeaListBySessionId(session.getSessionId());
         List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
         return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }
@@ -51,7 +49,7 @@ public class SessionController {
     public BaseResponse<SessionResponse> getLatest() {
         Session session = sessionService.getLatestSession();
         List<TagResponse> tags = tagService.getTagList();
-        List<IdeaResponse> ideas = ideaService.geIdeaListBySessionId(session.getSessionId());
+        List<IdeaResponse> ideas = ideaService.getIdeaListBySessionId(session.getSessionId());
         List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
         return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }
@@ -64,7 +62,7 @@ public class SessionController {
     public BaseResponse<SessionResponse> create(@RequestBody SessionRequest request) {
         Session session = sessionService.createSession(request);
         List<TagResponse> tags = tagService.getTagList();
-        List<IdeaResponse> ideas = ideaService.geIdeaListBySessionId(session.getSessionId());
+        List<IdeaResponse> ideas = ideaService.getIdeaListBySessionId(session.getSessionId());
         List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
         return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }
@@ -78,7 +76,7 @@ public class SessionController {
         Session session = sessionService.updateSession(sessionNumber, request);
 
         List<TagResponse> tags = tagService.getTagList();
-        List<IdeaResponse> ideas = ideaService.geIdeaListBySessionId(session.getSessionId());
+        List<IdeaResponse> ideas = ideaService.getIdeaListBySessionId(session.getSessionId());
         List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
         return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }

@@ -23,8 +23,8 @@ public class IdeaController {
 
     @GetMapping
     @JsonView(Views.List.class)
-    public BaseResponse<List<IdeaResponse>> list() {
-        List<IdeaResponse> ideas = ideaService.getIdeaList();
+    public BaseResponse<List<IdeaResponse>> list(@AuthenticationPrincipal User user) {
+        List<IdeaResponse> ideas = ideaService.getIdeaList(user);
         return new BaseResponse<>(200, 0, ideas);
     }
 
