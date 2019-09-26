@@ -58,6 +58,10 @@ public class UserService {
                 .orElseThrow(() -> new InValidTokenException());
     }
 
+    public Optional<User> findById(String id) {
+        return userRepository.findUserById(id);
+    }
+
     public SignInResponse signIn(String id, String password) {
         return userRepository.findUserById(id)
                 .map(user -> {

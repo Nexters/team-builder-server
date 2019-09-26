@@ -25,10 +25,12 @@ public class UserResponse {
 
     private User.Position position;
 
+    private String email;
+
     private ZonedDateTime createdAt;
 
     public static UserResponse of(User user) {
         return new UserResponse(user.getUuid(), user.getId(), user.getName(),
-                user.getNextersNumber(), user.getRole(), user.getPosition(), user.getCreatedAt());
+                user.getNextersNumber(), user.getRole(), user.getPosition(), user.getEmail(), user.getCreatedAt());
     }
 }
