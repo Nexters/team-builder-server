@@ -1,6 +1,7 @@
 package com.nexters.teambuilder.user.api;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -14,11 +15,15 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
@@ -165,6 +170,78 @@ class UserControllerTest {
                         ),
                         responseFields(baseResposneDescription)
                                         .andWithPrefix("data.", signInResposneDescription)));
+    }
+
+    @Test
+    void activate() throws Exception {
+        List<UserResponse> users = IntStream.range(1, 11).mapToObj(i -> {
+            user = new User("originman" + i, "password1212", "kiwon",
+                    13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
+            user.activate();
+
+            return UserResponse.of(user);
+        }).collect(Collectors.toList());
+
+        given(userService.activateUsers(anyList())).willReturn(users);
+
+        this.mockMvc.perform(put("/apis/users/activate?uuids=1,2,3,4,5,6,7,8,9,10")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("users/put-activate",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestParameters(
+                                parameterWithName("uuids").description("활성화시킬 user uuid list")
+                        ),
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.[].", userResposneDescription)));
+    }
+
+    @Test
+    void deactivate() throws Exception {
+        List<UserResponse> users = IntStream.range(1, 11).mapToObj(i -> {
+            user = new User("originman" + i, "password1212", "kiwon",
+                    13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
+            user.deactivate();
+
+            return UserResponse.of(user);
+        }).collect(Collectors.toList());
+
+        given(userService.deactivateUsers(anyList())).willReturn(users);
+
+        this.mockMvc.perform(put("/apis/users/deactivate?uuids=1,2,3,4,5,6,7,8,9,10")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("users/put-deactivate",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestParameters(
+                                parameterWithName("uuids").description("비활성화 시킬 user uuid list")
+                        ),
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.[].", userResposneDescription)));
+    }
+
+    @Test
+    void deactivateAll() throws Exception {
+        List<UserResponse> users = IntStream.range(1, 11).mapToObj(i -> {
+            user = new User("originman" + i, "password1212", "kiwon",
+                    13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
+            user.deactivate();
+
+            return UserResponse.of(user);
+        }).collect(Collectors.toList());
+
+        given(userService.deactivateAllUsers()).willReturn(users);
+
+        this.mockMvc.perform(put("/apis/users/deactivate/all")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("users/put-deactivate-all",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.[].", userResposneDescription)));
     }
 }
 

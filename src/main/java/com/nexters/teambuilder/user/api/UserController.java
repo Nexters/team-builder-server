@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -84,5 +85,26 @@ public class UserController {
                                                          @PathVariable String uuid) {
         SessionUserResponse sessionUserResponses = userService.getSessionUser(sessionNumber, uuid);
         return new BaseResponse<>(200, 0, sessionUserResponses);
+    }
+
+    @PutMapping("apis/users/activate")
+    public BaseResponse<List<UserResponse>> activateUsers(@RequestParam List<String> uuids) {
+        List<UserResponse> users = userService.activateUsers(uuids);
+
+        return new BaseResponse<>(200, 0, users);
+    }
+
+    @PutMapping("apis/users/deactivate/all")
+    public BaseResponse<List<UserResponse>> deactivateAllUsers() {
+        List<UserResponse> users = userService.deactivateAllUsers();
+
+        return new BaseResponse<>(200, 0, users);
+    }
+
+    @PutMapping("apis/users/deactivate")
+    public BaseResponse<List<UserResponse>> deactivateUsers(@RequestParam List<String> uuids) {
+        List<UserResponse> users = userService.deactivateUsers(uuids);
+
+        return new BaseResponse<>(200, 0, users);
     }
 }
