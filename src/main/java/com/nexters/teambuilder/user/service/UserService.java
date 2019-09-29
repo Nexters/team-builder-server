@@ -101,7 +101,13 @@ public class UserService {
             throw new PasswordNotMatedException();
         }
 
-        user.update(encryptor.encode(request.getNewPassword()), request.getPosition());
+        if(request.getNewPassword() != null) {
+            user.updatePassword(encryptor.encode(request.getNewPassword()));
+        }
+
+        if(request.getPosition() != null) {
+            user.updatePosition(request.getPosition());
+        }
 
         userRepository.save(user);
     }
@@ -132,5 +138,32 @@ public class UserService {
 
     public boolean isIdUsable(String userId) {
         return !userRepository.existsById(userId);
+    }
+
+    public List<UserResponse> activateUsers(List<String> uuids) {
+        List<User> users = userRepository.findAllByUuidIn(uuids);
+
+        users.stream().forEach(user -> user.activate());
+        userRepository.saveAll(users);
+
+        return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
+    }
+
+    public List<UserResponse> deactivateUsers(List<String> uuids) {
+        List<User> users = userRepository.findAllByUuidIn(uuids);
+
+        users.stream().forEach(user -> user.deactivate());
+        userRepository.saveAll(users);
+
+        return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
+    }
+
+    public List<UserResponse> deactivateAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return users.stream().map(user -> {
+            user.deactivate();
+            return UserResponse.of(user);
+        }).collect(Collectors.toList());
     }
 }

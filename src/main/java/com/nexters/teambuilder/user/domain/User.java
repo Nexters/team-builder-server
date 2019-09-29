@@ -87,10 +87,12 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public void update(String password, Position position) {
+    public void updatePassword(String password) {
         this.password = password;
-        this.position = position;
+    }
 
+    public void updatePosition(Position position) {
+        this.position = position;
     }
 
     @JsonIgnore
