@@ -33,4 +33,6 @@ public class UserRequest {
     private String email;
 
     private ZonedDateTime createdAt;
+
+    private Integer AuthenticationCode;
 }

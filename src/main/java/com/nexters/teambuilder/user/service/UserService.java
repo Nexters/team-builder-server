@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.nexters.teambuilder.common.domain.CommonRepository;
 import com.nexters.teambuilder.config.security.InValidTokenException;
 import com.nexters.teambuilder.config.security.TokenService;
 import com.nexters.teambuilder.session.domain.Session;
@@ -19,6 +20,7 @@ import com.nexters.teambuilder.user.api.dto.UserResponse;
 import com.nexters.teambuilder.user.api.dto.UserUpdateRequest;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
+import com.nexters.teambuilder.user.exception.AuthenticationCodeNotConsistentException;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
 import com.nexters.teambuilder.user.exception.PasswordNotMatedException;
 import com.nexters.teambuilder.user.exception.UserNotFoundException;
@@ -35,9 +37,16 @@ public class UserService {
 
     private final SessionRepository sessionRepository;
 
+    private final CommonRepository commonRepository;
+
     private BCryptPasswordEncoder encryptor = new BCryptPasswordEncoder();
 
     public UserResponse createUser(UserRequest request) {
+        commonRepository.findTopByOrderByIdDesc().ifPresent(common -> {
+            if (!common.getAuthenticationCode().equals(request.getAuthenticationCode())) {
+                throw new AuthenticationCodeNotConsistentException();
+            }
+        });
 
         User user = userRepository.save(User.builder()
                 .id(request.getId())
@@ -119,5 +128,9 @@ public class UserService {
 
 
         return new SessionUserResponse(findSessionUser);
+    }
+
+    public boolean isIdUsable(String userId) {
+        return !userRepository.existsById(userId);
     }
 }

@@ -1,6 +1,8 @@
 package com.nexters.teambuilder.user.api;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
@@ -40,6 +42,16 @@ public class UserController {
             @ApiImplicitParam(name = "role", value = "{ROLE_ADMIN or ROLE_USER}", required = true, dataType = "string", paramType = "body"),
             @ApiImplicitParam(name = "position", value = "{DESIGNER or DEVELOPER}", required = true, dataType = "string", paramType = "body"),
     })
+
+    @GetMapping("/users/check-id")
+    public BaseResponse<Map> checkIdDuplicate(String id) {
+        boolean isIdUsable = userService.isIdUsable(id);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isIdUsable", isIdUsable);
+
+        return new BaseResponse<>(200, 0, response);
+    }
+
     @PostMapping("/users/sign-up")
     public BaseResponse<UserResponse> signUp(@RequestBody @Valid UserRequest request) {
         UserResponse user = userService.createUser(request);
