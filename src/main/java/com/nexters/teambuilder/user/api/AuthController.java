@@ -24,7 +24,7 @@ public class AuthController {
     private final UserService userService;
     @GetMapping("/me")
     public BaseResponse<UserResponse> me(@AuthenticationPrincipal User user) {
-
+        System.out.println(user.getId() + "@@");
         return new BaseResponse<>(200, 0, UserResponse.of(user));
     }
 
@@ -34,10 +34,4 @@ public class AuthController {
         userService.updateUser(user, request);
         return new BaseResponse<>(200, 0, null);
     }
-
-//    @GetMapping("/users")
-//    public BaseResponse<List<UserResponse>> userList() {
-//        List<UserResponse> userResponses = userService.userList();
-//        return new BaseResponse<>(200, 0, userResponses);
-//    }
 }

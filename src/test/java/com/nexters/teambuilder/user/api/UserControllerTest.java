@@ -1,9 +1,10 @@
-package com.nexters.teambuilder.api;
+package com.nexters.teambuilder.user.api;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
@@ -20,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nexters.teambuilder.user.api.UserController;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
@@ -69,6 +69,8 @@ class UserControllerTest {
             fieldWithPath("id").description("아이디"),
             fieldWithPath("name").description("user 이름"),
             fieldWithPath("nextersNumber").description("user 기수"),
+            fieldWithPath("email").description("user email"),
+            fieldWithPath("activated").description("user 활성화 여부"),
             fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
             fieldWithPath("createdAt").description("user 가입 일자")
@@ -79,16 +81,35 @@ class UserControllerTest {
             fieldWithPath("password").description("비밀번호"),
             fieldWithPath("name").description("user 이름"),
             fieldWithPath("nextersNumber").description("user 기수"),
+            fieldWithPath("email").description("user email"),
             fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
+            fieldWithPath("authenticationCode").description("회원가입을 위한 인증코드"),
     };
 
     @BeforeEach
     void setUp() {
         user = new User("originman", "password1212", "kiwon",
-                13, User.Role.ROLE_USER, User.Position.DEVELOPER);
+                13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
 
         mapper = new ObjectMapper();
+    }
+
+    @Test
+    void checkId() throws Exception {
+        given(userService.isIdUsable(anyString())).willReturn(true);
+
+        this.mockMvc.perform(get("/users/check-id").param("id", "test1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("data.isIdUsable").value(true))
+                .andDo(document("users/get-checkId",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestParameters(
+                                parameterWithName("id").description("중복여부를 판단할 ID")
+                        ),
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.",
+                                        fieldWithPath("isIdUsable").description("아이디 사용 가능여부"))));
     }
 
     @Test
@@ -100,6 +121,8 @@ class UserControllerTest {
         input.put("nextersNumber", 13);
         input.put("role", "ROLE_USER");
         input.put("position", "DEVELOPER");
+        input.put("email", "originman@nexter.com");
+        input.put("authenticationCode", 12345);
 
         given(userService.createUser(any(UserRequest.class))).willReturn(UserResponse.of(user));
 

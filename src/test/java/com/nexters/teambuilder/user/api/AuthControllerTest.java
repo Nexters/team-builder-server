@@ -1,4 +1,4 @@
-package com.nexters.teambuilder.api;
+package com.nexters.teambuilder.user.api;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -10,7 +10,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.nexters.teambuilder.user.api.AuthController;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +47,8 @@ class AuthControllerTest {
             fieldWithPath("id").description("아이디"),
             fieldWithPath("name").description("user 이름"),
             fieldWithPath("nextersNumber").description("user 기수"),
+            fieldWithPath("email").description("user email"),
+            fieldWithPath("activated").description("user "),
             fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
             fieldWithPath("createdAt").description("user 가입 일자")
@@ -56,7 +57,7 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         user = new User("originman", "password1212", "kiwon",
-                13, User.Role.ROLE_USER, User.Position.DEVELOPER);
+                13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexters.com");
     }
 
     @Test

@@ -2,6 +2,9 @@ package com.nexters.teambuilder.user.api.dto;
 
 import java.time.ZonedDateTime;
 
+import javax.validation.constraints.Email;
+
+import com.nexters.teambuilder.user.api.annotation.UniqueId;
 import com.nexters.teambuilder.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRequest {
+    @UniqueId
     private String id;
 
     private String password;
@@ -25,5 +29,10 @@ public class UserRequest {
 
     private User.Position position;
 
+    @Email
+    private String email;
+
     private ZonedDateTime createdAt;
+
+    private Integer AuthenticationCode;
 }
