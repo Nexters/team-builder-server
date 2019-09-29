@@ -1,5 +1,6 @@
 package com.nexters.teambuilder.user.api;
 
+import static com.nexters.teambuilder.user.domain.User.Position.DEVELOPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -40,6 +41,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -90,6 +92,12 @@ class UserControllerTest {
             fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
             fieldWithPath("authenticationCode").description("회원가입을 위한 인증코드"),
+    };
+
+    private FieldDescriptor[] userUpdateRequesteDescription = new FieldDescriptor[]{
+            fieldWithPath("nowPassword").description("현재 비밀번호"),
+            fieldWithPath("newPassword").description("변경할 비밀번호 (null 일시 비밀번호 변경 스킵)"),
+            fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER} (null 일시 변경 스킵)"),
     };
 
     @BeforeEach
@@ -170,6 +178,24 @@ class UserControllerTest {
                         ),
                         responseFields(baseResposneDescription)
                                         .andWithPrefix("data.", signInResposneDescription)));
+    }
+
+    @Test
+    void updateUser() throws Exception {
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put("nowPassword", "1212");
+        input.put("newPassword", "3434");
+        input.put("position", DEVELOPER);
+
+        this.mockMvc.perform(RestDocumentationRequestBuilders.put("/apis/users")
+                .header("Authorization", "Bearer " + "<access_token>")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(mapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                .andDo(document("users/put-user",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestFields(userUpdateRequesteDescription),
+                        responseFields(baseResposneDescription)));
     }
 
     @Test

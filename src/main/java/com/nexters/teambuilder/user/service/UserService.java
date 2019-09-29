@@ -101,7 +101,13 @@ public class UserService {
             throw new PasswordNotMatedException();
         }
 
-        user.update(encryptor.encode(request.getNewPassword()), request.getPosition());
+        if(request.getNewPassword() != null) {
+            user.updatePassword(encryptor.encode(request.getNewPassword()));
+        }
+
+        if(request.getPosition() != null) {
+            user.updatePosition(request.getPosition());
+        }
 
         userRepository.save(user);
     }
