@@ -1,8 +1,6 @@
 package com.nexters.teambuilder.user.api.dto;
 
-import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.session.domain.SessionUser;
-import com.nexters.teambuilder.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +21,8 @@ public class SessionUserResponse extends UserResponse {
     public SessionUserResponse(SessionUser sessionUser) {
         super(sessionUser.getUser().getUuid(), sessionUser.getUser().getId(), sessionUser.getUser().getName(),
                 sessionUser.getUser().getNextersNumber(), sessionUser.getUser().getRole(),
-                sessionUser.getUser().getPosition(), sessionUser.getUser().getEmail(), sessionUser.getUser().getCreatedAt());
+                sessionUser.getUser().getPosition(), sessionUser.getUser().getEmail(),
+                sessionUser.getUser().isActivated(), sessionUser.getUser().getCreatedAt());
 
         this.voted = sessionUser.isVoted();
 
