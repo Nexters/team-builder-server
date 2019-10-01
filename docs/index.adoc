@@ -60,7 +60,7 @@ use of HTTP status codes.
 
 = Resources
 
-== 회원가입 인증코드
+== Authentication Code
 
 === 인증코드 생성
 operation::/commons/post-common[snippets='http-request,request-fields,http-response,response-fields']
@@ -83,11 +83,24 @@ operation::/users/put-activate[snippets='http-request,request-parameters,http-re
 === 비활성화
 operation::/users/put-deactivate[snippets='http-request,request-parameters,http-response,response-fields']
 === 전체비활성화
-operation::/users/put-deactivat-all[snippets='http-request,http-response,response-fields']
+operation::/users/put-deactivate-all[snippets='http-request,http-response,response-fields']
 
 == Auth
 === me
 operation::/auth/get-me[snippets='http-request,http-response,response-fields']
+
+== Idea
+=== 아이디어 생성
+operation::/ideas/post-idea[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 아이디어 조회
+operation::/ideas/get-idea[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 아이디어 목록
+operation::/ideas/list-idea[snippets='http-request,http-response,response-fields']
+
+=== 아이디어 수정
+operation::/ideas/put-idea[snippets='http-request,request-fields,path-parameters,http-response,response-fields']
 
 == Person
 
