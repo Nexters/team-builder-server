@@ -102,6 +102,9 @@ operation::/ideas/list-idea[snippets='http-request,http-response,response-fields
 === 아이디어 수정
 operation::/ideas/put-idea[snippets='http-request,request-fields,path-parameters,http-response,response-fields']
 
+=== 아이디어 투표
+operation::/ideas/put-idea[snippets='http-request,path-parameters,http-response,response-fields']
+
 == Person
 
 === Create Person
