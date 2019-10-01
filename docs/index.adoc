@@ -60,7 +60,7 @@ use of HTTP status codes.
 
 = Resources
 
-== 회원가입 인증코드
+== Authentication Code
 
 === 인증코드 생성
 operation::/commons/post-common[snippets='http-request,request-fields,http-response,response-fields']
