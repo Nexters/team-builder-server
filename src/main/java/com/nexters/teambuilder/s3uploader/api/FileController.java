@@ -29,9 +29,10 @@ public class FileController {
         return amazonS3Service.uploadImages(targetPath, filename, images);
     }
 
-//    @PostMapping(value = "/upload-file")
-//    public String upload(@RequestParam MultipartFile file,
-//                         @RequestParam String dirName) throws Exception {
-//        return s3Uploader.upload(file, dirName);
-//    }
+    @PostMapping(value = "/uploads", params = {"targetPath!=", "filename!="})
+    public List<String> upload(@RequestParam List<MultipartFile> files,
+                                   @RequestParam String targetPath,
+                                   @RequestParam String filename) {
+        return amazonS3Service.uploadImages(targetPath, filename, files);
+    }
 }
