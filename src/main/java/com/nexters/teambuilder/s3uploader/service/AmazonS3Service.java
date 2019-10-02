@@ -122,7 +122,7 @@ public class AmazonS3Service {
                     }
 
                     String extension = Files.getFileExtension(originalFilename);
-                    return createFileAtTempDirectoryFrom(multipartFile, alterFileName(filename, i, extension));
+                    return createFileAtTempDirectoryFrom(multipartFile, alterFileName(filename, i));
                 }).collect(Collectors.toList());
     }
 
@@ -133,7 +133,7 @@ public class AmazonS3Service {
         }
 
         String extension = Files.getFileExtension(multipartFile.getOriginalFilename());
-        return createFileAtTempDirectoryFrom(multipartFile, filename + "." + extension);
+        return createFileAtTempDirectoryFrom(multipartFile, filename);
     }
 
     private Optional<String> getKeyFromUploadResult(Upload upload) {
