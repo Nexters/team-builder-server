@@ -102,6 +102,22 @@ operation::/ideas/list-idea[snippets='http-request,http-response,response-fields
 === 아이디어 수정
 operation::/ideas/put-idea[snippets='http-request,request-fields,path-parameters,http-response,response-fields']
 
+=== 아이디어 투표
+operation::/ideas/put-idea[snippets='http-request,path-parameters,http-response,response-fields']
+
+== Session
+=== session 생성
+operation::/sessions/post-session[snippets='http-request,request-fields,http-response,response-fields']
+
+=== session 조회
+operation::/sessions/get-session[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 최신 session 조회
+operation::/sessions/latest-session[snippets='http-request,http-response,response-fields']
+
+=== session 수정
+operation::/sessions/put-idea[snippets='http-request,request-fields,path-parameters,http-response,response-fields']
+
 == Person
 
 === Create Person

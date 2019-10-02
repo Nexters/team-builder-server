@@ -15,6 +15,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.OBJECT;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -216,5 +217,19 @@ class IdeaControllerTest {
                         requestFields(ideaRequesteDescription),
                         responseFields(baseResposneDescription)
                                 .andWithPrefix("data.", ideaResposneDescription)));
+    }
+
+    @Test
+    void vote_Idea() throws Exception {
+        this.mockMvc.perform(put("/apis/ideas/{ideaId}/vote", 1)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("ideas/vote-idea",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("ideaId").description("Idea의 id")
+                                        .attributes(key("constraints").value("Not Null"))),
+                        responseFields(baseResposneDescription)));
     }
 }
