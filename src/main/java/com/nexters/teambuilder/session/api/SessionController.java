@@ -43,7 +43,8 @@ public class SessionController {
         Session session = sessionService.getSession(sessionNumber);
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaListBySessionId(session.getSessionId(), user);
-        List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
+        List<SessionNumber> sessionNumbers = sessionService.sessionNumberList();
+
         return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }
 
