@@ -122,7 +122,7 @@ public class AmazonS3Service {
                     }
 
                     String extension = Files.getFileExtension(originalFilename);
-                    return createFileAtTempDirectoryFrom(multipartFile, alterFileName(filename, i, extension));
+                    return createFileAtTempDirectoryFrom(multipartFile, alterFileName(filename, i));
                 }).collect(Collectors.toList());
     }
 
