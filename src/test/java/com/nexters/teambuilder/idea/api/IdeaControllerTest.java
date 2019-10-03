@@ -80,7 +80,7 @@ class IdeaControllerTest {
     private FieldDescriptor[] ideaRequesteDescription = new FieldDescriptor[]{
             fieldWithPath("sessionId").description("아이디어가 작성될 session(기수) id"),
             fieldWithPath("title").description("아이디어 제목"),
-            fieldWithPath("contents").description("아이디어 내용"),
+            fieldWithPath("content").description("아이디어 내용"),
             fieldWithPath("tags").description("tag Id 목록"),
             fieldWithPath("file").description("첨부파일 url"),
             fieldWithPath("type").description("아이디어 타입 {IDEA, NOTICE}"),
@@ -136,7 +136,7 @@ class IdeaControllerTest {
         Map<String, Object> input = new LinkedHashMap<>();
         input.put("sessionId", 1);
         input.put("title", "모임모임 웹 서비스");
-        input.put("contents", "모임모임 같이만드실분 구합니다");
+        input.put("content", "모임모임 같이만드실분 구합니다");
         input.put("tags", Arrays.asList(1, 2));
         input.put("file", "https://file.url");
         input.put("type", IDEA);
@@ -196,7 +196,7 @@ class IdeaControllerTest {
         Map<String, Object> input = new LinkedHashMap<>();
         input.put("sessionId", 1);
         input.put("title", "모임모임 웹 서비스");
-        input.put("contents", "모임모임 같이만드실분 구합니다");
+        input.put("content", "모임모임 같이만드실분 구합니다");
         input.put("tags", Arrays.asList(1, 2));
         input.put("file", "https://file.url");
         input.put("type", IDEA);
