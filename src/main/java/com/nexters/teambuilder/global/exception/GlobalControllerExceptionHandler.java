@@ -10,6 +10,7 @@ import com.nexters.teambuilder.person.exception.PersonNotFoundException;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.tag.exception.TagNotFoundException;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
+import com.nexters.teambuilder.user.exception.UserNotActivatedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -38,7 +39,8 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler(value = {
-            ActionForbiddenException.class
+            ActionForbiddenException.class,
+            UserNotActivatedException.class
     })
     @ResponseStatus(HttpStatus.FORBIDDEN)
     protected ApiError Forbidden(RuntimeException ex) {

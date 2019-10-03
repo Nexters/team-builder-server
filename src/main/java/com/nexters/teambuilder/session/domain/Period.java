@@ -1,5 +1,7 @@
 package com.nexters.teambuilder.session.domain;
 
+import static java.time.ZonedDateTime.now;
+
 import java.time.ZonedDateTime;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -30,5 +32,9 @@ public class Period {
 
     public static Period of (PeriodRequest request) {
         return new Period(request.getPeriodType(), request.getStartDate(), request.getEndDate());
+    }
+
+    public boolean isNowIn() {
+        return now().isAfter(this.startDate) && now().isBefore(this.endDate);
     }
 }
