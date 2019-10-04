@@ -33,7 +33,7 @@ public class FavoriteController {
     public BaseResponse<FavoriteResponse> get(@PathVariable Integer ideaId) {
         FavoriteResponse favorite = favoriteService.getFavorite(ideaId);
 
-        return new BaseResponse<>(200,0,favorite);
+        return new BaseResponse<>(200,0, favorite);
     }
 
     @PostMapping

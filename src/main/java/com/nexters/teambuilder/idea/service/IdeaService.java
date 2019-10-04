@@ -1,10 +1,5 @@
 package com.nexters.teambuilder.idea.service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.nexters.teambuilder.favorite.domain.Favorite;
 import com.nexters.teambuilder.favorite.domain.FavoriteRepository;
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
@@ -21,10 +16,14 @@ import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.tag.domain.Tag;
 import com.nexters.teambuilder.tag.domain.TagRepository;
 import com.nexters.teambuilder.user.domain.User;
-import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.UserNotActivatedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -34,8 +33,6 @@ public class IdeaService {
     private final SessionRepository sessionRepository;
     private final TagRepository tagRepository;
     private final FavoriteRepository favoriteRepository;
-    private final UserRepository userRepository;
-
 
     public IdeaResponse createIdea(User author, IdeaRequest request) {
         Session session = sessionRepository.findById(request.getSessionId())
@@ -61,7 +58,15 @@ public class IdeaService {
     public IdeaResponse getIdea(Integer ideaId) {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
-        return IdeaResponse.of(idea);
+
+        IdeaResponse ideaResponse = IdeaResponse.of(idea);
+        Optional<Favorite> favorite = favoriteRepository.findFavoriteByIdeaId(ideaId);
+
+        if (favorite.isPresent() && favorite.get().getIdeaId().equals(ideaId)) {
+            ideaResponse.setFavorite(true);
+        }
+
+        return ideaResponse;
     }
 
     public IdeaResponse updateIdea(User author, Integer ideaId, IdeaRequest request) {
@@ -89,7 +94,7 @@ public class IdeaService {
                     IdeaResponse ideaResponse = IdeaResponse.of(idea);
                     ideaResponse.setOrderNumber(ideaList.indexOf(idea) + 1);
 
-                    favoriteList.forEach(favorite->
+                    favoriteList.forEach(favorite ->
                             addFavoriteToIdeaResponse(favorite, idea, ideaResponse));
 
                     return ideaResponse;
@@ -97,14 +102,13 @@ public class IdeaService {
     }
 
     private void addFavoriteToIdeaResponse(Favorite favorite, Idea idea, IdeaResponse ideaResponse) {
-        if(favorite.getIdeaId().equals(idea.getIdeaId())){
+        if (favorite.getIdeaId().equals(idea.getIdeaId())) {
             ideaResponse.setFavorite(true);
         }
     }
 
     public List<IdeaResponse> getIdeaListBySessionId(Integer sessionId, User user) {
         List<Idea> ideaList = ideaRepository.findAllBySessionSessionId(sessionId);
-
         List<Favorite> favoriteList = favoriteRepository.findAllByUuid(user.getUuid());
 
         return ideaList.stream()
@@ -113,7 +117,7 @@ public class IdeaService {
                     IdeaResponse ideaResponse = IdeaResponse.of(idea);
                     ideaResponse.setOrderNumber(ideaList.indexOf(idea) + 1);
 
-                    favoriteList.forEach(favorite->
+                    favoriteList.forEach(favorite ->
                             addFavoriteToIdeaResponse(favorite, idea, ideaResponse));
 
                     return ideaResponse;
