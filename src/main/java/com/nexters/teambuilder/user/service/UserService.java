@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.nexters.teambuilder.common.domain.CommonRepository;
 import com.nexters.teambuilder.config.security.InValidTokenException;
 import com.nexters.teambuilder.config.security.TokenService;
 import com.nexters.teambuilder.session.domain.Session;
@@ -19,6 +20,7 @@ import com.nexters.teambuilder.user.api.dto.UserResponse;
 import com.nexters.teambuilder.user.api.dto.UserUpdateRequest;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
+import com.nexters.teambuilder.user.exception.AuthenticationCodeNotConsistentException;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
 import com.nexters.teambuilder.user.exception.PasswordNotMatedException;
 import com.nexters.teambuilder.user.exception.UserNotFoundException;
@@ -35,9 +37,16 @@ public class UserService {
 
     private final SessionRepository sessionRepository;
 
+    private final CommonRepository commonRepository;
+
     private BCryptPasswordEncoder encryptor = new BCryptPasswordEncoder();
 
     public UserResponse createUser(UserRequest request) {
+        commonRepository.findTopByOrderByIdDesc().ifPresent(common -> {
+            if (!common.getAuthenticationCode().equals(request.getAuthenticationCode())) {
+                throw new AuthenticationCodeNotConsistentException();
+            }
+        });
 
         User user = userRepository.save(User.builder()
                 .id(request.getId())
@@ -56,6 +65,10 @@ public class UserService {
                 .map(map -> map.get("uuid"))
                 .flatMap(userRepository::findUserByUuid)
                 .orElseThrow(() -> new InValidTokenException());
+    }
+
+    public Optional<User> findById(String id) {
+        return userRepository.findUserById(id);
     }
 
     public SignInResponse signIn(String id, String password) {
@@ -88,7 +101,13 @@ public class UserService {
             throw new PasswordNotMatedException();
         }
 
-        user.update(encryptor.encode(request.getNewPassword()), request.getPosition());
+        if(request.getNewPassword() != null) {
+            user.updatePassword(encryptor.encode(request.getNewPassword()));
+        }
+
+        if(request.getPosition() != null) {
+            user.updatePosition(request.getPosition());
+        }
 
         userRepository.save(user);
     }
@@ -115,5 +134,36 @@ public class UserService {
 
 
         return new SessionUserResponse(findSessionUser);
+    }
+
+    public boolean isIdUsable(String userId) {
+        return !userRepository.existsById(userId);
+    }
+
+    public List<UserResponse> activateUsers(List<String> uuids) {
+        List<User> users = userRepository.findAllByUuidIn(uuids);
+
+        users.stream().forEach(user -> user.activate());
+        userRepository.saveAll(users);
+
+        return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
+    }
+
+    public List<UserResponse> deactivateUsers(List<String> uuids) {
+        List<User> users = userRepository.findAllByUuidIn(uuids);
+
+        users.stream().forEach(user -> user.deactivate());
+        userRepository.saveAll(users);
+
+        return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
+    }
+
+    public List<UserResponse> deactivateAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return users.stream().map(user -> {
+            user.deactivate();
+            return UserResponse.of(user);
+        }).collect(Collectors.toList());
     }
 }

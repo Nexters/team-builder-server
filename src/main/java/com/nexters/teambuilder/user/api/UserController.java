@@ -1,7 +1,10 @@
 package com.nexters.teambuilder.user.api;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
 import com.nexters.teambuilder.common.response.BaseResponse;
@@ -10,15 +13,19 @@ import com.nexters.teambuilder.user.api.dto.SessionUserResponse;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
+import com.nexters.teambuilder.user.api.dto.UserUpdateRequest;
+import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,8 +46,18 @@ public class UserController {
             @ApiImplicitParam(name = "role", value = "{ROLE_ADMIN or ROLE_USER}", required = true, dataType = "string", paramType = "body"),
             @ApiImplicitParam(name = "position", value = "{DESIGNER or DEVELOPER}", required = true, dataType = "string", paramType = "body"),
     })
+
+    @GetMapping("/users/check-id")
+    public BaseResponse<Map> checkIdDuplicate(String id) {
+        boolean isIdUsable = userService.isIdUsable(id);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isIdUsable", isIdUsable);
+
+        return new BaseResponse<>(200, 0, response);
+    }
+
     @PostMapping("/users/sign-up")
-    public BaseResponse<UserResponse> signUp(@RequestBody UserRequest request) {
+    public BaseResponse<UserResponse> signUp(@RequestBody @Valid UserRequest request) {
         UserResponse user = userService.createUser(request);
 
         return new BaseResponse<>(200, 0, user);
@@ -71,5 +88,33 @@ public class UserController {
                                                          @PathVariable String uuid) {
         SessionUserResponse sessionUserResponses = userService.getSessionUser(sessionNumber, uuid);
         return new BaseResponse<>(200, 0, sessionUserResponses);
+    }
+
+    @PutMapping("apis/users/activate")
+    public BaseResponse<List<UserResponse>> activateUsers(@RequestParam List<String> uuids) {
+        List<UserResponse> users = userService.activateUsers(uuids);
+
+        return new BaseResponse<>(200, 0, users);
+    }
+
+    @PutMapping("apis/users/deactivate/all")
+    public BaseResponse<List<UserResponse>> deactivateAllUsers() {
+        List<UserResponse> users = userService.deactivateAllUsers();
+
+        return new BaseResponse<>(200, 0, users);
+    }
+
+    @PutMapping("apis/users/deactivate")
+    public BaseResponse<List<UserResponse>> deactivateUsers(@RequestParam List<String> uuids) {
+        List<UserResponse> users = userService.deactivateUsers(uuids);
+
+        return new BaseResponse<>(200, 0, users);
+    }
+
+    @PutMapping("apis/users")
+    public BaseResponse<UserResponse> updateUser(@AuthenticationPrincipal User user,
+                                                 @RequestBody UserUpdateRequest request) {
+        userService.updateUser(user, request);
+        return new BaseResponse<>(200, 0, null);
     }
 }

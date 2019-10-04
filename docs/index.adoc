@@ -60,15 +60,63 @@ use of HTTP status codes.
 
 = Resources
 
+== Authentication Code
+
+=== 인증코드 생성
+operation::/commons/post-common[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 인증코드 조회
+operation::/commons/get-common[http-response,response-fields']
+
+
 == User
+=== 아이디 중복체크
+operation::/users/get-checkId[snippets='http-request,request-parameters,http-response,response-fields']
 === 회원가입
 operation::/users/post-signUp[snippets='http-request,request-fields,http-response,response-fields']
 === 로그인
 operation::/users/post-signIn[snippets='http-request,request-parameters,http-response,response-fields']
+=== 개인정보 변경
+operation::/users/put-user[snippets='http-request,request-fields,http-response,response-fields']
+=== 활성화
+operation::/users/put-activate[snippets='http-request,request-parameters,http-response,response-fields']
+=== 비활성화
+operation::/users/put-deactivate[snippets='http-request,request-parameters,http-response,response-fields']
+=== 전체비활성화
+operation::/users/put-deactivate-all[snippets='http-request,http-response,response-fields']
 
 == Auth
 === me
 operation::/auth/get-me[snippets='http-request,http-response,response-fields']
+
+== Idea
+=== 아이디어 생성
+operation::/ideas/post-idea[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 아이디어 조회
+operation::/ideas/get-idea[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 아이디어 목록
+operation::/ideas/list-idea[snippets='http-request,http-response,response-fields']
+
+=== 아이디어 수정
+operation::/ideas/put-idea[snippets='http-request,request-fields,path-parameters,http-response,response-fields']
+
+=== 아이디어 투표
+operation::/ideas/vote-idea[snippets='http-request,path-parameters,http-response,response-fields']
+
+== Session
+=== session 생성
+operation::/sessions/post-session[snippets='http-request,request-fields,http-response,response-fields']
+
+=== session 조회
+operation::/sessions/get-session[snippets='http-request,path-parameters,http-response,response-fields']
+
+=== 최신 session 조회
+operation::/sessions/latest-session[snippets='http-request,http-response,response-fields']
+
+=== session 수정
+operation::/sessions/put-idea[snippets='http-request,request-fields,path-parameters,http-response,response-fields']
 
 == Person
 

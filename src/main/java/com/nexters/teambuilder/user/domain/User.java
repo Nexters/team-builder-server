@@ -56,6 +56,11 @@ public class User implements UserDetails {
 
     private Integer nextersNumber;
 
+    @Column(length = 100)
+    private String email;
+
+    private boolean activated;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private Role role;
@@ -71,19 +76,23 @@ public class User implements UserDetails {
     private Set<SessionUser> sessionUsers = new HashSet<>();
 
     @Builder
-    public User(String id, String password, String name, Integer nextersNumber, Role role, Position position) {
+    public User(String id, String password, String name, Integer nextersNumber, Role role,
+                Position position, String email) {
         this.id = id;
         this.password = password;
         this.name = name;
         this.nextersNumber = nextersNumber;
         this.role = role;
         this.position = position;
+        this.email = email;
     }
 
-    public void update(String password, Position position) {
+    public void updatePassword(String password) {
         this.password = password;
-        this.position = position;
+    }
 
+    public void updatePosition(Position position) {
+        this.position = position;
     }
 
     @JsonIgnore
@@ -130,5 +139,13 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void activate() {
+        this.activated = true;
+    }
+
+    public void deactivate() {
+        this.activated = false;
     }
 }

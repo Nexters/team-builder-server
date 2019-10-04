@@ -1,9 +1,12 @@
-package com.nexters.teambuilder.api;
+package com.nexters.teambuilder.user.api;
 
+import static com.nexters.teambuilder.user.domain.User.Position.DEVELOPER;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
@@ -13,14 +16,17 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nexters.teambuilder.user.api.UserController;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
@@ -35,6 +41,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -69,6 +76,8 @@ class UserControllerTest {
             fieldWithPath("id").description("아이디"),
             fieldWithPath("name").description("user 이름"),
             fieldWithPath("nextersNumber").description("user 기수"),
+            fieldWithPath("email").description("user email"),
+            fieldWithPath("activated").description("user 활성화 여부"),
             fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
             fieldWithPath("createdAt").description("user 가입 일자")
@@ -79,16 +88,41 @@ class UserControllerTest {
             fieldWithPath("password").description("비밀번호"),
             fieldWithPath("name").description("user 이름"),
             fieldWithPath("nextersNumber").description("user 기수"),
+            fieldWithPath("email").description("user email"),
             fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
+            fieldWithPath("authenticationCode").description("회원가입을 위한 인증코드"),
+    };
+
+    private FieldDescriptor[] userUpdateRequesteDescription = new FieldDescriptor[]{
+            fieldWithPath("nowPassword").description("현재 비밀번호"),
+            fieldWithPath("newPassword").description("변경할 비밀번호 (null 일시 비밀번호 변경 스킵)"),
+            fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER} (null 일시 변경 스킵)"),
     };
 
     @BeforeEach
     void setUp() {
         user = new User("originman", "password1212", "kiwon",
-                13, User.Role.ROLE_USER, User.Position.DEVELOPER);
+                13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
 
         mapper = new ObjectMapper();
+    }
+
+    @Test
+    void checkId() throws Exception {
+        given(userService.isIdUsable(anyString())).willReturn(true);
+
+        this.mockMvc.perform(get("/users/check-id").param("id", "test1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("data.isIdUsable").value(true))
+                .andDo(document("users/get-checkId",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestParameters(
+                                parameterWithName("id").description("중복여부를 판단할 ID")
+                        ),
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.",
+                                        fieldWithPath("isIdUsable").description("아이디 사용 가능여부"))));
     }
 
     @Test
@@ -100,6 +134,8 @@ class UserControllerTest {
         input.put("nextersNumber", 13);
         input.put("role", "ROLE_USER");
         input.put("position", "DEVELOPER");
+        input.put("email", "originman@nexter.com");
+        input.put("authenticationCode", 12345);
 
         given(userService.createUser(any(UserRequest.class))).willReturn(UserResponse.of(user));
 
@@ -142,6 +178,96 @@ class UserControllerTest {
                         ),
                         responseFields(baseResposneDescription)
                                         .andWithPrefix("data.", signInResposneDescription)));
+    }
+
+    @Test
+    void updateUser() throws Exception {
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put("nowPassword", "1212");
+        input.put("newPassword", "3434");
+        input.put("position", DEVELOPER);
+
+        this.mockMvc.perform(RestDocumentationRequestBuilders.put("/apis/users")
+                .header("Authorization", "Bearer " + "<access_token>")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(mapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                .andDo(document("users/put-user",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestFields(userUpdateRequesteDescription),
+                        responseFields(baseResposneDescription)));
+    }
+
+    @Test
+    void activate() throws Exception {
+        List<UserResponse> users = IntStream.range(1, 11).mapToObj(i -> {
+            user = new User("originman" + i, "password1212", "kiwon",
+                    13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
+            user.activate();
+
+            return UserResponse.of(user);
+        }).collect(Collectors.toList());
+
+        given(userService.activateUsers(anyList())).willReturn(users);
+
+        this.mockMvc.perform(put("/apis/users/activate?uuids=1,2,3,4,5,6,7,8,9,10")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("users/put-activate",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestParameters(
+                                parameterWithName("uuids").description("활성화시킬 user uuid list")
+                        ),
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.[].", userResposneDescription)));
+    }
+
+    @Test
+    void deactivate() throws Exception {
+        List<UserResponse> users = IntStream.range(1, 11).mapToObj(i -> {
+            user = new User("originman" + i, "password1212", "kiwon",
+                    13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
+            user.deactivate();
+
+            return UserResponse.of(user);
+        }).collect(Collectors.toList());
+
+        given(userService.deactivateUsers(anyList())).willReturn(users);
+
+        this.mockMvc.perform(put("/apis/users/deactivate?uuids=1,2,3,4,5,6,7,8,9,10")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("users/put-deactivate",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestParameters(
+                                parameterWithName("uuids").description("비활성화 시킬 user uuid list")
+                        ),
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.[].", userResposneDescription)));
+    }
+
+    @Test
+    void deactivateAll() throws Exception {
+        List<UserResponse> users = IntStream.range(1, 11).mapToObj(i -> {
+            user = new User("originman" + i, "password1212", "kiwon",
+                    13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
+            user.deactivate();
+
+            return UserResponse.of(user);
+        }).collect(Collectors.toList());
+
+        given(userService.deactivateAllUsers()).willReturn(users);
+
+        this.mockMvc.perform(put("/apis/users/deactivate/all")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("users/put-deactivate-all",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.[].", userResposneDescription)));
     }
 }
 

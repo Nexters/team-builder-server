@@ -7,6 +7,7 @@ import com.nexters.teambuilder.tag.api.dto.TagResponse;
 import com.nexters.teambuilder.tag.domain.Tag;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
 import com.nexters.teambuilder.user.domain.User;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,9 +21,9 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonView(Views.List.class)
+@AllArgsConstructor
 public class IdeaResponse {
-    @JsonView(Views.External.class)
+    @JsonView({Views.External.class})
     private Integer ideaId;
 
     @JsonView(Views.External.class)
@@ -48,6 +49,9 @@ public class IdeaResponse {
 
     @JsonView(Views.External.class)
     private Set<TagResponse> tags = new HashSet<>();
+
+    @JsonView(Views.External.class)
+    private boolean favorite;
 
     private int orderNumber;
 

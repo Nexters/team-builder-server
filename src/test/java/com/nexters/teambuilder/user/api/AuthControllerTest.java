@@ -1,7 +1,10 @@
-package com.nexters.teambuilder.api;
+package com.nexters.teambuilder.user.api;
 
+import static com.nexters.teambuilder.user.domain.User.Position.DEVELOPER;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -10,7 +13,10 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.nexters.teambuilder.user.api.AuthController;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -48,6 +55,8 @@ class AuthControllerTest {
             fieldWithPath("id").description("아이디"),
             fieldWithPath("name").description("user 이름"),
             fieldWithPath("nextersNumber").description("user 기수"),
+            fieldWithPath("email").description("user email"),
+            fieldWithPath("activated").description("user "),
             fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
             fieldWithPath("createdAt").description("user 가입 일자")
@@ -56,11 +65,11 @@ class AuthControllerTest {
     @BeforeEach
     void setUp() {
         user = new User("originman", "password1212", "kiwon",
-                13, User.Role.ROLE_USER, User.Position.DEVELOPER);
+                13, User.Role.ROLE_USER, DEVELOPER, "originman@nexters.com");
     }
 
     @Test
-    void me_GivenToken_GetUserInfo() throws Exception {
+    void me() throws Exception {
 
         this.mockMvc.perform(get("/apis/me")
                 .with(user(user)))

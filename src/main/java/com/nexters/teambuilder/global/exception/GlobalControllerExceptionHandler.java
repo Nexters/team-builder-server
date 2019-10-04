@@ -3,11 +3,14 @@ package com.nexters.teambuilder.global.exception;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.nexters.teambuilder.common.exception.ActionForbiddenException;
+import com.nexters.teambuilder.common.exception.CommonNotFoundException;
 import com.nexters.teambuilder.common.response.ApiError;
 import com.nexters.teambuilder.person.exception.PersonNotFoundException;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.tag.exception.TagNotFoundException;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
+import com.nexters.teambuilder.user.exception.UserNotActivatedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,11 +30,21 @@ public class GlobalControllerExceptionHandler {
             PersonNotFoundException.class,
             LoginErrorException.class,
             TagNotFoundException.class,
-            SessionNotFoundException.class
+            SessionNotFoundException.class,
+            CommonNotFoundException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ApiError handleNotFound(RuntimeException ex) {
         return new ApiError(HttpStatus.NOT_FOUND, 0, ex.getMessage());
+    }
+
+    @ExceptionHandler(value = {
+            ActionForbiddenException.class,
+            UserNotActivatedException.class
+    })
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    protected ApiError Forbidden(RuntimeException ex) {
+        return new ApiError(HttpStatus.FORBIDDEN, 0, ex.getMessage());
     }
 
     /**

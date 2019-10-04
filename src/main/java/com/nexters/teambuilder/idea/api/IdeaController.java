@@ -22,9 +22,8 @@ public class IdeaController {
     private final IdeaService ideaService;
 
     @GetMapping
-    @JsonView(Views.List.class)
-    public BaseResponse<List<IdeaResponse>> list() {
-        List<IdeaResponse> ideas = ideaService.getIdeaList();
+    public BaseResponse<List<IdeaResponse>> list(@AuthenticationPrincipal User user) {
+        List<IdeaResponse> ideas = ideaService.getIdeaList(user);
         return new BaseResponse<>(200, 0, ideas);
     }
 
@@ -57,7 +56,7 @@ public class IdeaController {
     }
 
     @PutMapping("/{ideaId}/vote")
-    public BaseResponse voote(@AuthenticationPrincipal User user, @PathVariable Integer ideaId){
+    public BaseResponse vote(@AuthenticationPrincipal User user, @PathVariable Integer ideaId){
         ideaService.ideaVote(user, ideaId);
         return new BaseResponse<>(200, 0, null);
     }
