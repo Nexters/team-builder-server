@@ -8,6 +8,7 @@ import com.nexters.teambuilder.idea.domain.Idea;
 import com.nexters.teambuilder.idea.domain.IdeaRepository;
 import com.nexters.teambuilder.idea.exception.IdeaNotFoundException;
 import com.nexters.teambuilder.idea.exception.NotHasRightVoteException;
+import com.nexters.teambuilder.session.domain.Period;
 import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.session.domain.SessionRepository;
 import com.nexters.teambuilder.session.domain.SessionUser;
@@ -15,6 +16,7 @@ import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.tag.domain.Tag;
 import com.nexters.teambuilder.tag.domain.TagRepository;
 import com.nexters.teambuilder.user.domain.User;
+import com.nexters.teambuilder.user.exception.UserNotActivatedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,14 +38,18 @@ public class IdeaService {
         Session session = sessionRepository.findById(request.getSessionId())
                 .orElseThrow(() -> new SessionNotFoundException(request.getSessionId()));
 
-        session.getSessionUsers().stream().filter(sessionUser -> sessionUser.getId().getUuid().equals(author.getUuid()))
-                .findFirst().ifPresent(sessionUser -> {
-            if (!sessionUser.isSubmitIdea()) {
-                sessionUser.updateSubmitIdea();
-            }
-        });
+        if (!author.isActivated()) {
+            throw new UserNotActivatedException();
+        }
 
-        sessionRepository.save(session);
+        session.getPeriods().stream()
+                .filter(period -> period.getPeriodType().equals(Period.PeriodType.IDEA_COLLECT))
+                .map(period -> {
+                    if (!period.isNowIn()) {
+                        throw new IllegalArgumentException("now is not in idea collect period");
+                    }
+                    return null;
+                });
 
         List<Tag> tags = tagRepository.findAllById(request.getTags());
         return IdeaResponse.of(ideaRepository.save(Idea.of(session, author, tags, request)));
