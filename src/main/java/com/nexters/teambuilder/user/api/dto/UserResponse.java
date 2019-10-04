@@ -29,11 +29,20 @@ public class UserResponse {
 
     private boolean activated;
 
+    private int voteCount;
+
+    private boolean voted;
+
+    private boolean submitIdea;
+
+    private boolean hasTeam;
+
     private ZonedDateTime createdAt;
 
     public static UserResponse of(User user) {
         return new UserResponse(user.getUuid(), user.getId(), user.getName(),
                 user.getNextersNumber(), user.getRole(), user.getPosition(), user.getEmail(),
-                user.isActivated(), user.getCreatedAt());
+                user.isActivated(), user.getVoteCount(), user.isVoted(), user.isSubmitIdea(),
+                user.isHasTeam(), user.getCreatedAt());
     }
 }

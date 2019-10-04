@@ -54,6 +54,11 @@ public class IdeaService {
                     return null;
                 });
 
+        if(!author.isSubmitIdea()) {
+            author.updateSubmitIdea(true);
+            userRepository.save(author);
+        }
+
         List<Tag> tags = tagRepository.findAllById(request.getTags());
         return IdeaResponse.of(ideaRepository.save(Idea.of(session, author, tags, request)));
     }
