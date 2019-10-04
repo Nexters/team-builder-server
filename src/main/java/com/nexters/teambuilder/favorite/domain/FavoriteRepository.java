@@ -7,6 +7,5 @@ import java.util.Optional;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, Integer> {
     Optional<Favorite> findFavoriteByIdeaId(Integer ideaId);
-
     List<Favorite> findAllByUuid(String uuid);
 }
