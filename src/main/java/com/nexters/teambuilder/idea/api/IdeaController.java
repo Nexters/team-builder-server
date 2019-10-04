@@ -36,8 +36,9 @@ public class IdeaController {
 
     @GetMapping("/{ideaId}")
     @JsonView(Views.External.class)
-    public BaseResponse<IdeaResponse> get(@PathVariable Integer ideaId){
-       IdeaResponse idea = ideaService.getIdea(ideaId);
+    public BaseResponse<IdeaResponse> get(@AuthenticationPrincipal User user,
+                                          @PathVariable Integer ideaId){
+       IdeaResponse idea = ideaService.getIdea(user, ideaId);
         return new BaseResponse<>(200, 0, idea);
     }
 

@@ -62,16 +62,13 @@ public class IdeaService {
         return IdeaResponse.of(ideaRepository.save(Idea.of(session, author, tags, request)));
     }
 
-    public IdeaResponse getIdea(Integer ideaId) {
+    public IdeaResponse getIdea(User user, Integer ideaId) {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
 
         IdeaResponse ideaResponse = IdeaResponse.of(idea);
-        Optional<Favorite> favorite = favoriteRepository.findFavoriteByIdeaId(ideaId);
-
-        if (favorite.isPresent() && favorite.get().getIdeaId().equals(ideaId)) {
-            ideaResponse.setFavorite(true);
-        }
+        favoriteRepository.findFavoriteByIdeaIdAndUuid(user.getUuid(), ideaId)
+                .ifPresent(favorite -> ideaResponse.setFavorite(true));
 
         return ideaResponse;
     }

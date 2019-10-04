@@ -162,7 +162,7 @@ class IdeaControllerTest {
 
     @Test
     void get_Idea() throws Exception {
-        given(ideaService.getIdea(anyInt())).willReturn(IdeaResponse.of(idea));
+        given(ideaService.getIdea(any(User.class), anyInt())).willReturn(IdeaResponse.of(idea));
 
         this.mockMvc.perform(get("/apis/ideas/{ideaId}", 1)
                 .header("Authorization", "Bearer " + "<access_token>"))
