@@ -61,4 +61,10 @@ public class IdeaController {
         ideaService.ideaVote(user, ideaId);
         return new BaseResponse<>(200, 0, null);
     }
+
+    @PutMapping("/vote")
+    public BaseResponse voteIdeas(@AuthenticationPrincipal User user, @RequestParam List<Integer> ideaIds){
+        ideaService.ideasVote(user, ideaIds);
+        return new BaseResponse<>(200, 0, null);
+    }
 }

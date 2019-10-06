@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface IdeaRepository extends JpaRepository<Idea, Integer> {
-//    List<Idea> findByUuid(String uuid);
     List<Idea> findAllBySessionSessionId(Integer sessionId);
+
+    List<Idea> findAllByIdeaIdIn(List<Integer> ideaIds);
 }
