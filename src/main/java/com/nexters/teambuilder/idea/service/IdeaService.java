@@ -167,4 +167,20 @@ public class IdeaService {
 
         sessionRepository.save(session);
     }
+
+    public void ideasVote(User voter, List<Integer> ideaId) {
+        List<Idea> ideas = ideaRepository.findAllByIdeaIdIn(ideaId);
+
+        ideas.stream().forEach(idea -> {
+            idea.vote();
+            ideaRepository.save(idea);
+        });
+
+        voter.updateVoteCount(ideas.size());
+        if (!voter.isVoted()) {
+            voter.updateVoted(true);
+        }
+
+        userRepository.save(voter);
+    }
 }

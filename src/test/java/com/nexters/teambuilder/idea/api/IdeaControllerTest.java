@@ -21,6 +21,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -234,6 +235,21 @@ class IdeaControllerTest {
                         pathParameters(
                                 parameterWithName("ideaId").description("Idea의 id")
                                         .attributes(key("constraints").value("Not Null"))),
+                        responseFields(baseResposneDescription)));
+    }
+
+    @Test
+    void vote_Ideas() throws Exception {
+
+        this.mockMvc.perform(put("/apis/ideas/vote?ideaIds=1,2,3,4,5,6,7,8,9,10")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("ideas/vote-ideas",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestParameters(
+                                parameterWithName("ideaIds").description("Idea의 id list")
+                                        .attributes(key("constraints").value("Not empty"))),
                         responseFields(baseResposneDescription)));
     }
 }

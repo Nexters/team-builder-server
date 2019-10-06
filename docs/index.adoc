@@ -105,6 +105,9 @@ operation::/ideas/put-idea[snippets='http-request,request-fields,path-parameters
 === 아이디어 투표
 operation::/ideas/vote-idea[snippets='http-request,path-parameters,http-response,response-fields']
 
+=== 아이디어 투표 (최신)
+operation::/ideas/vote-ideas[snippets='http-request,request-parameters,http-response,response-fields']
+
 == Session
 === session 생성
 operation::/sessions/post-session[snippets='http-request,request-fields,http-response,response-fields']
