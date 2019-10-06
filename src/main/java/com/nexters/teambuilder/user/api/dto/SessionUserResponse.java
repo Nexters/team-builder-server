@@ -22,7 +22,9 @@ public class SessionUserResponse extends UserResponse {
         super(sessionUser.getUser().getUuid(), sessionUser.getUser().getId(), sessionUser.getUser().getName(),
                 sessionUser.getUser().getNextersNumber(), sessionUser.getUser().getRole(),
                 sessionUser.getUser().getPosition(), sessionUser.getUser().getEmail(),
-                sessionUser.getUser().isActivated(), sessionUser.getUser().getCreatedAt());
+                sessionUser.getUser().isActivated(), sessionUser.getUser().getVoteCount(),
+                sessionUser.getUser().isVoted(), sessionUser.getUser().isSubmitIdea(),
+                sessionUser.getUser().isHasTeam(), sessionUser.getUser().getCreatedAt());
 
         this.voted = sessionUser.isVoted();
 

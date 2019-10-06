@@ -75,6 +75,14 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private Set<SessionUser> sessionUsers = new HashSet<>();
 
+    private int voteCount;
+
+    private boolean voted;
+
+    private boolean submitIdea;
+
+    private boolean hasTeam;
+
     @Builder
     public User(String id, String password, String name, Integer nextersNumber, Role role,
                 Position position, String email) {
@@ -147,5 +155,25 @@ public class User implements UserDetails {
 
     public void deactivate() {
         this.activated = false;
+        this.hasTeam = false;
+        this.submitIdea = false;
+        this.voted = false;
+        this.voteCount = 0;
+    }
+
+    public void updateHasTeam(boolean hasTeam) {
+        this.hasTeam = hasTeam;
+    }
+
+    public void updateSubmitIdea(boolean submitIdea) {
+        this.submitIdea = submitIdea;
+    }
+
+    public void updateVoted(boolean voted) {
+        this.voted = voted;
+    }
+
+    public void updateVoteCount(int voteCount) {
+        this.voteCount = voteCount;
     }
 }

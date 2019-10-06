@@ -16,6 +16,7 @@ import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.tag.domain.Tag;
 import com.nexters.teambuilder.tag.domain.TagRepository;
 import com.nexters.teambuilder.user.domain.User;
+import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.UserNotActivatedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class IdeaService {
     private final SessionRepository sessionRepository;
     private final TagRepository tagRepository;
     private final FavoriteRepository favoriteRepository;
+    private final UserRepository userRepository;
 
     public IdeaResponse createIdea(User author, IdeaRequest request) {
         Session session = sessionRepository.findById(request.getSessionId())
@@ -51,20 +53,22 @@ public class IdeaService {
                     return null;
                 });
 
+        if(!author.isSubmitIdea()) {
+            author.updateSubmitIdea(true);
+            userRepository.save(author);
+        }
+
         List<Tag> tags = tagRepository.findAllById(request.getTags());
         return IdeaResponse.of(ideaRepository.save(Idea.of(session, author, tags, request)));
     }
 
-    public IdeaResponse getIdea(Integer ideaId) {
+    public IdeaResponse getIdea(User user, Integer ideaId) {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
 
         IdeaResponse ideaResponse = IdeaResponse.of(idea);
-        Optional<Favorite> favorite = favoriteRepository.findFavoriteByIdeaId(ideaId);
-
-        if (favorite.isPresent() && favorite.get().getIdeaId().equals(ideaId)) {
-            ideaResponse.setFavorite(true);
-        }
+        favoriteRepository.findFavoriteByIdeaIdAndUuid(user.getUuid(), ideaId)
+                .ifPresent(favorite -> ideaResponse.setFavorite(true));
 
         return ideaResponse;
     }

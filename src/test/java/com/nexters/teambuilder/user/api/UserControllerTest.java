@@ -78,9 +78,13 @@ class UserControllerTest {
             fieldWithPath("nextersNumber").description("user 기수"),
             fieldWithPath("email").description("user email"),
             fieldWithPath("activated").description("user 활성화 여부"),
-            fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER}"),
-            fieldWithPath("createdAt").description("user 가입 일자")
+            fieldWithPath("role").description("user 권한 {ROLE_ADMIN, ROLE_USER}"),
+            fieldWithPath("voteCount").description("user 아이디어 투표 횟수"),
+            fieldWithPath("voted").description("user 투표 여부"),
+            fieldWithPath("submitIdea").description("user 아이디어 제출 여부"),
+            fieldWithPath("hasTeam").description("user 팀 소속 여부"),
+            fieldWithPath("createdAt").description("user 가입 일자"),
     };
 
     private FieldDescriptor[] userRequesteDescription = new FieldDescriptor[]{
