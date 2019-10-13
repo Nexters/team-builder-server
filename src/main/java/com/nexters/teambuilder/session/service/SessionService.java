@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.nexters.teambuilder.common.exception.ActionForbiddenException;
 import com.nexters.teambuilder.session.api.dto.SessionNumber;
 import com.nexters.teambuilder.session.api.dto.SessionRequest;
 import com.nexters.teambuilder.session.domain.Session;
@@ -45,6 +46,18 @@ public class SessionService {
 
         session.update(sessionRequest);
         return sessionRepository.save(session);
+    }
+
+    public void deleteSession(Integer sessionNumber, User user) {
+        if (!user.getRole().equals(User.Role.ROLE_ADMIN)) {
+            throw new ActionForbiddenException();
+        }
+
+
+        Session session = sessionRepository.findBySessionNumber(sessionNumber)
+                .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
+
+        sessionRepository.delete(session);
     }
 
     public List<SessionNumber> sessionNumberList() {

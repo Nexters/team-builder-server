@@ -2,6 +2,9 @@ package com.nexters.teambuilder.session.api;
 
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
+import com.nexters.teambuilder.common.exception.ActionForbiddenException;
 import com.nexters.teambuilder.common.response.BaseResponse;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
 import com.nexters.teambuilder.idea.service.IdeaService;
@@ -20,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,10 +61,6 @@ public class SessionController {
         return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }
 
-    @ApiOperation(value = "기수 생성")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "enum type 설명 : periods.periodType", value = "{IDEA_COLLECT or IDEA_VOTE or IDEA_CHECK or TEAM_BUILDING}", required = true, dataType = "date", paramType = "body"),
-    })
     @PostMapping
     public BaseResponse<SessionResponse> create(@AuthenticationPrincipal User user, @RequestBody SessionRequest request) {
         Session session = sessionService.createSession(request);
@@ -70,10 +70,6 @@ public class SessionController {
         return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
     }
 
-    @ApiOperation(value = "기수 수정")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "enum type 설명 : periods.periodType", value = "{IDEA_COLLECT or IDEA_VOTE or IDEA_CHECK or TEAM_BUILDING}", required = true, dataType = "date", paramType = "body"),
-    })
     @PutMapping("{sessionNumber}")
     public BaseResponse<SessionResponse> update(@AuthenticationPrincipal User user, @PathVariable Integer sessionNumber, @RequestBody SessionRequest request) {
         Session session = sessionService.updateSession(sessionNumber, request);
@@ -82,6 +78,12 @@ public class SessionController {
         List<IdeaResponse> ideas = ideaService.getIdeaListBySessionId(session.getSessionId(), user);
         List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
         return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
+    }
+
+    @DeleteMapping("{sessionNumber}")
+    public BaseResponse delete(@AuthenticationPrincipal User user, @PathVariable Integer sessionNumber) {
+        sessionService.deleteSession(sessionNumber, user);
+        return new BaseResponse<>(200, 0, null);
     }
 
     @PutMapping("/{sessionNumber}/add-users")
