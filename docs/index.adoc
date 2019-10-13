@@ -122,7 +122,10 @@ operation::/sessions/get-session[snippets='http-request,path-parameters,http-res
 operation::/sessions/latest-session[snippets='http-request,http-response,response-fields']
 
 === session 수정
-operation::/sessions/put-idea[snippets='http-request,request-fields,path-parameters,http-response,response-fields']
+operation::/sessions/update-session[snippets='http-request,request-fields,path-parameters,http-response,response-fields']
+
+=== session 삭제
+operation::/sessions/delete-session[snippets='http-request,path-parameters,http-response']
 
 == Person
 

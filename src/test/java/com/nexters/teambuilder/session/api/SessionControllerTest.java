@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -313,6 +314,20 @@ class SessionControllerTest {
                         requestFields(sessionRequestDescription),
                         responseFields(baseResposneDescription)
                                 .andWithPrefix("data.", sessionResposneDescription)
+                ));
+    }
+
+    @Test
+    void delete_session() throws Exception {
+        this.mockMvc.perform(delete("/apis/sessions/{sessionNumber}", 1)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("sessions/delete-session",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("sessionNumber").description("기수 번호")
+                                        .attributes(key("constraints").value("Not Null")))
                 ));
     }
 }
