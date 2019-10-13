@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -222,6 +223,20 @@ class IdeaControllerTest {
                         requestFields(ideaRequesteDescription),
                         responseFields(baseResposneDescription)
                                 .andWithPrefix("data.", ideaResposneDescription)));
+    }
+
+    @Test
+    void delete_Idea() throws Exception {
+        this.mockMvc.perform(delete("/apis/ideas/{ideaId}", 1)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("ideas/delete-idea",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("ideaId").description("Idea의 id")
+                                        .attributes(key("constraints").value("Not Null")))
+                ));
     }
 
     @Test
