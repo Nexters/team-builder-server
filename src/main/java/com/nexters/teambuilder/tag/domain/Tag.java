@@ -44,4 +44,12 @@ public class Tag {
     public static Tag of(TagRequest request) {
         return new Tag(request.getName(), request.getType());
     }
+
+    public void addIdea(Idea idea) {
+        this.ideas.add(idea);
+    }
+
+    public void removeIdea(Idea idea) {
+        this.ideas.remove(idea);
+    }
 }

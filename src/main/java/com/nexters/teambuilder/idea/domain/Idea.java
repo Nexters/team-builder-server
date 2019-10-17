@@ -87,12 +87,18 @@ public class Idea {
         this.tags = tags.stream().collect(Collectors.toSet());
     }
 
-    public void update(IdeaRequest request) {
+    public void update(IdeaRequest request, List<Tag> tags) {
         this.title = request.getTitle();
         this.content = request.getContent();
         this.file = request.getFile();
         this.type = request.getType();
         this.selected = request.isSelected();
+
+        //Tag update
+        this.tags.forEach(tag -> tag.removeIdea(this));
+        this.tags.clear();
+        this.tags.addAll(tags);
+        this.tags.forEach(tag -> tag.addIdea(this));
     }
 
 

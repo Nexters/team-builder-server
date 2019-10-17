@@ -65,11 +65,10 @@ public class IdeaService {
     public IdeaResponse getIdea(User user, Integer ideaId) {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
-
         IdeaResponse ideaResponse = IdeaResponse.of(idea);
-        favoriteRepository.findFavoriteByIdeaIdAndUuid(user.getUuid(), ideaId)
-                .ifPresent(favorite -> ideaResponse.setFavorite(true));
 
+        favoriteRepository.findFavoriteByIdeaIdAndUuid(ideaId, user.getUuid())
+                .ifPresent(favorite -> ideaResponse.setFavorite(true));
         return ideaResponse;
     }
 
@@ -82,7 +81,9 @@ public class IdeaService {
             throw new IllegalArgumentException("해당 아이디어의 작성자가 아닙니다");
         }
 
-        idea.update(request);
+        List<Tag> tags = tagRepository.findAllByTagIdIn(request.getTags());
+
+        idea.update(request, tags);
 
         return IdeaResponse.of(ideaRepository.save(idea));
     }
