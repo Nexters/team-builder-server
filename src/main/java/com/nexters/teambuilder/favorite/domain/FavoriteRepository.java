@@ -9,5 +9,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Integer> {
     Optional<Favorite> findFavoriteByIdeaId(Integer ideaId);
     List<Favorite> findAllByUuid(String uuid);
 
-    Optional<Favorite> findFavoriteByIdeaIdAndUuid(String uuid, Integer ideaId);
+    Optional<Favorite> findFavoriteByIdeaIdAndUuid(Integer ideaId, String uuid);
 }
