@@ -2,6 +2,7 @@ package com.nexters.teambuilder.idea.service;
 
 import com.nexters.teambuilder.favorite.domain.Favorite;
 import com.nexters.teambuilder.favorite.domain.FavoriteRepository;
+import com.nexters.teambuilder.favorite.exception.FavoriteNotFoundException;
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
 import com.nexters.teambuilder.idea.domain.Idea;
@@ -136,6 +137,10 @@ public class IdeaService {
         if (!idea.getAuthor().getId().equals(author.getId())) {
             throw new IllegalArgumentException("해당 아이디어의 작성자가 아닙니다");
         }
+
+        Favorite favorite = favoriteRepository.findFavoriteByIdeaIdAndUuid(ideaId, author.getUuid())
+                .orElseThrow(() -> new FavoriteNotFoundException(ideaId));
+        favoriteRepository.delete(favorite);
 
         ideaRepository.delete(idea);
     }
