@@ -30,8 +30,9 @@ public class FavoriteController {
     }
 
     @GetMapping("/{ideaId}")
-    public BaseResponse<FavoriteResponse> get(@PathVariable Integer ideaId) {
-        FavoriteResponse favorite = favoriteService.getFavorite(ideaId);
+    public BaseResponse<FavoriteResponse> get(@AuthenticationPrincipal User user,
+                                              @PathVariable Integer ideaId) {
+        FavoriteResponse favorite = favoriteService.getFavorite(user, ideaId);
 
         return new BaseResponse<>(200,0, favorite);
     }
@@ -44,8 +45,9 @@ public class FavoriteController {
     }
 
     @DeleteMapping("/{ideaId}")
-    public BaseResponse delete(@PathVariable Integer ideaId) {
-        favoriteService.delete(ideaId);
+    public BaseResponse delete(@AuthenticationPrincipal User user,
+                               @PathVariable Integer ideaId) {
+        favoriteService.delete(user, ideaId);
 
         return new BaseResponse<>(200, 0, null);
     }

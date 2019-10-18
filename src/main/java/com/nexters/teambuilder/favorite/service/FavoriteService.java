@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 public class FavoriteService {
     private final FavoriteRepository favoriteRepository;
 
-    public FavoriteResponse getFavorite(Integer ideaId){
-        Favorite favorite = favoriteRepository.findFavoriteByIdeaId(ideaId)
+    public FavoriteResponse getFavorite(User user, Integer ideaId){
+        Favorite favorite = favoriteRepository.findFavoriteByIdeaIdAndUuid(ideaId, user.getUuid())
                 .orElseThrow(() -> new FavoriteNotFoundException(ideaId));
 
         return FavoriteResponse.of(favorite);
@@ -37,8 +37,8 @@ public class FavoriteService {
                 .save(Favorite.of(user, request)));
     }
 
-    public void delete(Integer ideaId) {
-        Favorite favorite = favoriteRepository.findFavoriteByIdeaId(ideaId)
+    public void delete(User user, Integer ideaId) {
+        Favorite favorite = favoriteRepository.findFavoriteByIdeaIdAndUuid(ideaId, user.getUuid())
                 .orElseThrow(() -> new FavoriteNotFoundException(ideaId));
 
         favoriteRepository.delete(favorite);
