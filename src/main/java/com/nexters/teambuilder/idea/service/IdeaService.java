@@ -4,8 +4,11 @@ import com.nexters.teambuilder.favorite.domain.Favorite;
 import com.nexters.teambuilder.favorite.domain.FavoriteRepository;
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
+import com.nexters.teambuilder.idea.api.dto.VotedIdeaResponse;
 import com.nexters.teambuilder.idea.domain.Idea;
 import com.nexters.teambuilder.idea.domain.IdeaRepository;
+import com.nexters.teambuilder.idea.domain.IdeaVote;
+import com.nexters.teambuilder.idea.domain.IdeaVoteRepository;
 import com.nexters.teambuilder.idea.exception.IdeaNotFoundException;
 import com.nexters.teambuilder.idea.exception.NotHasRightVoteException;
 import com.nexters.teambuilder.session.domain.Period;
@@ -18,6 +21,7 @@ import com.nexters.teambuilder.tag.domain.TagRepository;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.UserNotActivatedException;
+import javafx.geometry.VPos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +35,7 @@ import java.util.stream.Collectors;
 @Service
 public class IdeaService {
     private final IdeaRepository ideaRepository;
+    private final IdeaVoteRepository ideaVoteRepository;
     private final SessionRepository sessionRepository;
     private final TagRepository tagRepository;
     private final FavoriteRepository favoriteRepository;
@@ -174,6 +179,7 @@ public class IdeaService {
 
         ideas.stream().forEach(idea -> {
             idea.vote();
+            ideaVoteRepository.save(new IdeaVote(idea.getIdeaId(), idea.getSession().getSessionNumber(), voter.getUuid()));
             ideaRepository.save(idea);
         });
 
@@ -183,5 +189,15 @@ public class IdeaService {
         }
 
         userRepository.save(voter);
+    }
+
+    public List<VotedIdeaResponse> votedIdeas(User user, Integer sessionNumber) {
+        List<Integer> votedIdeaIds = ideaVoteRepository.findAllByUuidAndSessionNumber(user.getUuid(), sessionNumber)
+                .stream().map(ideaVote -> ideaVote.getId())
+                .collect(Collectors.toList());
+
+        return ideaRepository.findAllByIdeaIdIn(votedIdeaIds).stream()
+                .map(VotedIdeaResponse::of)
+                .collect(Collectors.toList());
     }
 }

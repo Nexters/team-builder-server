@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
+import com.nexters.teambuilder.idea.api.dto.VotedIdeaResponse;
 import com.nexters.teambuilder.session.domain.Period;
 import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.tag.api.dto.TagResponse;
@@ -36,7 +37,10 @@ public class SessionResponse {
 
     private List<IdeaResponse> ideas = new ArrayList<>();
 
-    public static SessionResponse of(Session session, List<SessionNumber> sessionNumbers,  List<TagResponse> tags, List<IdeaResponse> ideas) {
+    private List<VotedIdeaResponse> votedIdeas = new ArrayList<>();
+
+    public static SessionResponse of(Session session, List<SessionNumber> sessionNumbers,  List<TagResponse> tags,
+                                     List<IdeaResponse> ideas, List<VotedIdeaResponse> votedIdeas) {
         List<PeriodResponse> periods =
                 session.getPeriods().stream().map(PeriodResponse::of).collect(Collectors.toList());
 
@@ -48,7 +52,7 @@ public class SessionResponse {
         }
 
         return new SessionResponse(session.getSessionId(), session.getSessionNumber(), sessionNumbers, session.getLogoImageUrl(),
-                session.isTeamBuildingMode(), periods, tags, session.getMaxVoteCount(), ideas);
+                session.isTeamBuildingMode(), periods, tags, session.getMaxVoteCount(), ideas, votedIdeas);
     }
 
 }
