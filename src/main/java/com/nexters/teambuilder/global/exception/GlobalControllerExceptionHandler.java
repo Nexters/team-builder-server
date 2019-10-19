@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.nexters.teambuilder.common.exception.ActionForbiddenException;
 import com.nexters.teambuilder.common.exception.CommonNotFoundException;
 import com.nexters.teambuilder.common.response.ApiError;
+import com.nexters.teambuilder.favorite.exception.FavoriteNotFoundException;
 import com.nexters.teambuilder.person.exception.PersonNotFoundException;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.tag.exception.TagNotFoundException;
@@ -31,7 +32,8 @@ public class GlobalControllerExceptionHandler {
             LoginErrorException.class,
             TagNotFoundException.class,
             SessionNotFoundException.class,
-            CommonNotFoundException.class
+            CommonNotFoundException.class,
+            FavoriteNotFoundException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ApiError handleNotFound(RuntimeException ex) {
