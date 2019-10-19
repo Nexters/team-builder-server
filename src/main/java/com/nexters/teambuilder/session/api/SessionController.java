@@ -15,7 +15,6 @@ import com.nexters.teambuilder.tag.api.dto.TagResponse;
 import com.nexters.teambuilder.tag.service.TagService;
 import com.nexters.teambuilder.user.api.dto.SessionUserResponse;
 import com.nexters.teambuilder.user.domain.User;
-import javafx.geometry.VPos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
