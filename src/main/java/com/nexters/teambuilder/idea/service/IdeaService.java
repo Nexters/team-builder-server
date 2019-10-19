@@ -21,7 +21,6 @@ import com.nexters.teambuilder.tag.domain.TagRepository;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.UserNotActivatedException;
-import javafx.geometry.VPos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
