@@ -2,11 +2,9 @@ package com.nexters.teambuilder.session.api;
 
 import java.util.List;
 
-import javax.websocket.server.PathParam;
-
-import com.nexters.teambuilder.common.exception.ActionForbiddenException;
 import com.nexters.teambuilder.common.response.BaseResponse;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
+import com.nexters.teambuilder.idea.api.dto.VotedIdeaResponse;
 import com.nexters.teambuilder.idea.service.IdeaService;
 import com.nexters.teambuilder.session.api.dto.SessionNumber;
 import com.nexters.teambuilder.session.api.dto.SessionRequest;
@@ -17,9 +15,7 @@ import com.nexters.teambuilder.tag.api.dto.TagResponse;
 import com.nexters.teambuilder.tag.service.TagService;
 import com.nexters.teambuilder.user.api.dto.SessionUserResponse;
 import com.nexters.teambuilder.user.domain.User;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import javafx.geometry.VPos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -47,9 +43,11 @@ public class SessionController {
         Session session = sessionService.getSession(sessionNumber);
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaListBySessionId(session.getSessionId(), user);
+        List<VotedIdeaResponse> votedIdeas = ideaService.votedIdeas(user, sessionNumber);
         List<SessionNumber> sessionNumbers = sessionService.sessionNumberList();
 
-        return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
+        return new BaseResponse<>(200, 0,
+                SessionResponse.of(session, sessionNumbers, tags, ideas, votedIdeas));
     }
 
     @GetMapping("latest")
@@ -57,8 +55,9 @@ public class SessionController {
         Session session = sessionService.getLatestSession();
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaListBySessionId(session.getSessionId(), user);
+        List<VotedIdeaResponse> votedIdeas = ideaService.votedIdeas(user, session.getSessionNumber());
         List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
-        return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
+        return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas, votedIdeas));
     }
 
     @PostMapping
@@ -66,8 +65,10 @@ public class SessionController {
         Session session = sessionService.createSession(request);
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaListBySessionId(session.getSessionId(), user);
+        List<VotedIdeaResponse> votedIdeas = ideaService.votedIdeas(user, session.getSessionNumber());
         List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
-        return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
+        return new BaseResponse<>(200, 0,
+                SessionResponse.of(session, sessionNumbers, tags, ideas, votedIdeas));
     }
 
     @PutMapping("{sessionNumber}")
@@ -76,8 +77,10 @@ public class SessionController {
 
         List<TagResponse> tags = tagService.getTagList();
         List<IdeaResponse> ideas = ideaService.getIdeaListBySessionId(session.getSessionId(), user);
+        List<VotedIdeaResponse> votedIdeas = ideaService.votedIdeas(user, sessionNumber);
         List<SessionNumber>  sessionNumbers = sessionService.sessionNumberList();
-        return new BaseResponse<>(200, 0, SessionResponse.of(session, sessionNumbers, tags, ideas));
+        return new BaseResponse<>(200, 0,
+                SessionResponse.of(session, sessionNumbers, tags, ideas, votedIdeas));
     }
 
     @DeleteMapping("{sessionNumber}")

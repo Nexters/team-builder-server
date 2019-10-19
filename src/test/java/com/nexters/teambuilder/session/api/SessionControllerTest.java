@@ -35,6 +35,7 @@ import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
+import com.nexters.teambuilder.idea.api.dto.VotedIdeaResponse;
 import com.nexters.teambuilder.idea.domain.Idea;
 import com.nexters.teambuilder.idea.service.IdeaService;
 import com.nexters.teambuilder.session.api.dto.SessionNumber;
@@ -147,7 +148,9 @@ class SessionControllerTest {
             fieldWithPath("ideas[].voteNumber").description("투표 수"),
             fieldWithPath("ideas[].createdAt").description("등록 시각"),
             fieldWithPath("ideas[].updatedAt").description("업데이트 시각"),
-
+            fieldWithPath("votedIdeas[]").description("Idea 목록"),
+            fieldWithPath("votedIdeas[].ideaId").description("Idea id"),
+            fieldWithPath("votedIdeas[].title").description("Idea 제목"),
     };
 
     @BeforeEach
@@ -178,8 +181,13 @@ class SessionControllerTest {
                 IDEA, Arrays.asList(new Tag("ios 개발자", DEVELOPER))))
                 .map(IdeaResponse::of).collect(Collectors.toList());
 
+        List<VotedIdeaResponse> votedIdeas = IntStream.range(1, 4)
+                .mapToObj(i -> new VotedIdeaResponse(i, "title" + i))
+                .collect(Collectors.toList());
+
         given(sessionService.getSession(anyInt())).willReturn(session);
         given(ideaService.getIdeaListBySessionId(anyInt(), any(User.class))).willReturn(ideas);
+        given(ideaService.votedIdeas(any(User.class), anyInt())).willReturn(votedIdeas);
         given(sessionService.sessionNumberList()).willReturn(sessionNumbers);
         given(tagService.getTagList()).willReturn(tags);
 
@@ -209,8 +217,13 @@ class SessionControllerTest {
                 IDEA, Arrays.asList(new Tag("ios 개발자", DEVELOPER))))
                 .map(IdeaResponse::of).collect(Collectors.toList());
 
+        List<VotedIdeaResponse> votedIdeas = IntStream.range(1, 4)
+                .mapToObj(i -> new VotedIdeaResponse(i, "title" + i))
+                .collect(Collectors.toList());
+
         given(sessionService.getLatestSession()).willReturn(session);
         given(ideaService.getIdeaListBySessionId(anyInt(), any(User.class))).willReturn(ideas);
+        given(ideaService.votedIdeas(any(User.class), anyInt())).willReturn(votedIdeas);
         given(sessionService.sessionNumberList()).willReturn(sessionNumbers);
         given(tagService.getTagList()).willReturn(tags);
 
@@ -238,10 +251,15 @@ class SessionControllerTest {
                 IDEA, Arrays.asList(new Tag("ios 개발자", DEVELOPER))))
                 .map(IdeaResponse::of).collect(Collectors.toList());
 
+        List<VotedIdeaResponse> votedIdeas = IntStream.range(1, 4)
+                .mapToObj(i -> new VotedIdeaResponse(i, "title" + i))
+                .collect(Collectors.toList());
 
         given(sessionService.createSession(any(SessionRequest.class))).willReturn(session);
         given(ideaService.getIdeaListBySessionId(anyInt(), any(User.class))).willReturn(ideas);
+        given(ideaService.votedIdeas(any(User.class), anyInt())).willReturn(votedIdeas);
         given(sessionService.sessionNumberList()).willReturn(sessionNumbers);
+        given(ideaService.votedIdeas(any(User.class), anyInt())).willReturn(votedIdeas);
         given(tagService.getTagList()).willReturn(tags);
 
         Map<String, Object> period = new LinkedHashMap<>();
@@ -283,9 +301,14 @@ class SessionControllerTest {
                 IDEA, Arrays.asList(new Tag("ios 개발자", DEVELOPER))))
                 .map(IdeaResponse::of).collect(Collectors.toList());
 
+        List<VotedIdeaResponse> votedIdeas = IntStream.range(1, 4)
+                .mapToObj(i -> new VotedIdeaResponse(i, "title" + i))
+                .collect(Collectors.toList());
+
 
         given(sessionService.updateSession(anyInt(), any(SessionRequest.class))).willReturn(session);
         given(ideaService.getIdeaListBySessionId(anyInt(), any(User.class))).willReturn(ideas);
+        given(ideaService.votedIdeas(any(User.class), anyInt())).willReturn(votedIdeas);
         given(sessionService.sessionNumberList()).willReturn(sessionNumbers);
         given(tagService.getTagList()).willReturn(tags);
 
