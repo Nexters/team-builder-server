@@ -2,12 +2,12 @@ package com.nexters.teambuilder.user.api;
 
 import static com.nexters.teambuilder.user.domain.User.Position.DEVELOPER;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -15,8 +15,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -214,7 +214,7 @@ class UserControllerTest {
         input.put("newPassword", "3434");
         input.put("position", DEVELOPER);
 
-        this.mockMvc.perform(RestDocumentationRequestBuilders.put("/apis/users")
+        this.mockMvc.perform(put("/apis/users")
                 .header("Authorization", "Bearer " + "<access_token>")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(mapper.writeValueAsString(input)))
@@ -235,19 +235,16 @@ class UserControllerTest {
             return UserResponse.of(user);
         }).collect(Collectors.toList());
 
-        given(userService.activateUsers(anyList())).willReturn(users);
-
-        this.mockMvc.perform(put("/apis/users/activate?uuids=1,2,3,4,5,6,7,8,9,10")
+        this.mockMvc.perform(put("/apis/users/{uuid}/activate", "aaaa-aaa-aaaa-aaaa")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + "<access_token>"))
                 .andExpect(status().isOk())
                 .andDo(document("users/put-activate",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                        requestParameters(
-                                parameterWithName("uuids").description("활성화시킬 user uuid list")
+                        pathParameters(
+                                parameterWithName("uuid").description("활성화시킬 user uuid")
                         ),
-                        responseFields(baseResposneDescription)
-                                .andWithPrefix("data.[].", userResposneDescription)));
+                        responseFields(baseResposneDescription)));
     }
 
     @Test
@@ -255,24 +252,21 @@ class UserControllerTest {
         List<UserResponse> users = IntStream.range(1, 11).mapToObj(i -> {
             user = new User("originman" + i, "password1212", "kiwon",
                     13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
-            user.deactivate();
+            user.activate();
 
             return UserResponse.of(user);
         }).collect(Collectors.toList());
 
-        given(userService.deactivateUsers(anyList())).willReturn(users);
-
-        this.mockMvc.perform(put("/apis/users/deactivate?uuids=1,2,3,4,5,6,7,8,9,10")
+        this.mockMvc.perform(put("/apis/users/{uuid}/deactivate", "aaaa-aaa-aaaa-aaaa")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + "<access_token>"))
                 .andExpect(status().isOk())
                 .andDo(document("users/put-deactivate",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                        requestParameters(
-                                parameterWithName("uuids").description("비활성화 시킬 user uuid list")
+                        pathParameters(
+                                parameterWithName("uuid").description("비활성화시킬 user uuid")
                         ),
-                        responseFields(baseResposneDescription)
-                                .andWithPrefix("data.[].", userResposneDescription)));
+                        responseFields(baseResposneDescription)));
     }
 
     @Test

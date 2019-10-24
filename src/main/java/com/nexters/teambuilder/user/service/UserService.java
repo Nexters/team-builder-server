@@ -140,22 +140,20 @@ public class UserService {
         return !userRepository.existsById(userId);
     }
 
-    public List<UserResponse> activateUsers(List<String> uuids) {
-        List<User> users = userRepository.findAllByUuidIn(uuids);
+    public void activateUser(String uuid) {
+        User user = userRepository.findUserByUuid(uuid).orElseThrow(() -> new UserNotFoundException(uuid));
 
-        users.stream().forEach(user -> user.activate());
-        userRepository.saveAll(users);
+        user.activate();
 
-        return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
+        userRepository.save(user);
     }
 
-    public List<UserResponse> deactivateUsers(List<String> uuids) {
-        List<User> users = userRepository.findAllByUuidIn(uuids);
+    public void deactivateUser(String uuid) {
+        User user = userRepository.findUserByUuid(uuid).orElseThrow(() -> new UserNotFoundException(uuid));
 
-        users.stream().forEach(user -> user.deactivate());
-        userRepository.saveAll(users);
+        user.deactivate();
 
-        return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
+        userRepository.save(user);
     }
 
     public List<UserResponse> deactivateAllUsers() {

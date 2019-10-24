@@ -90,23 +90,24 @@ public class UserController {
         return new BaseResponse<>(200, 0, sessionUserResponses);
     }
 
-    @PutMapping("apis/users/activate")
-    public BaseResponse<List<UserResponse>> activateUsers(@RequestParam List<String> uuids) {
-        List<UserResponse> users = userService.activateUsers(uuids);
+    @PutMapping("apis/users/{uuid}/activate")
+    public BaseResponse<List<UserResponse>> activateUser(@PathVariable String uuid) {
+        System.out.println(uuid);
+        userService.activateUser(uuid);
 
-        return new BaseResponse<>(200, 0, users);
+        return new BaseResponse<>(200, 0, null);
+    }
+
+    @PutMapping("apis/users/{uuid}/deactivate")
+    public BaseResponse<List<UserResponse>> deactivateUser(@PathVariable String uuid) {
+        userService.deactivateUser(uuid);
+
+        return new BaseResponse<>(200, 0, null);
     }
 
     @PutMapping("apis/users/deactivate/all")
     public BaseResponse<List<UserResponse>> deactivateAllUsers() {
         List<UserResponse> users = userService.deactivateAllUsers();
-
-        return new BaseResponse<>(200, 0, users);
-    }
-
-    @PutMapping("apis/users/deactivate")
-    public BaseResponse<List<UserResponse>> deactivateUsers(@RequestParam List<String> uuids) {
-        List<UserResponse> users = userService.deactivateUsers(uuids);
 
         return new BaseResponse<>(200, 0, users);
     }
