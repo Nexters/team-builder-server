@@ -78,6 +78,8 @@ operation::/users/post-signUp[snippets='http-request,request-fields,http-respons
 operation::/users/post-signIn[snippets='http-request,request-parameters,http-response,response-fields']
 === 개인정보 변경
 operation::/users/put-user[snippets='http-request,request-fields,http-response,response-fields']
+=== 회원 전체리스트
+operation::/users/list-users[snippets='http-request,http-response,response-fields']
 === 활성화
 operation::/users/put-activate[snippets='http-request,request-parameters,http-response,response-fields']
 === 비활성화
