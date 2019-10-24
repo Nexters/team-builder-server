@@ -45,6 +45,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "${service.api-server}", uriPort = 80)
@@ -182,6 +183,28 @@ class UserControllerTest {
                         ),
                         responseFields(baseResposneDescription)
                                         .andWithPrefix("data.", signInResposneDescription)));
+    }
+
+    @Test
+    void list() throws Exception {
+        List<UserResponse> users = IntStream.range(1, 11).mapToObj(i -> {
+            user = new User("originman" + i, "password1212", "kiwon",
+                    13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
+            user.activate();
+
+            return UserResponse.of(user);
+        }).collect(Collectors.toList());
+
+        given(userService.userList()).willReturn(users);
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/apis/users")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("users/list-users",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.[].", userResposneDescription)));
     }
 
     @Test
