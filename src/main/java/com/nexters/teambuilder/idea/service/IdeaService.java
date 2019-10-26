@@ -1,5 +1,8 @@
 package com.nexters.teambuilder.idea.service;
 
+import static com.nexters.teambuilder.user.domain.User.Role.ROLE_ADMIN;
+import static com.nexters.teambuilder.user.domain.User.Role.ROLE_USER;
+
 import com.nexters.teambuilder.favorite.domain.Favorite;
 import com.nexters.teambuilder.favorite.domain.FavoriteRepository;
 import com.nexters.teambuilder.favorite.exception.FavoriteNotFoundException;
@@ -45,7 +48,7 @@ public class IdeaService {
         Session session = sessionRepository.findById(request.getSessionId())
                 .orElseThrow(() -> new SessionNotFoundException(request.getSessionId()));
 
-        if (!author.isActivated()) {
+        if (!author.isActivated() && author.getRole().equals(ROLE_USER)) {
             throw new UserNotActivatedException();
         }
 
@@ -82,7 +85,7 @@ public class IdeaService {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
 
-        if (!idea.getAuthor().getId().equals(author.getId())) {
+        if (!idea.getAuthor().getId().equals(author.getId()) && author.getRole().equals(ROLE_USER)) {
             throw new IllegalArgumentException("해당 아이디어의 작성자가 아닙니다");
         }
 
