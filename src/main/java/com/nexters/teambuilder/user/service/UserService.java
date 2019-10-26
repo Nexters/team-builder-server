@@ -113,7 +113,9 @@ public class UserService {
     }
 
     public List<UserResponse> userList() {
-        return userRepository.findAll().stream().map(UserResponse::of).collect(Collectors.toList());
+        return userRepository.findAll().stream()
+                .filter(user -> user.getRole().equals(User.Role.ROLE_USER))
+                .map(UserResponse::of).collect(Collectors.toList());
     }
 
     public List<SessionUserResponse> sessionUserList(Integer sessionNumber) {
