@@ -3,6 +3,7 @@ package com.nexters.teambuilder.idea.service;
 import static com.nexters.teambuilder.user.domain.User.Role.ROLE_ADMIN;
 import static com.nexters.teambuilder.user.domain.User.Role.ROLE_USER;
 
+import com.nexters.teambuilder.common.exception.NotValidPeriodException;
 import com.nexters.teambuilder.favorite.domain.Favorite;
 import com.nexters.teambuilder.favorite.domain.FavoriteRepository;
 import com.nexters.teambuilder.favorite.exception.FavoriteNotFoundException;
@@ -28,6 +29,7 @@ import com.nexters.teambuilder.user.exception.UserNotActivatedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +49,8 @@ public class IdeaService {
     public IdeaResponse createIdea(User author, IdeaRequest request) {
         Session session = sessionRepository.findById(request.getSessionId())
                 .orElseThrow(() -> new SessionNotFoundException(request.getSessionId()));
+
+        checkValidPeriodForAction(session, Period.PeriodType.IDEA_VOTE);
 
         if (!author.isActivated() && author.getRole().equals(ROLE_USER)) {
             throw new UserNotActivatedException();
@@ -158,6 +162,9 @@ public class IdeaService {
         Optional<SessionUser> sessionUserOptional = idea.getSession().getSessionUsers().stream()
                 .filter(sessionUser -> sessionUser.getUser().getUuid().equals(voter.getUuid()))
                 .findAny();
+
+        checkValidPeriodForAction(idea.getSession(), Period.PeriodType.IDEA_VOTE);
+
         if (!sessionUserOptional.isPresent()) {
             throw new NotHasRightVoteException();
         }
@@ -206,5 +213,17 @@ public class IdeaService {
         return ideaRepository.findAllByIdeaIdIn(votedIdeaIds).stream()
                 .map(VotedIdeaResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public void checkValidPeriodForAction(Session session, Period.PeriodType periodType) {
+        ZonedDateTime now = ZonedDateTime.now();
+        session.getPeriods().stream()
+                .filter(period -> period.getPeriodType().equals(periodType)).findFirst()
+                .ifPresent(period -> {
+                    boolean validPeriod = now.isAfter(period.getStartDate()) && now.isBefore(period.getEndDate());
+                    if (!validPeriod) {
+                        throw new NotValidPeriodException(periodType);
+                    }
+                });
     }
 }
