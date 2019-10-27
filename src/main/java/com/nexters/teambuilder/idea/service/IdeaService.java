@@ -3,6 +3,7 @@ package com.nexters.teambuilder.idea.service;
 import static com.nexters.teambuilder.user.domain.User.Role.ROLE_ADMIN;
 import static com.nexters.teambuilder.user.domain.User.Role.ROLE_USER;
 
+import com.nexters.teambuilder.common.exception.NotValidPeriodException;
 import com.nexters.teambuilder.favorite.domain.Favorite;
 import com.nexters.teambuilder.favorite.domain.FavoriteRepository;
 import com.nexters.teambuilder.favorite.exception.FavoriteNotFoundException;
@@ -28,6 +29,7 @@ import com.nexters.teambuilder.user.exception.UserNotActivatedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -48,18 +50,11 @@ public class IdeaService {
         Session session = sessionRepository.findById(request.getSessionId())
                 .orElseThrow(() -> new SessionNotFoundException(request.getSessionId()));
 
+        checkValidPeriodForAction(session, Period.PeriodType.IDEA_COLLECT);
+
         if (!author.isActivated() && author.getRole().equals(ROLE_USER)) {
             throw new UserNotActivatedException();
         }
-
-        session.getPeriods().stream()
-                .filter(period -> period.getPeriodType().equals(Period.PeriodType.IDEA_COLLECT))
-                .map(period -> {
-                    if (!period.isNowIn()) {
-                        throw new IllegalArgumentException("now is not in idea collect period");
-                    }
-                    return null;
-                });
 
         if(!author.isSubmitIdea()) {
             author.updateSubmitIdea(true);
@@ -158,6 +153,9 @@ public class IdeaService {
         Optional<SessionUser> sessionUserOptional = idea.getSession().getSessionUsers().stream()
                 .filter(sessionUser -> sessionUser.getUser().getUuid().equals(voter.getUuid()))
                 .findAny();
+
+        checkValidPeriodForAction(idea.getSession(), Period.PeriodType.IDEA_VOTE);
+
         if (!sessionUserOptional.isPresent()) {
             throw new NotHasRightVoteException();
         }
@@ -184,6 +182,9 @@ public class IdeaService {
     public void ideasVote(User voter, List<Integer> ideaId) {
         List<Idea> ideas = ideaRepository.findAllByIdeaIdIn(ideaId);
 
+        ideas.stream().findFirst()
+                .ifPresent(idea -> checkValidPeriodForAction(idea.getSession(), Period.PeriodType.IDEA_VOTE));
+
         ideas.stream().forEach(idea -> {
             idea.vote();
             ideaVoteRepository.save(new IdeaVote(idea.getIdeaId(), idea.getSession().getSessionNumber(), voter.getUuid()));
@@ -206,5 +207,15 @@ public class IdeaService {
         return ideaRepository.findAllByIdeaIdIn(votedIdeaIds).stream()
                 .map(VotedIdeaResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public void checkValidPeriodForAction(Session session, Period.PeriodType periodType) {
+        session.getPeriods().stream()
+                .filter(period -> period.getPeriodType().equals(periodType)).findFirst()
+                .ifPresent(period -> {
+                    if (!period.isNowIn()) {
+                        throw new NotValidPeriodException(periodType);
+                    }
+                });
     }
 }

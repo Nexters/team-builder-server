@@ -3,8 +3,10 @@ package com.nexters.teambuilder.global.exception;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.nexters.teambuilder.common.error.ErrorCode;
 import com.nexters.teambuilder.common.exception.ActionForbiddenException;
 import com.nexters.teambuilder.common.exception.CommonNotFoundException;
+import com.nexters.teambuilder.common.exception.NotValidPeriodException;
 import com.nexters.teambuilder.common.response.ApiError;
 import com.nexters.teambuilder.favorite.exception.FavoriteNotFoundException;
 import com.nexters.teambuilder.person.exception.PersonNotFoundException;
@@ -75,5 +77,20 @@ public class GlobalControllerExceptionHandler {
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage() + ".")
                 .collect(Collectors.joining("\n"));
         return new ApiError(HttpStatus.BAD_REQUEST, 0, message);
+    }
+
+    /**
+     * exception handler for invalid period exceptions.
+     * @param ex MethodArgumentNotValidException
+     * @return Api Error Wrapper
+     */
+    @ExceptionHandler(value = {
+            NotValidPeriodException.class
+    })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleInvalidPeriod(RuntimeException ex) {
+        String message = ex.getMessage();
+        Integer code = ErrorCode.getCodeOf(message);
+        return new ApiError(HttpStatus.BAD_REQUEST, code, message);
     }
 }

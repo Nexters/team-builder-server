@@ -1,6 +1,8 @@
 package com.nexters.teambuilder.session.api.dto;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,15 +46,34 @@ public class SessionResponse {
         List<PeriodResponse> periods =
                 session.getPeriods().stream().map(PeriodResponse::of).collect(Collectors.toList());
 
-        if(session.isTeamBuildingMode()) {
+        if (session.isTeamBuildingMode()) {
             periods.forEach(periodResponse -> periodResponse.setNow(false));
             periods.stream()
                     .filter(periodResponse -> periodResponse.getPeriodType().equals(Period.PeriodType.TEAM_BUILDING))
                     .findFirst().ifPresent(periodResponse -> periodResponse.setNow(true));
         }
 
+        nowIsNotMatchAnyPeriod(periods);
+
         return new SessionResponse(session.getSessionId(), session.getSessionNumber(), sessionNumbers, session.getLogoImageUrl(),
                 session.isTeamBuildingMode(), periods, tags, session.getMaxVoteCount(), ideas, votedIdeas);
+    }
+
+    private static void nowIsNotMatchAnyPeriod(List<PeriodResponse> periods) {
+        if (!periods.stream().anyMatch(period -> period.isNow())) {
+
+            periods.stream().sorted(Comparator.comparing(PeriodResponse::getStartDate)).findFirst().ifPresent(p -> {
+                p.setNow(true);
+            });
+
+            ZonedDateTime now = ZonedDateTime.now();
+            periods.stream().sorted(Comparator.comparing(PeriodResponse::getStartDate)).forEach(periodResponse -> {
+                if (now.isAfter(periodResponse.getEndDate())) {
+                    periods.forEach(p -> p.setNow(false));
+                    periodResponse.setNow(true);
+                }
+            });
+        }
     }
 
 }
