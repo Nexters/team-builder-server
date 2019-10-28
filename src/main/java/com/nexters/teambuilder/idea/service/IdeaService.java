@@ -56,7 +56,7 @@ public class IdeaService {
             throw new UserNotActivatedException();
         }
 
-        if (!author.isSubmitIdea()) {
+        if(!author.isSubmitIdea()) {
             author.updateSubmitIdea(true);
             userRepository.save(author);
         }
@@ -140,7 +140,9 @@ public class IdeaService {
             throw new IllegalArgumentException("해당 아이디어의 작성자가 아닙니다");
         }
 
-        favoriteRepository.findFavoriteByIdeaIdAndUuid(ideaId, author.getUuid()).ifPresent(favoriteRepository::delete);
+        Favorite favorite = favoriteRepository.findFavoriteByIdeaIdAndUuid(ideaId, author.getUuid())
+                .orElseThrow(() -> new FavoriteNotFoundException(ideaId));
+        favoriteRepository.delete(favorite);
 
         ideaRepository.delete(idea);
     }
