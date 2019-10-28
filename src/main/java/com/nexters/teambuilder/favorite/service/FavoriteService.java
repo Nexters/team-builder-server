@@ -35,7 +35,7 @@ public class FavoriteService {
     }
 
     public FavoriteResponse createFavorite(User user, FavoriteRequest request) {
-        if(!ideaRepository.findByIdeaId(request.getIdeaId())){
+        if(!ideaRepository.existsIdeaByIdeaId(request.getIdeaId())){
             throw new IdeaNotFoundException(request.getIdeaId());
         }
 
