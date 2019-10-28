@@ -8,5 +8,5 @@ import java.util.List;
 public interface IdeaRepository extends JpaRepository<Idea, Integer> {
     List<Idea> findAllBySessionSessionId(Integer sessionId);
     List<Idea> findAllByIdeaIdIn(List<Integer> ideaIds);
-    boolean existByIdeaId(Integer ideaId);
+    boolean findByIdeaId(Integer ideaId);
 }
