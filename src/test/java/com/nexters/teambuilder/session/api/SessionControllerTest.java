@@ -89,14 +89,16 @@ class SessionControllerTest {
     };
 
     private FieldDescriptor[] sessionRequestDescription = new FieldDescriptor[]{
-            fieldWithPath("sessionNumber").description("기수 번호"),
-            fieldWithPath("logoImageUrl").description("기수 로고 이미지 url"),
+            fieldWithPath("logoImageUrl").description("기수 로고 이미지 url")
+                    .attributes(key("constraints").value("필수, Not Empty")),
             fieldWithPath("teamBuildingMode").description("기수가 현재 팀빌딩 모드인지 아닌지 여부"),
-            fieldWithPath("periods[]").description("기수의 운영 카테고리별 기간"),
+            fieldWithPath("periods[]").description("기수의 운영 카테고리별 기간")
+                    .attributes(key("constraints").value("필수, Not Null")),
             fieldWithPath("periods[].periodType").description("가수의 운영 카테고리 {IDEA_COLLECT, IDEA_VOTE, IDEA_CHECK, TEAM_BUILDING}"),
             fieldWithPath("periods[].startDate").description("각 항목별 기간 시작 날짜"),
             fieldWithPath("periods[].endDate").description("각 항목별 기간 끝나는 날짜"),
-            fieldWithPath("maxVoteCount").description("respone data"),
+            fieldWithPath("maxVoteCount").description("최대 투표 가능 횟수")
+                    .attributes(key("constraints").value("default : 0")),
     };
 
     private FieldDescriptor[] sessionResposneDescription = new FieldDescriptor[]{
@@ -268,7 +270,6 @@ class SessionControllerTest {
         period.put("endDate", now().toOffsetDateTime().toString());
 
         Map<String, Object> input = new LinkedHashMap<>();
-        input.put("sessionNumber", 1);
         input.put("logoImageUrl", "https://logo/image.url");
         input.put("teamBuildingMode", false);
         input.put("periods", Arrays.asList(period));
@@ -318,7 +319,6 @@ class SessionControllerTest {
         period.put("endDate", now().toOffsetDateTime().toString());
 
         Map<String, Object> input = new LinkedHashMap<>();
-        input.put("sessionNumber", 1);
         input.put("logoImageUrl", "https://logo/image.url");
         input.put("teamBuildingMode", false);
         input.put("periods", Arrays.asList(period));

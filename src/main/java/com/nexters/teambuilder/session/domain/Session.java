@@ -59,16 +59,15 @@ public class Session {
     }
 
     public void update(SessionRequest request) {
-        this.sessionNumber = request.getSessionNumber();
         this.teamBuildingMode = request.isTeamBuildingMode();
         this.periods = request.getPeriods().stream().map(Period::of).collect(Collectors.toList());
         this.logoImageUrl = request.getLogoImageUrl();
     }
 
-    public static Session of(SessionRequest sessionRequest) {
+    public static Session of(Integer sessionNumber, SessionRequest sessionRequest) {
         List<Period> periods = sessionRequest.getPeriods().stream().map(Period::of).collect(Collectors.toList());
 
-        return new Session(sessionRequest.getSessionNumber(), sessionRequest.isTeamBuildingMode(), periods,
+        return new Session(sessionNumber, sessionRequest.isTeamBuildingMode(), periods,
                 sessionRequest.getLogoImageUrl(), sessionRequest.getMaxVoteCount());
     }
 }
