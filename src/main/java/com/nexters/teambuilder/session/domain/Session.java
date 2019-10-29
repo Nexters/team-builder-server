@@ -1,8 +1,17 @@
 package com.nexters.teambuilder.session.domain;
 
+import static com.nexters.teambuilder.session.domain.Period.PeriodType.IDEA_CHECK;
+import static com.nexters.teambuilder.session.domain.Period.PeriodType.IDEA_COLLECT;
+import static com.nexters.teambuilder.session.domain.Period.PeriodType.IDEA_VOTE;
+import static com.nexters.teambuilder.session.domain.Period.PeriodType.TEAM_BUILDING;
+import static java.time.ZonedDateTime.now;
+
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -17,7 +26,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.nexters.teambuilder.session.api.dto.PeriodRequest;
 import com.nexters.teambuilder.session.api.dto.SessionRequest;
+import com.nexters.teambuilder.tag.domain.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,10 +76,25 @@ public class Session {
     }
 
     public static Session of(Integer sessionNumber, SessionRequest sessionRequest) {
-        List<Period> periods = sessionRequest.getPeriods().stream().map(Period::of).collect(Collectors.toList());
+        List<Period> periods = createPeriods(sessionRequest.getPeriods());
 
         return new Session(sessionNumber, sessionRequest.isTeamBuildingMode(), periods,
                 sessionRequest.getLogoImageUrl(), sessionRequest.getMaxVoteCount());
+    }
+
+    private static List<Period> createPeriods(List<PeriodRequest> periodRequests) {
+        ZonedDateTime now = now();
+        if (!Optional.ofNullable(periodRequests).isPresent()) {
+            List<Period> periods = new ArrayList<>();
+            periods.add(Period.of(new PeriodRequest(IDEA_COLLECT, now.plusDays(1), now.plusWeeks(1))));
+            periods.add(Period.of(new PeriodRequest(IDEA_VOTE, now.plusWeeks(1).plusDays(1), now.plusWeeks(2))));
+            periods.add(Period.of(new PeriodRequest(IDEA_CHECK, now.plusWeeks(2).plusDays(1), now.plusWeeks(3))));
+            periods.add(Period.of(new PeriodRequest(TEAM_BUILDING, now.plusWeeks(3).plusDays(1), now.plusWeeks(4))));
+
+            return periods;
+        }
+
+        return periodRequests.stream().map(Period::of).collect(Collectors.toList());
     }
 }
 
