@@ -36,7 +36,11 @@ public class SessionService {
     }
 
     public Session createSession(SessionRequest sessionRequest) {
-        Session session = Session.of(sessionRequest);
+        Integer latestSessionNumber = sessionRepository
+                .findTopByOrderBySessionNumberDesc().map(session -> session.getSessionNumber())
+                .orElse(0);
+
+        Session session = Session.of(latestSessionNumber + 1,sessionRequest);
         return sessionRepository.save(session);
     }
 
@@ -52,7 +56,6 @@ public class SessionService {
         if (!user.getRole().equals(User.Role.ROLE_ADMIN)) {
             throw new ActionForbiddenException();
         }
-
 
         Session session = sessionRepository.findBySessionNumber(sessionNumber)
                 .orElseThrow(() -> new SessionNotFoundException(sessionNumber));
