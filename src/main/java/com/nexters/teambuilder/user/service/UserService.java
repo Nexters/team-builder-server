@@ -118,6 +118,12 @@ public class UserService {
                 .map(UserResponse::of).collect(Collectors.toList());
     }
 
+    public List<UserResponse> activatedUserList() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getRole().equals(User.Role.ROLE_USER) && user.isActivated())
+                .map(UserResponse::of).collect(Collectors.toList());
+    }
+
     public List<SessionUserResponse> sessionUserList(Integer sessionNumber) {
         Session session = sessionRepository.findBySessionNumber(sessionNumber)
                 .orElseThrow(() -> new SessionNotFoundException(sessionNumber));

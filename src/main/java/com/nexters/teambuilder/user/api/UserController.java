@@ -77,6 +77,12 @@ public class UserController {
         return new BaseResponse<>(200, 0, userResponses);
     }
 
+    @GetMapping("apis/activated/users")
+    public BaseResponse<List<UserResponse>> activatedUserList() {
+        List<UserResponse> userResponses = userService.activatedUserList();
+        return new BaseResponse<>(200, 0, userResponses);
+    }
+
     @GetMapping("apis/sessions/{sessionNumber}/users")
     public BaseResponse<List<SessionUserResponse>> userList(@PathVariable Integer sessionNumber) {
         List<SessionUserResponse> sessionUserResponses = userService.sessionUserList(sessionNumber);
