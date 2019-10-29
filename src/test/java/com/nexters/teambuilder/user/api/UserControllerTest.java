@@ -208,6 +208,28 @@ class UserControllerTest {
     }
 
     @Test
+    void activatedUserList() throws Exception {
+        List<UserResponse> users = IntStream.range(1, 4).mapToObj(i -> {
+            user = new User("originman" + i, "password1212", "kiwon",
+                    13, User.Role.ROLE_USER, User.Position.DEVELOPER, "originman@nexter.com");
+            user.activate();
+
+            return UserResponse.of(user);
+        }).collect(Collectors.toList());
+
+        given(userService.activatedUserList()).willReturn(users);
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/apis/activated/users")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("users/list-activated-users",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        responseFields(baseResposneDescription)
+                                .andWithPrefix("data.[].", userResposneDescription)));
+    }
+
+    @Test
     void updateUser() throws Exception {
         Map<String, Object> input = new LinkedHashMap<>();
         input.put("nowPassword", "1212");
