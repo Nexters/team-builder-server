@@ -3,6 +3,7 @@ package com.nexters.teambuilder.idea.api.dto;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.nexters.teambuilder.common.view.Views;
 import com.nexters.teambuilder.idea.domain.Idea;
+import com.nexters.teambuilder.idea.domain.Member;
 import com.nexters.teambuilder.tag.api.dto.TagResponse;
 import com.nexters.teambuilder.tag.domain.Tag;
 import com.nexters.teambuilder.user.api.dto.UserResponse;
@@ -15,6 +16,7 @@ import lombok.Setter;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -64,12 +66,15 @@ public class IdeaResponse {
     @JsonView(Views.External.class)
     private ZonedDateTime updatedAt;
 
+    @JsonView(Views.External.class)
+    private List<Member> members;
+
     public IdeaResponse(Integer ideaId, Integer sessionId,  String title, String content,
                         User author, String file, boolean selected,
                         Idea.Type type,
                         ZonedDateTime createdAt, ZonedDateTime updatedAt,
-
-                        Set<Tag> tags, Integer voteNumber
+                        Set<Tag> tags, Integer voteNumber,
+                        List<Member> members
                         ){
         this.ideaId = ideaId;
         this.sessionId = sessionId;
@@ -85,6 +90,7 @@ public class IdeaResponse {
                 .sorted(Comparator.comparing(Tag::getTagId).reversed())
                 .map(TagResponse::of).collect(Collectors.toSet());
         this.voteNumber = voteNumber;
+        this.members = members;
     }
 
     public static IdeaResponse of(Idea idea) {
@@ -92,7 +98,7 @@ public class IdeaResponse {
                 idea.getContent(), idea.getAuthor(), idea.getFile(),
                 idea.isSelected(), idea.getType(),
                 idea.getCreatedAt(), idea.getUpdateAt(),
-                idea.getTags(), idea.getVoteNumber());
+                idea.getTags(), idea.getVoteNumber(), idea.getMembers());
     }
 
     public void updateOrderNumber(Integer orderNumber){

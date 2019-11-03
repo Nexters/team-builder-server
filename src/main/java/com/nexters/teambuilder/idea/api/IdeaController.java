@@ -5,6 +5,8 @@ import com.nexters.teambuilder.common.response.BaseResponse;
 import com.nexters.teambuilder.common.view.Views;
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
+import com.nexters.teambuilder.idea.api.dto.MemberRequest;
+import com.nexters.teambuilder.idea.api.dto.MemberResponse;
 import com.nexters.teambuilder.idea.service.IdeaService;
 import com.nexters.teambuilder.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -66,5 +68,12 @@ public class IdeaController {
     public BaseResponse voteIdeas(@AuthenticationPrincipal User user, @RequestParam List<Integer> ideaIds){
         ideaService.ideasVote(user, ideaIds);
         return new BaseResponse<>(200, 0, null);
+    }
+
+    @PutMapping("/{ideaId}/team")
+    public BaseResponse addMember(@AuthenticationPrincipal User user, @PathVariable Integer ideaId,
+                                 @RequestBody MemberRequest request){
+        List<MemberResponse> members = ideaService.addMember(ideaId, request);
+        return new BaseResponse<>(200, 0, members);
     }
 }

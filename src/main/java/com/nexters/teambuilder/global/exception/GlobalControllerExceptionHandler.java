@@ -9,6 +9,7 @@ import com.nexters.teambuilder.common.exception.CommonNotFoundException;
 import com.nexters.teambuilder.common.exception.NotValidPeriodException;
 import com.nexters.teambuilder.common.response.ApiError;
 import com.nexters.teambuilder.favorite.exception.FavoriteNotFoundException;
+import com.nexters.teambuilder.idea.exception.UserHasTeamException;
 import com.nexters.teambuilder.person.exception.PersonNotFoundException;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.tag.exception.TagNotFoundException;
@@ -35,7 +36,7 @@ public class GlobalControllerExceptionHandler {
             TagNotFoundException.class,
             SessionNotFoundException.class,
             CommonNotFoundException.class,
-            FavoriteNotFoundException.class
+            FavoriteNotFoundException.class,
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ApiError handleNotFound(RuntimeException ex) {
@@ -89,6 +90,16 @@ public class GlobalControllerExceptionHandler {
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleInvalidPeriod(RuntimeException ex) {
+        String message = ex.getMessage();
+        Integer code = ErrorCode.getCodeOf(message);
+        return new ApiError(HttpStatus.BAD_REQUEST, code, message);
+    }
+
+    @ExceptionHandler(value = {
+            UserHasTeamException.class
+    })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiError handleUserHasTeam(RuntimeException ex) {
         String message = ex.getMessage();
         Integer code = ErrorCode.getCodeOf(message);
         return new ApiError(HttpStatus.BAD_REQUEST, code, message);

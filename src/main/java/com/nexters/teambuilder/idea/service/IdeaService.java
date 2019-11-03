@@ -1,21 +1,13 @@
 package com.nexters.teambuilder.idea.service;
 
-import static com.nexters.teambuilder.user.domain.User.Role.ROLE_ADMIN;
-import static com.nexters.teambuilder.user.domain.User.Role.ROLE_USER;
-
 import com.nexters.teambuilder.common.exception.NotValidPeriodException;
 import com.nexters.teambuilder.favorite.domain.Favorite;
 import com.nexters.teambuilder.favorite.domain.FavoriteRepository;
-import com.nexters.teambuilder.favorite.exception.FavoriteNotFoundException;
-import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
-import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
-import com.nexters.teambuilder.idea.api.dto.VotedIdeaResponse;
-import com.nexters.teambuilder.idea.domain.Idea;
-import com.nexters.teambuilder.idea.domain.IdeaRepository;
-import com.nexters.teambuilder.idea.domain.IdeaVote;
-import com.nexters.teambuilder.idea.domain.IdeaVoteRepository;
+import com.nexters.teambuilder.idea.api.dto.*;
+import com.nexters.teambuilder.idea.domain.*;
 import com.nexters.teambuilder.idea.exception.IdeaNotFoundException;
 import com.nexters.teambuilder.idea.exception.NotHasRightVoteException;
+import com.nexters.teambuilder.idea.exception.UserHasTeamException;
 import com.nexters.teambuilder.session.domain.Period;
 import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.session.domain.SessionRepository;
@@ -29,11 +21,12 @@ import com.nexters.teambuilder.user.exception.UserNotActivatedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.nexters.teambuilder.user.domain.User.Role.ROLE_USER;
 
 
 @RequiredArgsConstructor
@@ -93,7 +86,6 @@ public class IdeaService {
 
     public List<IdeaResponse> getIdeaList(User user) {
         List<Idea> ideaList = ideaRepository.findAll();
-
         List<Favorite> favoriteList = favoriteRepository.findAllByUuid(user.getUuid());
 
         return ideaList.stream()
@@ -215,5 +207,31 @@ public class IdeaService {
                         throw new NotValidPeriodException(periodType);
                     }
                 });
+    }
+
+    public List<MemberResponse> addMember(Integer ideaId, MemberRequest request) {
+        Idea idea = ideaRepository.findById(ideaId)
+                .orElseThrow(() -> new IdeaNotFoundException(ideaId));
+
+        List<Member> members =
+                userRepository.findAllByUuidIn(request.getUuids())
+                .stream().map(user -> {
+
+                    if(user.isHasTeam()){
+                        throw new UserHasTeamException();
+                    }
+                    user.updateHasTeam(true);
+                    return new Member(user.getUuid(), user.getId(), user.getName(),
+                            user.getNextersNumber(), user.getPosition(), user.isHasTeam());
+                }).collect(Collectors.toList());
+
+
+
+
+        idea.addMember(members);
+        ideaRepository.save(idea);
+
+        return members.stream()
+                .map(MemberResponse::of).collect(Collectors.toList());
     }
 }
