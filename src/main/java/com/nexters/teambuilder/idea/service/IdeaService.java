@@ -209,15 +209,15 @@ public class IdeaService {
                 });
     }
 
-    public List<MemberResponse> addMember(Integer ideaId, MemberRequest request) {
+    public List<MemberResponse> addMember(User author, Integer ideaId, MemberRequest request) {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
 
         List<Member> members =
                 userRepository.findAllByUuidIn(request.getUuids())
-                .stream().map(user -> {
+                        .stream().map(user -> {
 
-                    if(user.isHasTeam()){
+                    if (user.isHasTeam()) {
                         throw new UserHasTeamException();
                     }
                     user.updateHasTeam(true);
@@ -225,8 +225,7 @@ public class IdeaService {
                             user.getNextersNumber(), user.getPosition(), user.isHasTeam());
                 }).collect(Collectors.toList());
 
-
-
+        addAuthorToMember(author, members);
 
         idea.addMember(members);
         ideaRepository.save(idea);
@@ -234,4 +233,11 @@ public class IdeaService {
         return members.stream()
                 .map(MemberResponse::of).collect(Collectors.toList());
     }
+
+    public void addAuthorToMember(User author, List<Member> members) {
+            Member member = new Member(author.getUuid(), author.getId(), author.getName(),
+                    author.getNextersNumber(), author.getPosition(), true);
+            members.add(member);
+    }
 }
+

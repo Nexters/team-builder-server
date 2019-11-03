@@ -11,8 +11,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Member {
-//    @Id
-//    private Integer ideaId;
 
     private String uuid;
 
@@ -26,11 +24,5 @@ public class Member {
     private User.Position position;
 
     private boolean hasTeam;
-
-//    public static Member of(Member member){
-//        return new Member(member.getIdeaId(), member.getUuid(),
-//                member.getId(), member.getName(), member.getNextersNumber(),
-//                member.getPosition(), member.isHasTeam());
-//    }
 
 }
