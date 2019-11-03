@@ -8,7 +8,8 @@ public enum ErrorCode {
     NOT_PERIOD_OF_IDEA_COLLECT("error.not.period.of.idea.collect", 90001),
     NOT_PERIOD_OF_IDEA_VOTE("error.not.period.of.idea.vote", 90002),
     NOT_PERIOD_OF_IDEA_CHECK("error.not.period.of.idea.check", 90003),
-    NOT_PERIOD_OF_TEAM_BUILDING("error.not.period.of.team.building", 90004);
+    NOT_PERIOD_OF_TEAM_BUILDING("error.not.period.of.team.building", 90004),
+    USER_HAS_TEAM("error.user.has.team", 90005);
 
     @Getter
     private String message;

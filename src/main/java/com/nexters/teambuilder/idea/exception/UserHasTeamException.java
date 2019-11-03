@@ -1,7 +1,9 @@
 package com.nexters.teambuilder.idea.exception;
 
+import static com.nexters.teambuilder.common.error.ErrorCode.USER_HAS_TEAM;
+
 public class UserHasTeamException extends RuntimeException {
     public UserHasTeamException() {
-        super("해당 유저는 소속 팀이 존재합니다.");
+        super(USER_HAS_TEAM.getMessage());
     }
 }
