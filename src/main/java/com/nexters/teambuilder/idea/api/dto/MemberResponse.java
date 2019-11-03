@@ -12,7 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberResponse {
-    private Integer ideaId;
 
     private String uuid;
 
@@ -27,7 +26,7 @@ public class MemberResponse {
     private boolean hasTeam;
 
     public static MemberResponse of(Member member){
-        return new MemberResponse(member.getIdeaId(), member.getUuid(),
+        return new MemberResponse(member.getUuid(),
                 member.getId(), member.getName(), member.getNextersNumber(),
                 member.getPosition(), member.isHasTeam());
     }

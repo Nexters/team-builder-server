@@ -38,7 +38,7 @@ public class IdeaService {
     private final TagRepository tagRepository;
     private final FavoriteRepository favoriteRepository;
     private final UserRepository userRepository;
-    private final MemberRepository memberRepository;
+//    private final MemberRepository memberRepository;
 
     public IdeaResponse createIdea(User author, IdeaRequest request) {
         Session session = sessionRepository.findById(request.getSessionId())
@@ -212,17 +212,22 @@ public class IdeaService {
     }
 
     public void joinTeam(Integer ideaId, MemberRequest request) {
-        List<Member> members = userRepository.findAllByUuidIn(request.getUuids())
+        List<Member> members =
+                userRepository.findAllByUuidIn(request.getUuids())
                 .stream().map(user -> {
-                    if(!user.isHasTeam()){
-                        user.updateHasTeam(true);
-                        return new Member(ideaId, user.getUuid(), user.getId(), user.getName(),
-                                user.getNextersNumber(), user.getPosition(), user.isHasTeam());
-                    }else{
+                    if(user.isHasTeam()){
                         throw new UserHasTeamException();
                     }
+                    user.updateHasTeam(true);
+                    return new Member(user.getUuid(), user.getId(), user.getName(),
+                            user.getNextersNumber(), user.getPosition(), user.isHasTeam());
                 }).collect(Collectors.toList());
 
-        memberRepository.saveAll(members);
+
+        Idea idea = ideaRepository.findById(ideaId)
+                .orElseThrow(() -> new IdeaNotFoundException(ideaId));
+
+        idea.addMember(members);
+        ideaRepository.save(idea);
     }
 }

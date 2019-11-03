@@ -72,6 +72,11 @@ public class Idea {
     @Column(name = "update_at", nullable = false)
     private ZonedDateTime updateAt;
 
+    @ElementCollection
+    @Column(name="member")
+    @CollectionTable(name="idea_members", joinColumns = {@JoinColumn(name="idea_ideaId")})
+    private List<Member> members;
+
     @Builder
     public Idea(Session session, String title, String content, User author, String file, Type type,
                 List<Tag> tags) {
@@ -109,5 +114,9 @@ public class Idea {
 
     public void vote() {
         this.voteNumber++;
+    }
+
+    public void addMember(List<Member> members){
+        this.members =  members;
     }
 }

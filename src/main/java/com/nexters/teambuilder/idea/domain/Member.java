@@ -6,19 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
-@Entity
+@Embeddable
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Member {
-
-    public enum Position{
-        DESIGNER, DEVELOPER
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer ideaId;
+//    @Id
+//    private Integer ideaId;
 
     private String uuid;
 
@@ -28,16 +22,15 @@ public class Member {
 
     private Integer nextersNumber;
 
-    @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private User.Position position;
 
     private boolean hasTeam;
 
-    public static Member of(Member member){
-        return new Member(member.getIdeaId(), member.getUuid(),
-                member.getId(), member.getName(), member.getNextersNumber(),
-                member.getPosition(), member.isHasTeam());
-    }
+//    public static Member of(Member member){
+//        return new Member(member.getIdeaId(), member.getUuid(),
+//                member.getId(), member.getName(), member.getNextersNumber(),
+//                member.getPosition(), member.isHasTeam());
+//    }
 
 }
