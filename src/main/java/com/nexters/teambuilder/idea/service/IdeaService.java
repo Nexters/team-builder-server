@@ -86,7 +86,6 @@ public class IdeaService {
 
     public List<IdeaResponse> getIdeaList(User user) {
         List<Idea> ideaList = ideaRepository.findAll();
-
         List<Favorite> favoriteList = favoriteRepository.findAllByUuid(user.getUuid());
 
         return ideaList.stream()
@@ -210,7 +209,7 @@ public class IdeaService {
                 });
     }
 
-    public List<MemberResponse> joinTeam(Integer ideaId, MemberRequest request) {
+    public List<MemberResponse> addMember(Integer ideaId, MemberRequest request) {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
 
