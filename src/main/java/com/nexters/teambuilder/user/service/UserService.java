@@ -1,11 +1,5 @@
 package com.nexters.teambuilder.user.service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.nexters.teambuilder.common.domain.CommonRepository;
 import com.nexters.teambuilder.config.security.InValidTokenException;
 import com.nexters.teambuilder.config.security.TokenService;
@@ -13,11 +7,7 @@ import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.session.domain.SessionRepository;
 import com.nexters.teambuilder.session.domain.SessionUser;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
-import com.nexters.teambuilder.user.api.dto.SessionUserResponse;
-import com.nexters.teambuilder.user.api.dto.SignInResponse;
-import com.nexters.teambuilder.user.api.dto.UserRequest;
-import com.nexters.teambuilder.user.api.dto.UserResponse;
-import com.nexters.teambuilder.user.api.dto.UserUpdateRequest;
+import com.nexters.teambuilder.user.api.dto.*;
 import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.domain.UserRepository;
 import com.nexters.teambuilder.user.exception.AuthenticationCodeNotConsistentException;
@@ -27,6 +17,12 @@ import com.nexters.teambuilder.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

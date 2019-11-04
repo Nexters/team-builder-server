@@ -36,10 +36,6 @@ public class Idea {
     @JoinColumn(name = "session_id")
     private Session session;
 
-    /*
-    @NotNull
-    @Size(max = 100)
-    */
     private String title;
 
     @Column(columnDefinition = "TEXT", name = "content", nullable = false)
@@ -73,7 +69,6 @@ public class Idea {
     private ZonedDateTime updateAt;
 
     @ElementCollection
-    @Column(name="member")
     @CollectionTable(name="idea_members", joinColumns = {@JoinColumn(name="idea_ideaId")})
     private List<Member> members;
 
@@ -116,7 +111,13 @@ public class Idea {
         this.voteNumber++;
     }
 
-    public void addMember(List<Member> members){
-        this.members =  members;
+    public void addMember(List<Member> newMembers){
+        this.members.clear();
+
+        this.author.updateHasTeam(true);
+        newMembers.add(new Member(this.author.getUuid(), this.author.getId(), this.author.getName(),
+                this.author.getNextersNumber(), this.author.getPosition(), this.author.isHasTeam()));
+
+        this.members.addAll(newMembers);
     }
 }

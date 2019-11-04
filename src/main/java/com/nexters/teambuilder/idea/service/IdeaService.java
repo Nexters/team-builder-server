@@ -209,24 +209,23 @@ public class IdeaService {
                 });
     }
 
-    public List<MemberResponse> addMember(Integer ideaId, MemberRequest request) {
+    public List<MemberResponse> addMember(User author, Integer ideaId, MemberRequest request) {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
 
-        List<Member> members =
-                userRepository.findAllByUuidIn(request.getUuids())
-                .stream().map(user -> {
-
-                    if(user.isHasTeam()){
-                        throw new UserHasTeamException();
+        List<Member> members = userRepository.findAllByUuidIn(request.getUuids())
+                        .stream().map(requestedUser -> {
+                    if (requestedUser.isHasTeam()){
+                        if(!isExistingMember(idea, requestedUser)){
+                            throw new UserHasTeamException();
+                        }
+                        return new Member(requestedUser.getUuid(), requestedUser.getId(), requestedUser.getName(),
+                                requestedUser.getNextersNumber(), requestedUser.getPosition(), requestedUser.isHasTeam());
                     }
-                    user.updateHasTeam(true);
-                    return new Member(user.getUuid(), user.getId(), user.getName(),
-                            user.getNextersNumber(), user.getPosition(), user.isHasTeam());
+                    requestedUser.updateHasTeam(true);
+                    return new Member(requestedUser.getUuid(), requestedUser.getId(), requestedUser.getName(),
+                            requestedUser.getNextersNumber(), requestedUser.getPosition(), requestedUser.isHasTeam());
                 }).collect(Collectors.toList());
-
-
-
 
         idea.addMember(members);
         ideaRepository.save(idea);
@@ -234,4 +233,12 @@ public class IdeaService {
         return members.stream()
                 .map(MemberResponse::of).collect(Collectors.toList());
     }
+
+    public boolean isExistingMember(Idea idea, User requestedUser){
+        if(idea.getMembers().stream().anyMatch(member -> requestedUser.getUuid().equals(member.getUuid()))){
+            return true;
+        }
+        return false;
+    }
 }
+
