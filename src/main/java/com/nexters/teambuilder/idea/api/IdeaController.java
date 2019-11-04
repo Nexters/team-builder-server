@@ -73,7 +73,7 @@ public class IdeaController {
     @PutMapping("/{ideaId}/team")
     public BaseResponse addMember(@AuthenticationPrincipal User user, @PathVariable Integer ideaId,
                                  @RequestBody MemberRequest request){
-        List<MemberResponse> members = ideaService.addMember(ideaId, request);
+        List<MemberResponse> members = ideaService.addMember(user, ideaId, request);
         return new BaseResponse<>(200, 0, members);
     }
 }

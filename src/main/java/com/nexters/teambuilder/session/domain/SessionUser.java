@@ -1,18 +1,13 @@
 package com.nexters.teambuilder.session.domain;
 
-import java.io.Serializable;
-import javax.persistence.Embeddable;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-
 import com.nexters.teambuilder.user.domain.User;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
