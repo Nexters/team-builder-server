@@ -1,42 +1,12 @@
 package com.nexters.teambuilder.idea.api;
 
-import static com.nexters.teambuilder.idea.domain.Idea.Type.IDEA;
-import static com.nexters.teambuilder.session.domain.Period.PeriodType.IDEA_COLLECT;
-import static com.nexters.teambuilder.tag.domain.Tag.Type.DEVELOPER;
-import static java.time.ZonedDateTime.now;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
-import static org.springframework.restdocs.payload.JsonFieldType.OBJECT;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
-import static org.springframework.restdocs.snippet.Attributes.key;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
+import com.nexters.teambuilder.idea.api.dto.MemberRequest;
+import com.nexters.teambuilder.idea.api.dto.MemberResponse;
 import com.nexters.teambuilder.idea.domain.Idea;
+import com.nexters.teambuilder.idea.domain.Member;
 import com.nexters.teambuilder.idea.service.IdeaService;
 import com.nexters.teambuilder.session.domain.Period;
 import com.nexters.teambuilder.session.domain.Session;
@@ -55,6 +25,29 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static com.nexters.teambuilder.idea.domain.Idea.Type.IDEA;
+import static com.nexters.teambuilder.session.domain.Period.PeriodType.IDEA_COLLECT;
+import static com.nexters.teambuilder.tag.domain.Tag.Type.DEVELOPER;
+import static java.time.ZonedDateTime.now;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "${service.api-server}", uriPort = 80)
 @WebMvcTest(value = IdeaController.class, secure = false)
@@ -71,15 +64,17 @@ class IdeaControllerTest {
 
     private User user;
 
+    private Member member;
+
     private ObjectMapper mapper;
 
-    private FieldDescriptor[] baseResposneDescription = new FieldDescriptor[]{
+    private FieldDescriptor[] baseResponseDescription = new FieldDescriptor[]{
             fieldWithPath("status").description("status code"),
             fieldWithPath("errorCode").description("error code, 해당 코드를 보고 front 에서 분기처리를 한다"),
-            fieldWithPath("data").description("respone data"),
+            fieldWithPath("data").description("response data"),
     };
 
-    private FieldDescriptor[] ideaRequesteDescription = new FieldDescriptor[]{
+    private FieldDescriptor[] ideaRequestDescription = new FieldDescriptor[]{
             fieldWithPath("sessionId").description("아이디어가 작성될 session(기수) id"),
             fieldWithPath("title").description("아이디어 제목"),
             fieldWithPath("content").description("아이디어 내용"),
@@ -89,7 +84,7 @@ class IdeaControllerTest {
             fieldWithPath("selected").description("아이디어 선정 여부"),
     };
 
-    private FieldDescriptor[] ideaResposneDescription = new FieldDescriptor[] {
+    private FieldDescriptor[] ideaResponseDescription = new FieldDescriptor[] {
             fieldWithPath("ideaId").description("id"),
             fieldWithPath("sessionId").description("아이디어가 작성될 session(기수) id"),
             fieldWithPath("title").description("아이디어 제목"),
@@ -121,6 +116,7 @@ class IdeaControllerTest {
             fieldWithPath("voteNumber").description("투표 수"),
             fieldWithPath("createdAt").description("등록 시각"),
             fieldWithPath("updatedAt").description("업데이트 시각"),
+            fieldWithPath("members").description("팀 멤버 목록"),
     };
 
     @BeforeEach
@@ -157,9 +153,9 @@ class IdeaControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document("ideas/post-idea",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                        requestFields(ideaRequesteDescription),
-                        responseFields(baseResposneDescription)
-                                .andWithPrefix("data.", ideaResposneDescription)));
+                        requestFields(ideaRequestDescription),
+                        responseFields(baseResponseDescription)
+                                .andWithPrefix("data.", ideaResponseDescription)));
     }
 
     @Test
@@ -174,8 +170,8 @@ class IdeaControllerTest {
                         pathParameters(
                                 parameterWithName("ideaId").description("Idea의 id")
                                         .attributes(key("constraints").value("Not Null"))),
-                        responseFields(baseResposneDescription)
-                                .andWithPrefix("data.", ideaResposneDescription)));
+                        responseFields(baseResponseDescription)
+                                .andWithPrefix("data.", ideaResponseDescription)));
     }
 
     @Test
@@ -193,8 +189,8 @@ class IdeaControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document("ideas/list-idea",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                        responseFields(baseResposneDescription)
-                                .andWithPrefix("data.[].", ideaResposneDescription)));
+                        responseFields(baseResponseDescription)
+                                .andWithPrefix("data.[].", ideaResponseDescription)));
     }
 
     @Test
@@ -220,9 +216,9 @@ class IdeaControllerTest {
                         pathParameters(
                                 parameterWithName("ideaId").description("Idea의 id")
                                         .attributes(key("constraints").value("Not Null"))),
-                        requestFields(ideaRequesteDescription),
-                        responseFields(baseResposneDescription)
-                                .andWithPrefix("data.", ideaResposneDescription)));
+                        requestFields(ideaRequestDescription),
+                        responseFields(baseResponseDescription)
+                                .andWithPrefix("data.", ideaResponseDescription)));
     }
 
     @Test
@@ -250,7 +246,7 @@ class IdeaControllerTest {
                         pathParameters(
                                 parameterWithName("ideaId").description("Idea의 id")
                                         .attributes(key("constraints").value("Not Null"))),
-                        responseFields(baseResposneDescription)));
+                        responseFields(baseResponseDescription)));
     }
 
     @Test
@@ -265,6 +261,6 @@ class IdeaControllerTest {
                         requestParameters(
                                 parameterWithName("ideaIds").description("Idea의 id list")
                                         .attributes(key("constraints").value("Not empty"))),
-                        responseFields(baseResposneDescription)));
+                        responseFields(baseResponseDescription)));
     }
 }

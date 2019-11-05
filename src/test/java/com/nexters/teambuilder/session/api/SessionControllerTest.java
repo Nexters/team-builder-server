@@ -150,6 +150,7 @@ class SessionControllerTest {
             fieldWithPath("ideas[].voteNumber").description("투표 수"),
             fieldWithPath("ideas[].createdAt").description("등록 시각"),
             fieldWithPath("ideas[].updatedAt").description("업데이트 시각"),
+            fieldWithPath("ideas[].members").description("팀 멤버 목록"),
             fieldWithPath("votedIdeas[]").description("Idea 목록"),
             fieldWithPath("votedIdeas[].ideaId").description("Idea id"),
             fieldWithPath("votedIdeas[].title").description("Idea 제목"),
