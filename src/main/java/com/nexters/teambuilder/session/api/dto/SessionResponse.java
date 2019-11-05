@@ -46,12 +46,12 @@ public class SessionResponse {
         List<PeriodResponse> periods =
                 session.getPeriods().stream().map(PeriodResponse::of).collect(Collectors.toList());
 
-        if (session.isTeamBuildingMode()) {
-            periods.forEach(periodResponse -> periodResponse.setNow(false));
-            periods.stream()
-                    .filter(periodResponse -> periodResponse.getPeriodType().equals(Period.PeriodType.TEAM_BUILDING))
-                    .findFirst().ifPresent(periodResponse -> periodResponse.setNow(true));
-        }
+//        if (session.isTeamBuildingMode()) {
+//            periods.forEach(periodResponse -> periodResponse.setNow(false));
+//            periods.stream()
+//                    .filter(periodResponse -> periodResponse.getPeriodType().equals(Period.PeriodType.TEAM_BUILDING))
+//                    .findFirst().ifPresent(periodResponse -> periodResponse.setNow(true));
+//        }
 
         nowIsNotMatchAnyPeriod(periods);
 
