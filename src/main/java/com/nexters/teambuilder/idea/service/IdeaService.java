@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.nexters.teambuilder.user.domain.User.Role.ROLE_ADMIN;
 import static com.nexters.teambuilder.user.domain.User.Role.ROLE_USER;
 
 
@@ -55,12 +56,14 @@ public class IdeaService {
         }
 
         List<Tag> tags = tagRepository.findAllById(request.getTags());
+
         return IdeaResponse.of(ideaRepository.save(Idea.of(session, author, tags, request)));
     }
 
     public IdeaResponse getIdea(User user, Integer ideaId) {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
+
         IdeaResponse ideaResponse = IdeaResponse.of(idea);
 
         favoriteRepository.findFavoriteByIdeaIdAndUuid(ideaId, user.getUuid())
@@ -213,32 +216,26 @@ public class IdeaService {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
 
-        List<Member> members = userRepository.findAllByUuidIn(request.getUuids())
-                        .stream().map(requestedUser -> {
-                    if (requestedUser.isHasTeam()){
-                        if(!isExistingMember(idea, requestedUser)){
-                            throw new UserHasTeamException();
-                        }
-                        return new Member(requestedUser.getUuid(), requestedUser.getId(), requestedUser.getName(),
-                                requestedUser.getNextersNumber(), requestedUser.getPosition(), requestedUser.isHasTeam());
-                    }
-                    requestedUser.updateHasTeam(true);
-                    return new Member(requestedUser.getUuid(), requestedUser.getId(), requestedUser.getName(),
-                            requestedUser.getNextersNumber(), requestedUser.getPosition(), requestedUser.isHasTeam());
-                }).collect(Collectors.toList());
+        if (!idea.getAuthor().getUuid().equals(author.getUuid()) || !author.getRole().equals(ROLE_ADMIN)) {
+            throw new IllegalArgumentException("해당 아이디어의 작성자가 아닙니다");
+        }
 
-        idea.addMember(members);
+        List<User> users = userRepository.findAllByUuidIn(request.getUuids());
+
+        if(users.stream().anyMatch(user -> user.isHasTeam())) {
+            throw new UserHasTeamException();
+        }
+
+        List<User> newMembers = users.stream().map(newMember -> {
+            newMember.updateHasTeam(true);
+            return newMember;
+        }).collect(Collectors.toList());
+
+        idea.addMember(newMembers);
+
         ideaRepository.save(idea);
 
-        return members.stream()
-                .map(MemberResponse::of).collect(Collectors.toList());
-    }
-
-    public boolean isExistingMember(Idea idea, User requestedUser){
-        if(idea.getMembers().stream().anyMatch(member -> requestedUser.getUuid().equals(member.getUuid()))){
-            return true;
-        }
-        return false;
+        return newMembers.stream().map(MemberResponse::createMemberFrom).collect(Collectors.toList());
     }
 }
 

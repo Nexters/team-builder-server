@@ -1,6 +1,5 @@
 package com.nexters.teambuilder.idea.api.dto;
 
-import com.nexters.teambuilder.idea.domain.Member;
 import com.nexters.teambuilder.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,9 +24,14 @@ public class MemberResponse {
 
     private boolean hasTeam;
 
-    public static MemberResponse of(Member member){
-        return new MemberResponse(member.getUuid(),
-                member.getId(), member.getName(), member.getNextersNumber(),
-                member.getPosition(), member.isHasTeam());
+    public static  MemberResponse createMemberFrom(User user) {
+        return new MemberResponse(user.getUuid(), user.getId(), user.getName(), user.getNextersNumber(),
+                user.getPosition(), user.isHasTeam());
     }
+
+//    public static MemberResponse of(Member member){
+//        return new MemberResponse(member.getUuid(),
+//                member.getId(), member.getName(), member.getNextersNumber(),
+//                member.getPosition(), member.isHasTeam());
+//    }
 }

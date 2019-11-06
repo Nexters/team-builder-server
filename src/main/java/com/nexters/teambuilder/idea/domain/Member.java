@@ -25,4 +25,9 @@ public class Member {
     private User.Position position;
 
     private boolean hasTeam;
+
+    public Member createMemberFrom(User user) {
+        return new Member(user.getUuid(), user.getId(), user.getName(), user.getNextersNumber(),
+                user.getPosition(), user.isHasTeam());
+    }
 }

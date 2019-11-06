@@ -3,8 +3,6 @@ package com.nexters.teambuilder.idea.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
-import com.nexters.teambuilder.idea.api.dto.MemberRequest;
-import com.nexters.teambuilder.idea.api.dto.MemberResponse;
 import com.nexters.teambuilder.idea.domain.Idea;
 import com.nexters.teambuilder.idea.domain.Member;
 import com.nexters.teambuilder.idea.service.IdeaService;
@@ -117,6 +115,13 @@ class IdeaControllerTest {
             fieldWithPath("createdAt").description("등록 시각"),
             fieldWithPath("updatedAt").description("업데이트 시각"),
             fieldWithPath("members").description("팀 멤버 목록"),
+            fieldWithPath("members[].uuid").description("팀 멤버 uuid"),
+            fieldWithPath("members[].id").description("팀 멤버 id"),
+            fieldWithPath("members[].name").description("팀 멤버 name"),
+            fieldWithPath("members[].nextersNumber").description("팀 멤버 넥스터즈 기수"),
+            fieldWithPath("members[].position").description("팀 멤버 포지션 {DESIGNER, DEVELOPER}"),
+            fieldWithPath("members[].hasTeam").description("팀 멤버가 현재 '활동'중인 기수에서 팀에 소속되어있는지 여부"),
+
     };
 
     @BeforeEach

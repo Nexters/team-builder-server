@@ -9,6 +9,7 @@ import com.nexters.teambuilder.common.exception.CommonNotFoundException;
 import com.nexters.teambuilder.common.exception.NotValidPeriodException;
 import com.nexters.teambuilder.common.response.ApiError;
 import com.nexters.teambuilder.favorite.exception.FavoriteNotFoundException;
+import com.nexters.teambuilder.idea.exception.NotIdeaAuthorException;
 import com.nexters.teambuilder.idea.exception.UserHasTeamException;
 import com.nexters.teambuilder.person.exception.PersonNotFoundException;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
@@ -96,6 +97,8 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler(value = {
+            UserHasTeamException.class,
+            NotIdeaAuthorException.class,
             UserHasTeamException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)

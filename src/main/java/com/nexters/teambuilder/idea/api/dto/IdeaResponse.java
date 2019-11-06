@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -67,14 +68,14 @@ public class IdeaResponse {
     private ZonedDateTime updatedAt;
 
     @JsonView(Views.External.class)
-    private List<Member> members;
+    private List<MemberResponse> members = new ArrayList<>();
 
     public IdeaResponse(Integer ideaId, Integer sessionId,  String title, String content,
                         User author, String file, boolean selected,
                         Idea.Type type,
                         ZonedDateTime createdAt, ZonedDateTime updatedAt,
                         Set<Tag> tags, Integer voteNumber,
-                        List<Member> members
+                        List<User> members
                         ){
         this.ideaId = ideaId;
         this.sessionId = sessionId;
@@ -90,7 +91,7 @@ public class IdeaResponse {
                 .sorted(Comparator.comparing(Tag::getTagId).reversed())
                 .map(TagResponse::of).collect(Collectors.toSet());
         this.voteNumber = voteNumber;
-        this.members = members;
+        this.members = members.stream().map(MemberResponse::createMemberFrom).collect(Collectors.toList());
     }
 
     public static IdeaResponse of(Idea idea) {
