@@ -14,6 +14,7 @@ import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -68,9 +69,9 @@ public class Idea {
     @Column(name = "update_at", nullable = false)
     private ZonedDateTime updateAt;
 
-    @ElementCollection
-    @CollectionTable(name="idea_members", joinColumns = {@JoinColumn(name="idea_ideaId")})
-    private List<Member> members;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "idea_id")
+    private List<User> members = new ArrayList<>();
 
     @Builder
     public Idea(Session session, String title, String content, User author, String file, Type type,
@@ -85,6 +86,8 @@ public class Idea {
         this.file = file;
         this.type = type;
         this.tags = tags.stream().collect(Collectors.toSet());
+
+        this.members.add(author);
     }
 
     public void update(IdeaRequest request, List<Tag> tags) {
@@ -111,13 +114,11 @@ public class Idea {
         this.voteNumber++;
     }
 
-    public void addMember(List<Member> newMembers){
-        this.members.clear();
-
+    public void addMember(List<User> members) {
+        this.members.stream().forEach(member -> member.updateHasTeam(false));
         this.author.updateHasTeam(true);
-        newMembers.add(new Member(this.author.getUuid(), this.author.getId(), this.author.getName(),
-                this.author.getNextersNumber(), this.author.getPosition(), this.author.isHasTeam()));
-
-        this.members.addAll(newMembers);
+        this.members.clear();
+        this.members.add(this.author);
+        this.members.addAll(members);
     }
 }
