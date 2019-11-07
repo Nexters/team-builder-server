@@ -216,7 +216,7 @@ public class IdeaService {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
 
-        if (!idea.getAuthor().getUuid().equals(author.getUuid()) && author.getRole().equals(ROLE_ADMIN)) {
+        if (!idea.getAuthor().getUuid().equals(author.getUuid()) && author.getRole().equals(ROLE_USER)) {
             throw new IllegalArgumentException("해당 아이디어의 작성자가 아닙니다");
         }
 
