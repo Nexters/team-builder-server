@@ -222,7 +222,7 @@ public class IdeaService {
 
         List<User> users = userRepository.findAllByUuidIn(request.getUuids());
 
-        if(users.stream().anyMatch(user -> user.isHasTeam())) {
+        if(users.stream().anyMatch(user -> user.isHasTeam() && !idea.getMembers().contains(user))) {
             throw new UserHasTeamException();
         }
 
