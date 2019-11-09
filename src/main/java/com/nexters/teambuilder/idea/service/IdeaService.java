@@ -7,6 +7,7 @@ import com.nexters.teambuilder.idea.api.dto.*;
 import com.nexters.teambuilder.idea.domain.*;
 import com.nexters.teambuilder.idea.exception.IdeaNotFoundException;
 import com.nexters.teambuilder.idea.exception.NotHasRightVoteException;
+import com.nexters.teambuilder.idea.exception.UserForbiddenActionException;
 import com.nexters.teambuilder.idea.exception.UserHasTeamException;
 import com.nexters.teambuilder.session.domain.Period;
 import com.nexters.teambuilder.session.domain.Session;
@@ -236,6 +237,20 @@ public class IdeaService {
         ideaRepository.save(idea);
 
         return newMembers.stream().map(MemberResponse::createMemberFrom).collect(Collectors.toList());
+    }
+
+    public void ideaSelect(User user, List<Integer> ideaids) {
+        if(!user.getRole().equals(ROLE_ADMIN)) {
+            throw new UserForbiddenActionException();
+        }
+
+        List<Idea> selectedIdeas = ideaRepository.findAllByIdeaIdIn(ideaids).stream()
+                .map(idea -> {
+                    idea.select();
+                    return idea;
+                }).collect(Collectors.toList());
+
+        ideaRepository.saveAll(selectedIdeas);
     }
 }
 

@@ -10,7 +10,8 @@ public enum ErrorCode {
     NOT_PERIOD_OF_IDEA_CHECK("error.not.period.of.idea.check", 90003),
     NOT_PERIOD_OF_TEAM_BUILDING("error.not.period.of.team.building", 90004),
     USER_HAS_TEAM("error.user.has.team", 90005),
-    NOT_AUTHOR_OF_IDEA("error.user.not.author.of.idea", 90006);
+    NOT_AUTHOR_OF_IDEA("error.user.not.author.of.idea", 90006),
+    USER_FORBIDDEN("error.user.forbidden", 90007);
 
     @Getter
     private String message;
