@@ -121,4 +121,8 @@ public class Idea {
         this.members.add(this.author);
         this.members.addAll(members);
     }
+
+    public void select() {
+        this.selected = true;
+    }
 }

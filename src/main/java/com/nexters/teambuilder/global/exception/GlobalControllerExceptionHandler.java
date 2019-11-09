@@ -10,6 +10,7 @@ import com.nexters.teambuilder.common.exception.NotValidPeriodException;
 import com.nexters.teambuilder.common.response.ApiError;
 import com.nexters.teambuilder.favorite.exception.FavoriteNotFoundException;
 import com.nexters.teambuilder.idea.exception.NotIdeaAuthorException;
+import com.nexters.teambuilder.idea.exception.UserForbiddenActionException;
 import com.nexters.teambuilder.idea.exception.UserHasTeamException;
 import com.nexters.teambuilder.person.exception.PersonNotFoundException;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
@@ -107,5 +108,15 @@ public class GlobalControllerExceptionHandler {
         String message = ex.getMessage();
         Integer code = ErrorCode.getCodeOf(message);
         return new ApiError(HttpStatus.BAD_REQUEST, code, message);
+    }
+
+    @ExceptionHandler(value = {
+            UserForbiddenActionException.class
+    })
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    protected ApiError handleUserForbiddenException(RuntimeException ex) {
+        String message = ex.getMessage();
+        Integer code = ErrorCode.getCodeOf(message);
+        return new ApiError(HttpStatus.FORBIDDEN, code, message);
     }
 }

@@ -5,6 +5,7 @@ import com.nexters.teambuilder.common.response.BaseResponse;
 import com.nexters.teambuilder.common.view.Views;
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
+import com.nexters.teambuilder.idea.api.dto.IdeaSelectRequest;
 import com.nexters.teambuilder.idea.api.dto.MemberRequest;
 import com.nexters.teambuilder.idea.api.dto.MemberResponse;
 import com.nexters.teambuilder.idea.service.IdeaService;
@@ -75,5 +76,12 @@ public class IdeaController {
                                  @RequestBody MemberRequest request){
         List<MemberResponse> members = ideaService.addMember(user, ideaId, request);
         return new BaseResponse<>(200, 0, members);
+    }
+
+    @PutMapping("select")
+    public BaseResponse select(@AuthenticationPrincipal User user, @RequestBody IdeaSelectRequest request) {
+        ideaService.ideaSelect(user, request.getIdeaIds());
+
+        return new BaseResponse<>(200, 0, null);
     }
 }
