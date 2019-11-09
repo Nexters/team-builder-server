@@ -64,7 +64,8 @@ public class GlobalControllerExceptionHandler {
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ApiError handleBadRequest(RuntimeException ex) {
-        return new ApiError(HttpStatus.BAD_REQUEST, 0, ex.getMessage());
+        String message = "인증코드 형식이 올바르지 않습니다";
+        return new ApiError(HttpStatus.BAD_REQUEST, 0, message);
     }
 
     /**
