@@ -3,6 +3,7 @@ package com.nexters.teambuilder.user.service;
 import com.nexters.teambuilder.common.domain.CommonRepository;
 import com.nexters.teambuilder.config.security.InValidTokenException;
 import com.nexters.teambuilder.config.security.TokenService;
+import com.nexters.teambuilder.idea.exception.UserForbiddenActionException;
 import com.nexters.teambuilder.session.domain.Session;
 import com.nexters.teambuilder.session.domain.SessionRepository;
 import com.nexters.teambuilder.session.domain.SessionUser;
@@ -110,7 +111,7 @@ public class UserService {
 
     public List<UserResponse> userList() {
         return userRepository.findAll().stream()
-                .filter(user -> user.getRole().equals(User.Role.ROLE_USER))
+                .filter(user -> user.getRole().equals(User.Role.ROLE_USER) && !user.isDissmissed())
                 .map(UserResponse::of).collect(Collectors.toList());
     }
 
@@ -167,5 +168,18 @@ public class UserService {
             user.deactivate();
             return UserResponse.of(user);
         }).collect(Collectors.toList());
+    }
+
+    public void dismissUsers(User admin, UserDismissRequest request) {
+        if (!admin.getRole().equals(User.Role.ROLE_ADMIN)) {
+            throw new UserForbiddenActionException();
+        }
+
+        List<User> users = userRepository.findAllByUuidIn(request.getUuids()).stream().map(user -> {
+            user.dismiss();
+            return user;
+        }).collect(Collectors.toList());
+
+        userRepository.saveAll(users);
     }
 }

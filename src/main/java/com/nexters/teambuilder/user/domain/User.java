@@ -74,6 +74,8 @@ public class User implements UserDetails {
 
     private boolean hasTeam;
 
+    private boolean dissmissed;
+
     @Builder
     public User(String id, String password, String name, Integer nextersNumber, Role role,
                 Position position, String email) {
@@ -166,5 +168,10 @@ public class User implements UserDetails {
 
     public void updateVoteCount(int voteCount) {
         this.voteCount = voteCount;
+    }
+
+    public void dismiss() {
+        this.dissmissed = true;
+        this.name = "제명된 회원";
     }
 }
