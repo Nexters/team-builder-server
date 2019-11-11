@@ -88,6 +88,8 @@ operation::/users/put-activate[snippets='http-request,request-parameters,http-re
 operation::/users/put-deactivate[snippets='http-request,request-parameters,http-response,response-fields']
 === 전체비활성화
 operation::/users/put-deactivate-all[snippets='http-request,http-response,response-fields']
+=== 회원 제명
+operation::/users/put-dismiss[snippets='http-request,request-headers,request-fields,http-response,response-fields']
 
 == Auth
 === me
@@ -114,6 +116,9 @@ operation::/ideas/vote-ideas[snippets='http-request,request-parameters,http-resp
 
 === 아이디어 삭제
 operation::/ideas/delete-idea[snippets='http-request,path-parameters,http-response']
+
+=== 아이디어 선정
+operation::/ideas/put-select[snippets='http-request,request-headers,request-fields,http-response']
 
 == Session
 === session 생성

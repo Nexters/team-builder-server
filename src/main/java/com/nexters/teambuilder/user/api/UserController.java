@@ -109,4 +109,12 @@ public class UserController {
         userService.updateUser(user, request);
         return new BaseResponse<>(200, 0, null);
     }
+
+    @PutMapping("apis/users/dismiss")
+    public BaseResponse dismiss(@AuthenticationPrincipal User user,
+                                @RequestBody UserDismissRequest request) {
+        userService.dismissUsers(user, request);
+
+        return new BaseResponse<>(200, 0, null);
+    }
 }

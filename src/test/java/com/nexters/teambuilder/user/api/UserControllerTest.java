@@ -4,6 +4,8 @@ import static com.nexters.teambuilder.user.domain.User.Position.DEVELOPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -20,6 +22,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -311,6 +314,27 @@ class UserControllerTest {
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
                         responseFields(baseResposneDescription)
                                 .andWithPrefix("data.[].", userResposneDescription)));
+    }
+
+    @Test
+    void dismissUsers() throws Exception {
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put("uuids", Arrays.asList("awa34er-adfg-ersaer-324aewr", "asdf342-avcxv-345ert-fhdgfh"));
+
+        this.mockMvc.perform(put("/apis/users/dismiss")
+                .content(mapper.writeValueAsString(input))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("users/put-dismiss",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization")
+                                        .description("Bearer oAuth2 access_token,"
+                                                + " admin계정이 아닐경우 error 발생 error code : 90007")),
+                        requestFields(
+                                fieldWithPath("uuids").description("제명하려는 회원들의 uuid 목록")),
+                        responseFields(baseResposneDescription)));
     }
 }
 

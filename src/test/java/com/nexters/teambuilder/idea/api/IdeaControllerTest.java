@@ -37,6 +37,8 @@ import static java.time.ZonedDateTime.now;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -266,6 +268,28 @@ class IdeaControllerTest {
                         requestParameters(
                                 parameterWithName("ideaIds").description("Idea의 id list")
                                         .attributes(key("constraints").value("Not empty"))),
+                        responseFields(baseResponseDescription)));
+    }
+
+    @Test
+    void select() throws Exception {
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put("ideaIds", Arrays.asList(1, 2));
+
+        this.mockMvc.perform(put("/apis/ideas/select")
+                .content(mapper.writeValueAsString(input))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("ideas/put-select",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization")
+                                        .description("Bearer oAuth2 access_token,"
+                                                + " admin계정이 아닐경우 error 발생 error code : 90007")),
+                        requestFields(
+                                fieldWithPath("ideaIds")
+                                        .description("선정하려는 아이디어들의 id목록")),
                         responseFields(baseResponseDescription)));
     }
 }
