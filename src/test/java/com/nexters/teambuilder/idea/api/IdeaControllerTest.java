@@ -292,4 +292,26 @@ class IdeaControllerTest {
                                         .description("선정하려는 아이디어들의 id목록")),
                         responseFields(baseResponseDescription)));
     }
+
+    @Test
+    void deselect() throws Exception {
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put("ideaIds", Arrays.asList(1, 2));
+
+        this.mockMvc.perform(put("/apis/ideas/deselect")
+                .content(mapper.writeValueAsString(input))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("ideas/put-deselect",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization")
+                                        .description("Bearer oAuth2 access_token,"
+                                                + " admin계정이 아닐경우 error 발생 error code : 90007")),
+                        requestFields(
+                                fieldWithPath("ideaIds")
+                                        .description("선정 해제하려는 아이디어들의 id목록")),
+                        responseFields(baseResponseDescription)));
+    }
 }

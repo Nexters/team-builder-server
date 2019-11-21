@@ -252,5 +252,19 @@ public class IdeaService {
 
         ideaRepository.saveAll(selectedIdeas);
     }
+
+    public void ideaDeselect(User user, List<Integer> ideaids) {
+        if(!user.getRole().equals(ROLE_ADMIN)) {
+            throw new UserForbiddenActionException();
+        }
+
+        List<Idea> selectedIdeas = ideaRepository.findAllByIdeaIdIn(ideaids).stream()
+                .map(idea -> {
+                    idea.deselect();
+                    return idea;
+                }).collect(Collectors.toList());
+
+        ideaRepository.saveAll(selectedIdeas);
+    }
 }
 

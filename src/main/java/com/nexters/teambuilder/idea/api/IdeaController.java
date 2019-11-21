@@ -84,4 +84,11 @@ public class IdeaController {
 
         return new BaseResponse<>(200, 0, null);
     }
+
+    @PutMapping("deselect")
+    public BaseResponse deselect(@AuthenticationPrincipal User user, @RequestBody IdeaSelectRequest request) {
+        ideaService.ideaSelect(user, request.getIdeaIds());
+
+        return new BaseResponse<>(200, 0, null);
+    }
 }
