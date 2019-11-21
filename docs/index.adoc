@@ -120,6 +120,9 @@ operation::/ideas/delete-idea[snippets='http-request,path-parameters,http-respon
 === 아이디어 선정
 operation::/ideas/put-select[snippets='http-request,request-headers,request-fields,http-response']
 
+=== 아이디어 선정 해제
+operation::/ideas/put-deselect[snippets='http-request,request-headers,request-fields,http-response']
+
 == Session
 === session 생성
 operation::/sessions/post-session[snippets='http-request,request-fields,http-response,response-fields']

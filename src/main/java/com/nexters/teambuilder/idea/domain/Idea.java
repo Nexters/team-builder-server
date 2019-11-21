@@ -125,4 +125,8 @@ public class Idea {
     public void select() {
         this.selected = true;
     }
+
+    public void deselect() {
+        this.selected = false;
+    }
 }
