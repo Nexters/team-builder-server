@@ -99,7 +99,8 @@ public class IdeaResponse {
                 idea.getContent(), idea.getAuthor(), idea.getFile(),
                 idea.isSelected(), idea.getType(),
                 idea.getCreatedAt(), idea.getUpdateAt(),
-                idea.getTags(), idea.getVoteNumber(), idea.getMembers());
+                idea.getTags(), idea.getVoteNumber(),
+                idea.getMembers().stream().collect(Collectors.toList()));
     }
 
     public void updateOrderNumber(Integer orderNumber){
