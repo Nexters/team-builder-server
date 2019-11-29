@@ -45,7 +45,7 @@ public class IdeaService {
         Session session = sessionRepository.findById(request.getSessionId())
                 .orElseThrow(() -> new SessionNotFoundException(request.getSessionId()));
 
-        checkValidPeriodForAction(session, Period.PeriodType.IDEA_COLLECT);
+        checkValidPeriodForAction(author, session, Period.PeriodType.IDEA_COLLECT);
 
         if (!author.isActivated() && author.getRole().equals(ROLE_USER)) {
             throw new UserNotActivatedException();
@@ -132,7 +132,7 @@ public class IdeaService {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new IdeaNotFoundException(ideaId));
 
-        if (!idea.getAuthor().getId().equals(author.getId())) {
+        if (!idea.getAuthor().getId().equals(author.getId()) && author.getRole().equals(ROLE_USER)) {
             throw new IllegalArgumentException("해당 아이디어의 작성자가 아닙니다");
         }
 
@@ -148,7 +148,7 @@ public class IdeaService {
                 .filter(sessionUser -> sessionUser.getUser().getUuid().equals(voter.getUuid()))
                 .findAny();
 
-        checkValidPeriodForAction(idea.getSession(), Period.PeriodType.IDEA_VOTE);
+        checkValidPeriodForAction(voter, idea.getSession(), Period.PeriodType.IDEA_VOTE);
 
         if (!sessionUserOptional.isPresent()) {
             throw new NotHasRightVoteException();
@@ -174,10 +174,14 @@ public class IdeaService {
     }
 
     public void ideasVote(User voter, List<Integer> ideaId) {
+        if (!voter.isActivated()) {
+            throw new UserForbiddenActionException();
+        }
+
         List<Idea> ideas = ideaRepository.findAllByIdeaIdIn(ideaId);
 
         ideas.stream().findFirst()
-                .ifPresent(idea -> checkValidPeriodForAction(idea.getSession(), Period.PeriodType.IDEA_VOTE));
+                .ifPresent(idea -> checkValidPeriodForAction(voter, idea.getSession(), Period.PeriodType.IDEA_VOTE));
 
         ideas.stream().forEach(idea -> {
             idea.vote();
@@ -195,7 +199,7 @@ public class IdeaService {
 
     public List<VotedIdeaResponse> votedIdeas(User user, Integer sessionNumber) {
         List<Integer> votedIdeaIds = ideaVoteRepository.findAllByUuidAndSessionNumber(user.getUuid(), sessionNumber)
-                .stream().map(ideaVote -> ideaVote.getId())
+                .stream().map(ideaVote -> ideaVote.getIdeaId())
                 .collect(Collectors.toList());
 
         return ideaRepository.findAllByIdeaIdIn(votedIdeaIds).stream()
@@ -203,11 +207,11 @@ public class IdeaService {
                 .collect(Collectors.toList());
     }
 
-    public void checkValidPeriodForAction(Session session, Period.PeriodType periodType) {
+    public void checkValidPeriodForAction(User user, Session session, Period.PeriodType periodType) {
         session.getPeriods().stream()
                 .filter(period -> period.getPeriodType().equals(periodType)).findFirst()
                 .ifPresent(period -> {
-                    if (!period.isNowIn()) {
+                    if (!period.isNowIn() && user.getRole().equals(ROLE_USER)) {
                         throw new NotValidPeriodException(periodType);
                     }
                 });

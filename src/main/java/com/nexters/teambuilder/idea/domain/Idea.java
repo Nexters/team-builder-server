@@ -15,6 +15,7 @@ import org.springframework.util.Assert;
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -71,7 +72,7 @@ public class Idea {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "idea_id")
-    private List<User> members = new ArrayList<>();
+    private Set<User> members = new HashSet<>();
 
     @Builder
     public Idea(Session session, String title, String content, User author, String file, Type type,
