@@ -174,6 +174,10 @@ public class IdeaService {
     }
 
     public void ideasVote(User voter, List<Integer> ideaId) {
+        if (!voter.isActivated()) {
+            throw new UserForbiddenActionException();
+        }
+
         List<Idea> ideas = ideaRepository.findAllByIdeaIdIn(ideaId);
 
         ideas.stream().findFirst()
