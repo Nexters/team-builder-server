@@ -199,7 +199,7 @@ public class IdeaService {
 
     public List<VotedIdeaResponse> votedIdeas(User user, Integer sessionNumber) {
         List<Integer> votedIdeaIds = ideaVoteRepository.findAllByUuidAndSessionNumber(user.getUuid(), sessionNumber)
-                .stream().map(ideaVote -> ideaVote.getId())
+                .stream().map(ideaVote -> ideaVote.getIdeaId())
                 .collect(Collectors.toList());
 
         return ideaRepository.findAllByIdeaIdIn(votedIdeaIds).stream()
