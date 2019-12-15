@@ -170,8 +170,9 @@ public class User implements UserDetails {
         this.voteCount = voteCount;
     }
 
-    public void dismiss() {
+    public void dismiss(long dissmissNumber) {
         this.dissmissed = true;
         this.name = "제명된 회원";
+        this.id = "제명회원" + String.format("%03d", dissmissNumber);
     }
 }

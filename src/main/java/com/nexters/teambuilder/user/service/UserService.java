@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -175,11 +176,16 @@ public class UserService {
             throw new UserForbiddenActionException();
         }
 
-        List<User> users = userRepository.findAllByUuidIn(request.getUuids()).stream().map(user -> {
-            user.dismiss();
+        long dissmissNumber = userRepository.countByDissmissedIsTrue();
+        System.out.println(dissmissNumber);
+
+        List<User> users = userRepository.findAllByUuidIn(request.getUuids());
+        List<User> dissmissedUsers = IntStream.range(0, users.size()).mapToObj(i -> {
+            User user = users.get(i);
+            user.dismiss(dissmissNumber + i + 1);
             return user;
         }).collect(Collectors.toList());
 
-        userRepository.saveAll(users);
+        userRepository.saveAll(dissmissedUsers);
     }
 }
