@@ -13,4 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsById(String id);
 
     List<User> findAllByUuidIn(List<String> ids);
+
+    long countByDissmissedIsTrue();
 }
