@@ -2,8 +2,6 @@ package com.nexters.teambuilder.session.domain;
 
 import static java.time.ZonedDateTime.now;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import javax.persistence.Embeddable;
@@ -14,7 +12,6 @@ import com.nexters.teambuilder.session.api.dto.PeriodRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.tomcat.jni.Local;
 
 @Embeddable
 @Getter
@@ -49,7 +46,6 @@ public class Period {
     }
 
     public boolean isNowIn() {
-        LocalDate realEndDate = endDate.toLocalDate();
-        return ZonedDateTime.now().isAfter(startDate) && LocalDate.now().isBefore(realEndDate.plusDays(1));
+        return now().isAfter(startDate) && now().isBefore(endDate);
     }
 }
