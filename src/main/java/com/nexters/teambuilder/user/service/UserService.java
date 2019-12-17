@@ -118,7 +118,7 @@ public class UserService {
 
     public List<UserResponse> activatedUserList() {
         return userRepository.findAll().stream()
-                .filter(user -> user.getRole().equals(User.Role.ROLE_USER) && user.isActivated())
+                .filter(user -> user.getRole().equals(User.Role.ROLE_USER) && user.isActivated() && !user.isDissmissed())
                 .map(UserResponse::of).collect(Collectors.toList());
     }
 
