@@ -232,7 +232,7 @@ public class IdeaService {
 
         if(users.stream().anyMatch(user -> user.isHasTeam() && !idea.getMembers().contains(user))) {
             List<User> hasTeamMembers = users.stream().filter(user -> user.isHasTeam() && !idea.getMembers().contains(user)).collect(Collectors.toList());
-            throw new UserHasTeamException(hasTeamMembers);
+            throw new UserHasTeamException(hasTeamMembers.stream().map(MemberResponse::createMemberFrom).collect(Collectors.toList()));
         }
 
         List<User> newMembers = users.stream().map(newMember -> {
