@@ -1,5 +1,6 @@
 package com.nexters.teambuilder.global.exception;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -15,6 +16,7 @@ import com.nexters.teambuilder.idea.exception.UserHasTeamException;
 import com.nexters.teambuilder.person.exception.PersonNotFoundException;
 import com.nexters.teambuilder.session.exception.SessionNotFoundException;
 import com.nexters.teambuilder.tag.exception.TagNotFoundException;
+import com.nexters.teambuilder.user.domain.User;
 import com.nexters.teambuilder.user.exception.LoginErrorException;
 import com.nexters.teambuilder.user.exception.UserNotActivatedException;
 import org.springframework.http.HttpStatus;
@@ -100,11 +102,20 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(value = {
             UserHasTeamException.class,
-            NotIdeaAuthorException.class,
-            UserHasTeamException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ApiError handleUserHasTeam(RuntimeException ex) {
+    protected ApiError handleUserHasTeam(UserHasTeamException ex) {
+        Integer code = ErrorCode.getCodeOf(ex.getMessage());
+        String message = ex.getMessage();
+        List<User> hasTeamMembers = ex.getHasTeamMembers();
+        return new ApiError(HttpStatus.BAD_REQUEST, code, message, hasTeamMembers);
+    }
+
+    @ExceptionHandler(value = {
+            NotIdeaAuthorException.class,
+    })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ApiError handleNotIdeaAuthorException(RuntimeException ex) {
         String message = ex.getMessage();
         Integer code = ErrorCode.getCodeOf(message);
         return new ApiError(HttpStatus.BAD_REQUEST, code, message);

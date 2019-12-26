@@ -29,9 +29,4 @@ public class MemberResponse {
                 user.getPosition(), user.isHasTeam());
     }
 
-//    public static MemberResponse of(Member member){
-//        return new MemberResponse(member.getUuid(),
-//                member.getId(), member.getName(), member.getNextersNumber(),
-//                member.getPosition(), member.isHasTeam());
-//    }
 }
