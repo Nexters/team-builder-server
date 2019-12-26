@@ -1,34 +1,5 @@
 package com.nexters.teambuilder.user.api;
 
-import static com.nexters.teambuilder.user.domain.User.Position.DEVELOPER;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexters.teambuilder.user.api.dto.SignInResponse;
 import com.nexters.teambuilder.user.api.dto.UserRequest;
@@ -44,11 +15,31 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static com.nexters.teambuilder.user.domain.User.Position.DEVELOPER;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "${service.api-server}", uriPort = 80)
@@ -64,18 +55,18 @@ class UserControllerTest {
 
     private ObjectMapper mapper;
 
-    private FieldDescriptor[] baseResposneDescription = new FieldDescriptor[]{
+    private FieldDescriptor[] baseResponseDescription = new FieldDescriptor[]{
             fieldWithPath("status").description("status code"),
             fieldWithPath("errorCode").description("error code, 해당 코드를 보고 front 에서 분기처리를 한다"),
             fieldWithPath("data").description("respone data"),
     };
 
-    private FieldDescriptor[] signInResposneDescription = new FieldDescriptor[]{
+    private FieldDescriptor[] signInResponseDescription = new FieldDescriptor[]{
             fieldWithPath("accessToken").description("access token for user"),
             fieldWithPath("role").description("user role")
     };
 
-    private FieldDescriptor[] userResposneDescription = new FieldDescriptor[]{
+    private FieldDescriptor[] userResponseDescription = new FieldDescriptor[]{
             fieldWithPath("uuid").description("user uuid"),
             fieldWithPath("id").description("아이디"),
             fieldWithPath("name").description("user 이름"),
@@ -91,7 +82,7 @@ class UserControllerTest {
             fieldWithPath("createdAt").description("user 가입 일자"),
     };
 
-    private FieldDescriptor[] userRequesteDescription = new FieldDescriptor[]{
+    private FieldDescriptor[] userRequestDescription = new FieldDescriptor[]{
             fieldWithPath("id").description("아이디"),
             fieldWithPath("password").description("비밀번호"),
             fieldWithPath("name").description("user 이름"),
@@ -102,7 +93,7 @@ class UserControllerTest {
             fieldWithPath("authenticationCode").description("회원가입을 위한 인증코드"),
     };
 
-    private FieldDescriptor[] userUpdateRequesteDescription = new FieldDescriptor[]{
+    private FieldDescriptor[] userUpdateRequestDescription = new FieldDescriptor[]{
             fieldWithPath("nowPassword").description("현재 비밀번호"),
             fieldWithPath("newPassword").description("변경할 비밀번호 (null 일시 비밀번호 변경 스킵)"),
             fieldWithPath("position").description("user Position {DESIGNER, DEVELOPER} (null 일시 변경 스킵)"),
@@ -128,7 +119,7 @@ class UserControllerTest {
                         requestParameters(
                                 parameterWithName("id").description("중복여부를 판단할 ID")
                         ),
-                        responseFields(baseResposneDescription)
+                        responseFields(baseResponseDescription)
                                 .andWithPrefix("data.",
                                         fieldWithPath("isIdUsable").description("아이디 사용 가능여부"))));
     }
@@ -158,9 +149,9 @@ class UserControllerTest {
                 .andExpect(jsonPath("data.position").value("DEVELOPER"))
                 .andDo(document("users/post-signUp",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                        requestFields(userRequesteDescription),
-                        responseFields(baseResposneDescription)
-                                .andWithPrefix("data.", userResposneDescription)));
+                        requestFields(userRequestDescription),
+                        responseFields(baseResponseDescription)
+                                .andWithPrefix("data.", userResponseDescription)));
     }
 
     @Test
@@ -184,8 +175,8 @@ class UserControllerTest {
                                 parameterWithName("id").description("user 아이디"),
                                 parameterWithName("password").description("user 비밀번호")
                         ),
-                        responseFields(baseResposneDescription)
-                                        .andWithPrefix("data.", signInResposneDescription)));
+                        responseFields(baseResponseDescription)
+                                        .andWithPrefix("data.", signInResponseDescription)));
     }
 
     @Test
@@ -206,8 +197,8 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document("users/list-users",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                        responseFields(baseResposneDescription)
-                                .andWithPrefix("data.[].", userResposneDescription)));
+                        responseFields(baseResponseDescription)
+                                .andWithPrefix("data.[].", userResponseDescription)));
     }
 
     @Test
@@ -228,8 +219,8 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document("users/list-activated-users",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                        responseFields(baseResposneDescription)
-                                .andWithPrefix("data.[].", userResposneDescription)));
+                        responseFields(baseResponseDescription)
+                                .andWithPrefix("data.[].", userResponseDescription)));
     }
 
     @Test
@@ -246,8 +237,8 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document("users/put-user",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                        requestFields(userUpdateRequesteDescription),
-                        responseFields(baseResposneDescription)));
+                        requestFields(userUpdateRequestDescription),
+                        responseFields(baseResponseDescription)));
     }
 
     @Test
@@ -269,7 +260,7 @@ class UserControllerTest {
                         pathParameters(
                                 parameterWithName("uuid").description("활성화시킬 user uuid")
                         ),
-                        responseFields(baseResposneDescription)));
+                        responseFields(baseResponseDescription)));
     }
 
     @Test
@@ -291,7 +282,7 @@ class UserControllerTest {
                         pathParameters(
                                 parameterWithName("uuid").description("비활성화시킬 user uuid")
                         ),
-                        responseFields(baseResposneDescription)));
+                        responseFields(baseResponseDescription)));
     }
 
     @Test
@@ -312,8 +303,8 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document("users/put-deactivate-all",
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                        responseFields(baseResposneDescription)
-                                .andWithPrefix("data.[].", userResposneDescription)));
+                        responseFields(baseResponseDescription)
+                                .andWithPrefix("data.[].", userResponseDescription)));
     }
 
     @Test
@@ -334,7 +325,7 @@ class UserControllerTest {
                                                 + " admin계정이 아닐경우 error 발생 error code : 90007")),
                         requestFields(
                                 fieldWithPath("uuids").description("제명하려는 회원들의 uuid 목록")),
-                        responseFields(baseResposneDescription)));
+                        responseFields(baseResponseDescription)));
     }
 }
 

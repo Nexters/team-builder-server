@@ -3,8 +3,11 @@ package com.nexters.teambuilder.idea.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexters.teambuilder.idea.api.dto.IdeaRequest;
 import com.nexters.teambuilder.idea.api.dto.IdeaResponse;
+import com.nexters.teambuilder.idea.api.dto.MemberRequest;
+import com.nexters.teambuilder.idea.api.dto.MemberResponse;
 import com.nexters.teambuilder.idea.domain.Idea;
 import com.nexters.teambuilder.idea.domain.Member;
+import com.nexters.teambuilder.idea.exception.UserHasTeamException;
 import com.nexters.teambuilder.idea.service.IdeaService;
 import com.nexters.teambuilder.session.domain.Period;
 import com.nexters.teambuilder.session.domain.Session;
@@ -84,7 +87,34 @@ class IdeaControllerTest {
             fieldWithPath("selected").description("아이디어 선정 여부"),
     };
 
-    private FieldDescriptor[] ideaResponseDescription = new FieldDescriptor[] {
+    private FieldDescriptor[] addMemberDescription = new FieldDescriptor[]{
+            fieldWithPath("status").description("status code"),
+            fieldWithPath("errorCode").description("error code"),
+            fieldWithPath("data[]").description("팀에 추가된 회원 목록"),
+            fieldWithPath("data[].uuid").description("회원의 uuid"),
+            fieldWithPath("data[].id").description("회원의 id"),
+            fieldWithPath("data[].name").description("회원의 이름"),
+            fieldWithPath("data[].nextersNumber").description("회원의 기수"),
+            fieldWithPath("data[].position").description("회원의 직군"),
+            fieldWithPath("data[].hasTeam").description("회원의 팀 빌딩 여부"),
+    };
+
+    private FieldDescriptor[] userHasTeamException = new FieldDescriptor[]{
+            fieldWithPath("status").description("status code"),
+            fieldWithPath("errorCode").description("error code"),
+            fieldWithPath("error").description("error 이름"),
+            fieldWithPath("message").description("error 메시지"),
+            fieldWithPath("timestamp").description("발생 시각"),
+            fieldWithPath("hasTeamMembers[]").description("중복된 회원 목록"),
+            fieldWithPath("hasTeamMembers[].uuid").description("중복된 회원의 uuid"),
+            fieldWithPath("hasTeamMembers[].id").description("중복된 회원의 id"),
+            fieldWithPath("hasTeamMembers[].name").description("중복된 회원의 이름"),
+            fieldWithPath("hasTeamMembers[].nextersNumber").description("중복된 회원의 기수"),
+            fieldWithPath("hasTeamMembers[].position").description("중복된 회원의 직군"),
+            fieldWithPath("hasTeamMembers[].hasTeam").description("중복된 회원의 팀 빌딩 여부"),
+    };
+
+    private FieldDescriptor[] ideaResponseDescription = new FieldDescriptor[]{
             fieldWithPath("ideaId").description("id"),
             fieldWithPath("sessionId").description("아이디어가 작성될 session(기수) id"),
             fieldWithPath("title").description("아이디어 제목"),
@@ -136,6 +166,9 @@ class IdeaControllerTest {
 
         idea = new Idea(session, "모임모임 웹 서비스", "모임모임 같이만드실분 구합니다", user, "https://file.url", IDEA,
                 Arrays.asList(new Tag("ios 개발자", DEVELOPER)));
+
+        member = new Member("uuid", user.getId(), user.getName(), user.getNextersNumber(),
+                user.getPosition(), false);
 
         mapper = new ObjectMapper();
     }
@@ -269,6 +302,64 @@ class IdeaControllerTest {
                                 parameterWithName("ideaIds").description("Idea의 id list")
                                         .attributes(key("constraints").value("Not empty"))),
                         responseFields(baseResponseDescription)));
+    }
+
+    @Test
+    void addMember() throws Exception {
+        List<User> members = IntStream.range(1, 5).mapToObj(i -> {
+            user.updateHasTeam(true);
+            user.setUuid("uuid");
+            return user;
+        }).collect(Collectors.toList());
+
+        List<MemberResponse> newMembers = members.stream()
+                .map(MemberResponse::createMemberFrom).collect(Collectors.toList());
+
+        given(ideaService.addMember(any(User.class), anyInt(), any(MemberRequest.class)))
+                .willReturn(newMembers);
+
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put("uuids", Arrays.asList("uuid1", "uuid2"));
+
+        this.mockMvc.perform(put("/apis/ideas/{ideaId}/team", 1)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(mapper.writeValueAsString(input))
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isOk())
+                .andDo(document("ideas/team",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())
+                        , requestFields(fieldWithPath("uuids").description("user의 uuid. " +
+                                "다른 팀에 이미 속해 있을 경우 error 발생(error code 90005).")),
+                        responseFields(addMemberDescription)));
+    }
+
+    @Test
+    void userHasTeamThrowsException() throws Exception {
+        List<User> members = IntStream.range(1, 5).mapToObj(i -> {
+            user.updateHasTeam(true);
+            user.setUuid("uuid");
+            return user;
+        }).collect(Collectors.toList());
+
+        List<MemberResponse> newMembers = members.stream()
+                .map(MemberResponse::createMemberFrom).collect(Collectors.toList());
+
+        given(ideaService.addMember(any(User.class), anyInt(), any(MemberRequest.class)))
+                .willThrow(new UserHasTeamException(newMembers));
+
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put("uuids", Arrays.asList(member.getUuid(), member.getUuid()));
+
+        this.mockMvc.perform(put("/apis/ideas/{ideaId}/team", 1)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(mapper.writeValueAsString(input))
+                .header("Authorization", "Bearer " + "<access_token>"))
+                .andExpect(status().isBadRequest())
+                .andDo(document("ideas/team-exception",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())
+                        , requestFields(fieldWithPath("uuids").description("user의 uuid. " +
+                                "다른 팀에 이미 속해 있을 경우 error 발생(error code 90005).")),
+                        responseFields(userHasTeamException)));
     }
 
     @Test
