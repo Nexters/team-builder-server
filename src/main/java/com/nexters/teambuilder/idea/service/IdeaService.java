@@ -4,7 +4,10 @@ import com.nexters.teambuilder.common.exception.NotValidPeriodException;
 import com.nexters.teambuilder.favorite.domain.Favorite;
 import com.nexters.teambuilder.favorite.domain.FavoriteRepository;
 import com.nexters.teambuilder.idea.api.dto.*;
-import com.nexters.teambuilder.idea.domain.*;
+import com.nexters.teambuilder.idea.domain.Idea;
+import com.nexters.teambuilder.idea.domain.IdeaRepository;
+import com.nexters.teambuilder.idea.domain.IdeaVote;
+import com.nexters.teambuilder.idea.domain.IdeaVoteRepository;
 import com.nexters.teambuilder.idea.exception.IdeaNotFoundException;
 import com.nexters.teambuilder.idea.exception.NotHasRightVoteException;
 import com.nexters.teambuilder.idea.exception.UserForbiddenActionException;
@@ -228,7 +231,8 @@ public class IdeaService {
         List<User> users = userRepository.findAllByUuidIn(request.getUuids());
 
         if(users.stream().anyMatch(user -> user.isHasTeam() && !idea.getMembers().contains(user))) {
-            throw new UserHasTeamException();
+            List<User> hasTeamMembers = users.stream().filter(user -> user.isHasTeam() && !idea.getMembers().contains(user)).collect(Collectors.toList());
+            throw new UserHasTeamException(hasTeamMembers);
         }
 
         List<User> newMembers = users.stream().map(newMember -> {
