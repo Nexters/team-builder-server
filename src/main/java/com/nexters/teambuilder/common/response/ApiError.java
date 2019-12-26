@@ -1,11 +1,11 @@
 package com.nexters.teambuilder.common.response;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-
-import com.nexters.teambuilder.user.domain.User;
+import com.nexters.teambuilder.idea.api.dto.MemberResponse;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+
+import java.time.ZonedDateTime;
+import java.util.List;
 
 @Getter
 public class ApiError {
@@ -14,7 +14,7 @@ public class ApiError {
     private String error;
     private String message;
     private ZonedDateTime timestamp;
-    private List<User> hasTeamMembers;
+    private List<MemberResponse> hasTeamMembers;
 
     /**
      * Api Error Response Wrapper.
@@ -29,7 +29,7 @@ public class ApiError {
         this.timestamp = ZonedDateTime.now();
     }
 
-    public ApiError(HttpStatus status, Integer errorCode, String message, List<User> hasTeamMembers) {
+    public ApiError(HttpStatus status, Integer errorCode, String message, List<MemberResponse> hasTeamMembers) {
         this.status = status.value();
         this.errorCode = errorCode;
         this.error = status.getReasonPhrase();
