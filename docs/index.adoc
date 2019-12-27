@@ -124,10 +124,10 @@ operation::/ideas/put-select[snippets='http-request,request-headers,request-fiel
 operation::/ideas/put-deselect[snippets='http-request,request-headers,request-fields,http-response']
 
 === 팀 빌딩
-operation::/ideas/team[snippets='http-request,request-headers,request-fields,http-response,response-fields']
+operation::/ideas/team[snippets='http-request,request-fields,http-response,response-fields']
 
-=== 팀 빌딩 시 중복되는 회원
-operation::/ideas/team-exception[snippets='http-request,request-headers,request-fields,http-response,response-fields']
+=== 팀 빌딩 중복 회원
+operation::/ideas/team-exception[snippets='http-request,request-fields,http-response,response-fields']
 
 == Session
 === session 생성
