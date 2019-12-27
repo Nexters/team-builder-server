@@ -88,30 +88,21 @@ class IdeaControllerTest {
     };
 
     private FieldDescriptor[] addMemberDescription = new FieldDescriptor[]{
-            fieldWithPath("status").description("status code"),
-            fieldWithPath("errorCode").description("error code"),
-            fieldWithPath("data[]").description("팀에 추가된 회원 목록"),
-            fieldWithPath("data[].uuid").description("회원의 uuid"),
-            fieldWithPath("data[].id").description("회원의 id"),
-            fieldWithPath("data[].name").description("회원의 이름"),
-            fieldWithPath("data[].nextersNumber").description("회원의 기수"),
-            fieldWithPath("data[].position").description("회원의 직군"),
-            fieldWithPath("data[].hasTeam").description("회원의 팀 빌딩 여부"),
+            fieldWithPath("uuid").description("회원의 uuid"),
+            fieldWithPath("id").description("회원의 id"),
+            fieldWithPath("name").description("회원의 이름"),
+            fieldWithPath("nextersNumber").description("회원의 기수"),
+            fieldWithPath("position").description("회원의 직군"),
+            fieldWithPath("hasTeam").description("회원의 팀 빌딩 여부"),
     };
 
     private FieldDescriptor[] userHasTeamException = new FieldDescriptor[]{
-            fieldWithPath("status").description("status code"),
-            fieldWithPath("errorCode").description("error code"),
-            fieldWithPath("error").description("error 이름"),
-            fieldWithPath("message").description("error 메시지"),
-            fieldWithPath("timestamp").description("발생 시각"),
-            fieldWithPath("hasTeamMembers[]").description("중복된 회원 목록"),
-            fieldWithPath("hasTeamMembers[].uuid").description("중복된 회원의 uuid"),
-            fieldWithPath("hasTeamMembers[].id").description("중복된 회원의 id"),
-            fieldWithPath("hasTeamMembers[].name").description("중복된 회원의 이름"),
-            fieldWithPath("hasTeamMembers[].nextersNumber").description("중복된 회원의 기수"),
-            fieldWithPath("hasTeamMembers[].position").description("중복된 회원의 직군"),
-            fieldWithPath("hasTeamMembers[].hasTeam").description("중복된 회원의 팀 빌딩 여부"),
+            fieldWithPath("id").description("중복된 회원의 id"),
+            fieldWithPath("uuid").description("중복된 회원의 uuid"),
+            fieldWithPath("name").description("중복된 회원의 이름"),
+            fieldWithPath("nextersNumber").description("중복된 회원의 기수"),
+            fieldWithPath("position").description("중복된 회원의 직군"),
+            fieldWithPath("hasTeam").description("중복된 회원의 팀 빌딩 여부"),
     };
 
     private FieldDescriptor[] ideaResponseDescription = new FieldDescriptor[]{
@@ -319,7 +310,7 @@ class IdeaControllerTest {
                 .willReturn(newMembers);
 
         Map<String, Object> input = new LinkedHashMap<>();
-        input.put("uuids", Arrays.asList("uuid1", "uuid2"));
+        input.put("uuids", Arrays.asList("uuid", "uuid"));
 
         this.mockMvc.perform(put("/apis/ideas/{ideaId}/team", 1)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -330,7 +321,8 @@ class IdeaControllerTest {
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())
                         , requestFields(fieldWithPath("uuids").description("user의 uuid. " +
                                 "다른 팀에 이미 속해 있을 경우 error 발생(error code 90005).")),
-                        responseFields(addMemberDescription)));
+                        responseFields(baseResponseDescription)
+                                .andWithPrefix("data[].",addMemberDescription)));
     }
 
     @Test
@@ -359,7 +351,13 @@ class IdeaControllerTest {
                         preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())
                         , requestFields(fieldWithPath("uuids").description("user의 uuid. " +
                                 "다른 팀에 이미 속해 있을 경우 error 발생(error code 90005).")),
-                        responseFields(userHasTeamException)));
+                        responseFields( fieldWithPath("status").description("status code"),
+                                fieldWithPath("errorCode").description("error code"),
+                                fieldWithPath("error").description("error 이름"),
+                                fieldWithPath("message").description("error 메시지"),
+                                fieldWithPath("timestamp").description("발생 시각"),
+                                fieldWithPath("hasTeamMembers").description("중복된 회원"))
+                                .andWithPrefix("hasTeamMembers[].", userHasTeamException)));
     }
 
     @Test
