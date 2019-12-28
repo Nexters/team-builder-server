@@ -115,7 +115,7 @@ public class Idea {
     }
 
     public void addMember(List<User> members) {
-        this.members.stream().forEach(member -> member.updateHasTeam(true));
+        members.stream().forEach(member -> member.updateHasTeam(true));
         this.author.updateHasTeam(true);
         this.members.clear();
         this.members.add(this.author);
