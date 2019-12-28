@@ -228,6 +228,10 @@ public class IdeaService {
             throw new IllegalArgumentException("해당 아이디어의 작성자가 아닙니다");
         }
 
+        idea.getMembers().forEach(member -> member.updateHasTeam(false));
+
+        ideaRepository.save(idea);
+
         List<User> users = userRepository.findAllByUuidIn(request.getUuids());
 
         if(users.stream().anyMatch(user -> user.isHasTeam() && !idea.getMembers().contains(user))) {
