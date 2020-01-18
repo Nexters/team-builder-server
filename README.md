@@ -1,78 +1,105 @@
 # 모임모임
 ![메인](image/메인.jpeg)
 
-[모임모임](http://www.모임모임.com)은 [넥스터즈](http://teamnexters.com/)의 아이디어를 아카이빙하고 팀빌딩을 할 수 있는 서비스입니다.
+> 모임모임은 [넥스터즈](http://teamnexters.com/) 회원들의 아이디어 제안부터 팀 빌딩까지의 과정을 외부 플랫폼 도움 없이 진행하기 위해 만든 서비스입니다.
 
-## 목차
-1. [상세 기능](#detail)
-2. [브랜치 관리 전략](#gitflow)
-3. [TDD 수행 방법](#tdd)
-4. [데모 화면](#screenshot)
-5. [팀원 소개](#team)
+<br/>
 
-<a name="detail"></a>
-## 상세 기능
-실제 넥스터즈 팀빌딩 프로세스에 최적화된 설계
+# ⚙️ 개발 환경
 
-### 아이디어 관리
-- 아이디어 모집 / 투표 / 선정
-- 팀빌딩
+![](image/skillset.jpeg)
+<br/><br/>
 
-### 사용성 향상
-- 즐겨찾기
-- 게시글 및 태그 검색
+# 💿 프로젝트 시작
 
-### 운영자 페이지
-- 기수 설정
-- 회원 관리
-- 아이디어 관리
+```shell script
+# commit 전 검토 사항
+./gradlew check                 # Test, CheckStyle 확인
+./gradlew jacocoTestReport      # Test Coverage에서 빠진 부분이 있는지 확인
 
-<a name="gitflow"></a>
-## 브랜치 관리 전략
+# 모든 테스트 수행
+./gradlew test
+
+# 프로젝트 빌드
+./gradlew build
+
+# 프로젝트 실행
+./gradlew bootrun
+```
+<br/>
+
+# 🌲 브랜치 관리 전략
 - `master` : 제품으로 출시될 수 있는 브랜치
 - `develop` : 다음 출시 버전을 개발하는 브랜치
 - `feature` : 기능을 개발하는 브랜치
 - `hotfix` : 버그를 수정하는 브랜치
 
 모든 PR은 review 후에 자신이 `merge`합니다.
+<br/><br/>
 
-<a name="tdd"></a>
-## TDD 수행 방법
-### commit 전 검토 사항
-- `gradle check`를 실행하고 test, checkstyle 문제점을 확인합니다.
-- `gradle jacocoTestReport`를 실행하고 test coverage에서 빠진 부분이 있는지 확인합니다.
+# 📑 상세 기능
+## 회원가입 및 로그인
 
-### Test
-- gradle test - Test All Project
-
-### Test Coverage
-- gradle jacocoTestReport
-
-<a name="screenshot"></a>
-## 데모 화면 
 ![화면](image/화면-로그인.png)
-![화면](image/화면-아이디어모집.png)
-![화면](image/화면-아이디어상세.png)
-![화면](image/화면-투표.png)
-![화면](image/화면-아이디어선정.png)
 
-<a name="team"></a>
-## 팀원 소개
+![화면](image/회원가입.png)
+
+넥스터즈 회원 전용 서비스이므로 인증 코드를 입력하고 별도의 승인을 받아야 가입 및 이용이 가능합니다.
+<br/><br/>
+
+## 아이디어 목록
+
+![화면](image/아이디어-리스트.png)
+
+![화면](image/아이디어-상세보기.png)
+
+![화면](image/아이디어-태그검색.png)
+
+![화면](image/아이디어-즐겨찾기목록.png)
+
+회원들이 작성한 아이디어를 열람, 필터링, 즐겨찾기 할 수 있습니다.
+<br/><br/>
+
+## 아이디어 투표 및 선정
+
+![화면](image/투표-리스트.png)
+
+투표 기간이 되면 마음에 드는 아이디어를 체크해서 투표할 수 있습니다.
+<br/><br/>
+
+![화면](image/선정-리스트.png)
+
+투표 기간이 종료되면 선정된 아이디어를 확인할 수 있습니다.
+<br/><br/>
+
+## 팀 빌딩
+
+![화면](image/팀빌딩-리스트7.png)
+
+팀 빌딩 당일에 협의를 통하여 팀원을 결정하고 목록에 추가합니다.
+<br/><br/>
+
+# 👨‍👩‍👧‍👦 프로젝트 멤버
 ![로고](image/logo.png)
 
 넥스터즈 15기 (주)모임건설
 
-### 디자이너
-- [지니]()
-- [혜니]()
+## 디자이너
 
-### 프론트엔드 개발
-- [team-builder-web](https://github.com/Nexters/team-builder-web)
-- [미카엘](https://github.com/leekwanho)
-- [봄](https://github.com/BBBOMi)
-- [홈매튜](https://github.com/inhyuck)
+🧞‍️ 지니
 
-### 서버 개발
-- [team-builder-server](https://github.com/Nexters/team-builder-server)
-- [오리진](https://github.com/Namkiwon)
-- [도더니](https://github.com/sojeongw)
+💁‍ 혜니
+
+## 클라이언트
+
+🌸 봄 [(BBBOMi)](https://github.com/BBBOMi)
+
+😇 미카엘 [(leekwanho)](https://github.com/leekwanho)
+
+👑 홈매튜[(inhyuck)](https://github.com/inhyuck)
+
+## 서버
+
+🤐 오리진 [(Namkiwon)](https://github.com/Namkiwon)
+
+🏃🏻‍️ 도더니 [(sojeongw)](https://github.com/sojeongw)
