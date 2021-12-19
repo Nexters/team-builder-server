@@ -37,8 +37,8 @@ service:
 cloud:
   aws:
     s3:
-      bucket: team-builder-s3
+      bucket: moimmoim
     region:
       static: ap-northeast-2
 cdn:
-  domain: d14veoa90g9l0u.cloudfront.net
+  domain: moimmoim.s3.ap-northeast-2.amazonaws.com
